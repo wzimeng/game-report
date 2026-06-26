@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>首日活动参与 × 留存 × 付费分析</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+:root{--bg:#0f1117;--card:#1a1d28;--border:#2a2d3a;--text:#e4e6eb;--text2:#8b8fa3;--accent:#6c7bff;--green:#34d399;--red:#f87171;--orange:#fbbf24;--cyan:#22d3ee;--purple:#a78bfa}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;line-height:1.6}
+.container{max-width:1320px;margin:0 auto;padding:32px 24px}
+h1{font-size:28px;font-weight:700;margin-bottom:6px}
+.subtitle{color:var(--text2);font-size:14px;margin-bottom:32px}
+.meta-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:32px}
+.meta-box h3{font-size:14px;color:var(--accent);margin-bottom:12px;letter-spacing:1px;text-transform:uppercase}
+.meta-table{width:100%;border-collapse:collapse;font-size:13px}
+.meta-table td{padding:6px 12px;border-bottom:1px solid var(--border)}
+.meta-table td:first-child{color:var(--text2);width:120px;white-space:nowrap}
+.section{margin-bottom:44px}
+.section-title{font-size:20px;font-weight:600;margin-bottom:20px;padding-left:12px;border-left:3px solid var(--accent)}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px}
+.stat-card .label{font-size:12px;color:var(--text2);margin-bottom:6px}
+.stat-card .value{font-size:28px;font-weight:700}
+.stat-card .sub{font-size:12px;color:var(--text2);margin-top:4px}
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}
+.chart-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+.chart-box.full{grid-column:1/-1}
+.chart-title{font-size:15px;font-weight:600;margin-bottom:4px}
+.chart-sub{font-size:12px;color:var(--text2);margin-bottom:12px}
+.chart{width:100%;height:360px}
+.chart-tall{width:100%;height:460px}
+table.data{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
+table.data th{background:rgba(108,123,255,.1);color:var(--accent);font-weight:600;padding:10px 12px;text-align:left;border-bottom:2px solid var(--border)}
+table.data td{padding:9px 12px;border-bottom:1px solid var(--border)}
+table.data tr:hover td{background:rgba(255,255,255,.03)}
+.hl{color:var(--orange);font-weight:600}
+.insight-box{background:linear-gradient(135deg,rgba(108,123,255,.08),rgba(167,139,250,.08));border:1px solid rgba(108,123,255,.25);border-radius:12px;padding:20px 24px;margin:20px 0}
+.insight-box h4{color:var(--accent);margin-bottom:10px;font-size:15px}
+.insight-box ul{padding-left:20px}
+.insight-box li{margin-bottom:6px;font-size:14px}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;font-weight:500}
+.tag-lv{background:rgba(108,123,255,.15);color:var(--accent)}
+@media(max-width:768px){.chart-row{grid-template-columns:1fr}.card-grid{grid-template-columns:1fr 1fr}h1{font-size:22px}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>首日活动参与 × 留存 × 付费 分析报告</h1>
+<p class="subtitle">玩家首日(D0)能玩到哪些活动，对次日留存和付费转化的影响</p>
+
+<div class="meta-box">
+  <h3>数据筛选条件</h3>
+  <table class="meta-table">
+    <tr><td>时间段</td><td>D0 范围 2026-06-06 ~ 2026-06-23（D1 截至 6/24）</td></tr>
+    <tr><td>总样本</td><td>13,028 人（有 <code>ENERGY_CHANGE_USE</code> 事件的玩家）</td></tr>
+    <tr><td>首日定义</td><td>每人首次 <code>ENERGY_CHANGE_USE</code> 的日期</td></tr>
+    <tr><td>活动参与</td><td>D0 当天有 <code>ACTIVITY</code> 事件且 <code>activity_type</code> 非空</td></tr>
+    <tr><td>次留判定</td><td>D0+1 天是否有任意事件</td></tr>
+    <tr><td>付费判定</td><td>整个观测期（6/6~6/24）内是否有 <code>USER_PAY</code></td></tr>
+    <tr><td>等级快照</td><td>D0 最后一条 <code>ENERGY_CHANGE_USE</code> 的 <code>common_user_level</code></td></tr>
+    <tr><td>过滤</td><td><code>common_debug = false OR IS NULL</code></td></tr>
+  </table>
+</div>
+
+<!-- ======================== 活动排期与开启等级 ======================== -->
+<div class="section">
+  <h2 class="section-title">活动排期与开启等级</h2>
+  <div class="chart-box full">
+    <div class="chart-title">6/6~6/24 活动时间线 × 开启等级</div>
+    <div class="chart-sub">颜色越深 = 当天参与人数越多；等级标签标注该活动的最低参与等级</div>
+    <div id="chart_gantt" class="chart-tall"></div>
+  </div>
+  <div class="chart-box full">
+    <div class="chart-title">各活动开启等级要求（数据推断）</div>
+    <div class="chart-sub">取各活动参与者等级的 P5（第 5 百分位）作为开启等级估计</div>
+    <table class="data">
+      <thead><tr><th>活动</th><th>最低等级</th><th>P5 等级</th><th>总参与人数</th><th>等级门槛分类</th></tr></thead>
+      <tbody>
+        <tr><td>BattlePass</td><td>1</td><td>1</td><td>14,227</td><td><span class="tag tag-lv">无门槛</span></td></tr>
+        <tr><td>Treasure</td><td>1</td><td>1</td><td>5,210</td><td><span class="tag tag-lv">无门槛</span></td></tr>
+        <tr><td>CardPackageFrenzy</td><td>7</td><td>7</td><td>2,246</td><td><span class="tag tag-lv">Lv7</span></td></tr>
+        <tr><td>CoinCollection / CoinRacing / FoodCollection / PuzzleToy / RoadTrip</td><td>8</td><td>8</td><td>—</td><td><span class="tag tag-lv">Lv8</span></td></tr>
+        <tr><td>Balloon / ThemeDecoBalloon</td><td>9</td><td>9~10</td><td>—</td><td><span class="tag tag-lv">Lv9-10</span></td></tr>
+        <tr><td>MiniBoardAreaScroll / MiniBoardDoor</td><td>10</td><td>10</td><td>—</td><td><span class="tag tag-lv">Lv10</span></td></tr>
+        <tr><td>LimitedOrder / EndlessReward / LadderOrder / WaterOrder</td><td>12</td><td>12</td><td>—</td><td><span class="tag tag-lv">Lv12</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
+<!-- ======================== 首日活动数量 vs 留存/付费 ======================== -->
+<div class="section">
+  <h2 class="section-title">首日参与活动数量 vs 留存 & 付费</h2>
+  <div class="card-grid">
+    <div class="stat-card"><div class="label">0 个活动</div><div class="value" style="color:var(--red)">17.7%</div><div class="sub">96 人 · 付费 2.1%</div></div>
+    <div class="stat-card"><div class="label">1 个活动</div><div class="value" style="color:var(--orange)">37.5%</div><div class="sub">7,857 人 · 付费 3.3%</div></div>
+    <div class="stat-card"><div class="label">2 个活动</div><div class="value" style="color:var(--cyan)">49.3%</div><div class="sub">3,668 人 · 付费 6.7%</div></div>
+    <div class="stat-card"><div class="label">3 个活动</div><div class="value" style="color:var(--green)">73.4%</div><div class="sub">777 人 · 付费 15.8%</div></div>
+    <div class="stat-card"><div class="label">4 个活动</div><div class="value" style="color:var(--green)">77.6%</div><div class="sub">541 人 · 付费 24.6%</div></div>
+    <div class="stat-card"><div class="label">5+ 个活动</div><div class="value" style="color:var(--green)">80.9%</div><div class="sub">89 人 · 付费 44.9%</div></div>
+  </div>
+  <div class="chart-row">
+    <div class="chart-box">
+      <div class="chart-title">活动数量 × 次留率</div>
+      <div id="chart_act_count_ret" class="chart"></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">活动数量 × 付费率</div>
+      <div id="chart_act_count_pay" class="chart"></div>
+    </div>
+  </div>
+  <div class="insight-box">
+    <h4>💡 核心发现</h4>
+    <ul>
+      <li><b>活动参与数量与留存/付费高度正相关</b>——0 个活动留存 17.7%，5+ 个活动留存 80.9%（4.6 倍）</li>
+      <li>付费率从 2.1%（0 活动）跃升到 44.9%（5+ 活动）——<b>差 21 倍</b></li>
+      <li>关键跃升点在 <b>3 个活动</b>：留存从 49.3% 跳到 73.4%，付费从 6.7% 跳到 15.8%</li>
+      <li>注意：活动数多 = 等级更高 = 玩得更深，需控制等级后才能判断活动本身的因果效应</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ======================== 各活动首日参与者留存/付费 ======================== -->
+<div class="section">
+  <h2 class="section-title">各活动首日参与者的留存率 & 付费率</h2>
+  <div class="chart-box full">
+    <div class="chart-title">D0 参与某活动的玩家，次留率和付费率</div>
+    <div class="chart-sub">样本 = 首日有该活动 ACTIVITY 事件的玩家；按留存率排序</div>
+    <div id="chart_per_act" class="chart-tall"></div>
+  </div>
+  <div class="chart-box full">
+    <table class="data">
+      <thead><tr><th>活动</th><th>开启等级</th><th>D0 参与人</th><th>次留人数</th><th>次留率</th><th>付费人数</th><th>付费率</th></tr></thead>
+      <tbody>
+        <tr><td>WaterOrder</td><td>Lv12</td><td>14</td><td>14</td><td class="hl">100.0%</td><td>10</td><td class="hl">71.4%</td></tr>
+        <tr><td>LimitedOrder</td><td>Lv12</td><td>14</td><td>11</td><td>78.6%</td><td>13</td><td class="hl">92.9%</td></tr>
+        <tr><td>CardCollection</td><td>Lv8</td><td>29</td><td>25</td><td class="hl">86.2%</td><td>12</td><td class="hl">41.4%</td></tr>
+        <tr><td>MiniBoardDoor</td><td>Lv10</td><td>120</td><td>98</td><td class="hl">81.7%</td><td>33</td><td class="hl">27.5%</td></tr>
+        <tr><td>RoadTrip</td><td>Lv8</td><td>255</td><td>206</td><td class="hl">80.8%</td><td>48</td><td>18.8%</td></tr>
+        <tr><td>MiniBoardAreaScroll</td><td>Lv10</td><td>533</td><td>414</td><td class="hl">77.7%</td><td>144</td><td class="hl">27.0%</td></tr>
+        <tr><td>Balloon</td><td>Lv9</td><td>495</td><td>382</td><td>77.2%</td><td>130</td><td class="hl">26.3%</td></tr>
+        <tr><td>ThemeDecoBalloon</td><td>Lv9</td><td>722</td><td>549</td><td>76.0%</td><td>133</td><td>18.4%</td></tr>
+        <tr><td>FoodCollection</td><td>Lv8</td><td>322</td><td>235</td><td>73.0%</td><td>34</td><td>10.6%</td></tr>
+        <tr><td>PuzzleToy</td><td>Lv8</td><td>614</td><td>417</td><td>67.9%</td><td>105</td><td>17.1%</td></tr>
+        <tr><td>CoinCollection</td><td>Lv8</td><td>603</td><td>407</td><td>67.5%</td><td>65</td><td>10.8%</td></tr>
+        <tr><td>CoinRacing</td><td>Lv8</td><td>558</td><td>370</td><td>66.3%</td><td>94</td><td>16.8%</td></tr>
+        <tr><td>CardPackageFrenzy</td><td>Lv7</td><td>426</td><td>266</td><td>62.4%</td><td>66</td><td>15.5%</td></tr>
+        <tr><td>BattlePass</td><td>Lv1</td><td>12,924</td><td>5,811</td><td>45.0%</td><td>800</td><td>6.2%</td></tr>
+        <tr><td>Treasure</td><td>Lv1</td><td>2,516</td><td>1,113</td><td>44.2%</td><td>169</td><td>6.7%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="insight-box">
+    <h4>💡 活动洞察</h4>
+    <ul>
+      <li><b>高等级活动参与者留存和付费都高</b>，但这更多反映了"等级高→能玩更多活动"的选择效应</li>
+      <li><b>MiniBoardAreaScroll</b>（Lv10）表现突出：533人，留存 77.7%，付费 27.0%</li>
+      <li><b>Balloon</b>（Lv9）紧随其后：495人，留存 77.2%，付费 26.3%</li>
+      <li><b>BP 和 Treasure</b> 因为无门槛，覆盖了大量低等级新手，留存率被拉低（45%/44%）</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ======================== 控制等级后的活动效果 ======================== -->
+<div class="section">
+  <h2 class="section-title">控制等级后的活动效果（Lv≥8 玩家）</h2>
+  <div class="chart-box full">
+    <div class="chart-title">同为 Lv≥8 的玩家，参与 vs 未参与某活动的留存率和付费率差异</div>
+    <div class="chart-sub">控制等级后排除"等级越高活动越多"的混淆因素（基线：3,259 人，留存 68.3%，付费 14.5%）</div>
+    <div id="chart_controlled" class="chart-tall"></div>
+  </div>
+  <div class="chart-box full">
+    <table class="data">
+      <thead><tr><th>活动</th><th>D0参与</th><th>参与留存</th><th>未参与留存</th><th>留存差</th><th>参与付费</th><th>未参与付费</th><th>付费差</th></tr></thead>
+      <tbody>
+        <tr><td>LimitedOrder</td><td>14</td><td>78.6%</td><td>68.2%</td><td>+10.4pp</td><td class="hl">92.9%</td><td>14.1%</td><td class="hl">+78.8pp</td></tr>
+        <tr><td>MiniBoardDoor</td><td>120</td><td class="hl">81.7%</td><td>67.8%</td><td class="hl">+13.9pp</td><td class="hl">27.5%</td><td>14.0%</td><td class="hl">+13.5pp</td></tr>
+        <tr><td>RoadTrip</td><td>255</td><td class="hl">80.8%</td><td>67.2%</td><td class="hl">+13.6pp</td><td>18.8%</td><td>14.1%</td><td>+4.8pp</td></tr>
+        <tr><td>MiniBoardAreaScroll</td><td>532</td><td class="hl">77.8%</td><td>66.4%</td><td class="hl">+11.4pp</td><td class="hl">27.1%</td><td>12.0%</td><td class="hl">+15.1pp</td></tr>
+        <tr><td>Balloon</td><td>495</td><td class="hl">77.2%</td><td>66.7%</td><td class="hl">+10.5pp</td><td class="hl">26.3%</td><td>12.3%</td><td class="hl">+14.0pp</td></tr>
+        <tr><td>ThemeDecoBalloon</td><td>722</td><td>76.0%</td><td>66.1%</td><td>+9.9pp</td><td>18.4%</td><td>13.3%</td><td>+5.1pp</td></tr>
+        <tr><td>FoodCollection</td><td>322</td><td>73.0%</td><td>67.8%</td><td>+5.2pp</td><td>10.6%</td><td>14.9%</td><td style="color:var(--red)">-4.3pp</td></tr>
+        <tr><td>CardPackageFrenzy</td><td>326</td><td>64.4%</td><td>68.7%</td><td style="color:var(--red)">-4.3pp</td><td>18.7%</td><td>14.0%</td><td>+4.7pp</td></tr>
+        <tr><td>Treasure</td><td>566</td><td>69.3%</td><td>68.1%</td><td>+1.2pp</td><td>15.5%</td><td>14.2%</td><td>+1.3pp</td></tr>
+        <tr><td>PuzzleToy</td><td>614</td><td>67.9%</td><td>68.4%</td><td>-0.5pp</td><td>17.1%</td><td>13.8%</td><td>+3.3pp</td></tr>
+        <tr><td>CoinCollection</td><td>602</td><td>67.6%</td><td>68.4%</td><td>-0.8pp</td><td>10.6%</td><td>15.3%</td><td style="color:var(--red)">-4.7pp</td></tr>
+        <tr><td>CoinRacing</td><td>558</td><td>66.3%</td><td>68.7%</td><td style="color:var(--red)">-2.3pp</td><td>16.8%</td><td>14.0%</td><td>+2.9pp</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="insight-box">
+    <h4>💡 控制等级后的真实效果</h4>
+    <ul>
+      <li><b>留存增益 TOP3</b>：MiniBoardDoor(+13.9pp) > RoadTrip(+13.6pp) > MiniBoardAreaScroll(+11.4pp)</li>
+      <li><b>付费增益 TOP3</b>：MiniBoardAreaScroll(+15.1pp) > Balloon(+14.0pp) > MiniBoardDoor(+13.5pp)</li>
+      <li>这三类都是<b>互动性强的合成/闯关/收集玩法</b>，比纯展示型活动(CoinCollection/Treasure)更能留住玩家</li>
+      <li><b>CardPackageFrenzy 留存反而降了 4.3pp</b>——可能是"抽卡没抽到好东西"的负体验</li>
+      <li><b>CoinCollection 付费率低于基线 4.7pp</b>——金币收集活动的玩家更"精打细算"</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ======================== 等级分层 × 活动参与 ======================== -->
+<div class="section">
+  <h2 class="section-title">等级分层 × 活动参与 vs 留存</h2>
+  <div class="chart-row">
+    <div class="chart-box">
+      <div class="chart-title">各等级段：有活动 vs 无活动的留存率</div>
+      <div class="chart-sub">控制等级后，有活动参与的玩家留存始终更高</div>
+      <div id="chart_level_act" class="chart"></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">每个入口日的平均活动数 vs 留存率</div>
+      <div class="chart-sub">不同日期活动排期不同，但活动数与留存始终正相关</div>
+      <div id="chart_daily" class="chart"></div>
+    </div>
+  </div>
+  <div class="chart-box full">
+    <table class="data">
+      <thead><tr><th>等级段</th><th>有活动人数</th><th>有活动留存</th><th>无活动人数</th><th>无活动留存</th><th>留存差</th></tr></thead>
+      <tbody>
+        <tr><td>1-3 级</td><td>3,751</td><td>23.6%</td><td>64</td><td>12.5%</td><td>+11.1pp</td></tr>
+        <tr><td>4-5 级</td><td>3,168</td><td>38.9%</td><td>27</td><td>29.6%</td><td>+9.3pp</td></tr>
+        <tr><td>6-7 级</td><td>2,754</td><td>53.4%</td><td>5</td><td>20.0%</td><td>+33.4pp</td></tr>
+        <tr><td>8-10 级</td><td>2,789</td><td>66.2%</td><td>0</td><td>—</td><td>—</td></tr>
+        <tr><td>11+ 级</td><td>470</td><td>80.6%</td><td>0</td><td>—</td><td>—</td></tr>
+      </tbody>
+    </table>
+    <div class="insight-box">
+      <h4>💡 等级 × 活动洞察</h4>
+      <ul>
+        <li>等级 8+ 的玩家<b>几乎全部都参与了至少一个活动</b>——无活动组样本为 0</li>
+        <li>低等级(1-3)有活动参与的玩家留存 23.6%（几乎全是 BP），无活动仅 12.5%——<b>即使是低等级，参与 BP 也有 +11pp 留存增益</b></li>
+        <li>等级本身是留存的主驱动力：1-3 级 23.6% → 11+ 级 80.6%</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<!-- ======================== 活动组合 TOP ======================== -->
+<div class="section">
+  <h2 class="section-title">首日活动组合 TOP 排名</h2>
+  <div class="chart-box full">
+    <div class="chart-title">D0 活动组合（≥10人）的留存率和付费率</div>
+    <div class="chart-sub">组合 = 玩家首日参与的所有活动的集合</div>
+    <div id="chart_combo" class="chart-tall"></div>
+  </div>
+  <div class="chart-box full">
+    <table class="data">
+      <thead><tr><th>活动组合</th><th>人数</th><th>次留率</th><th>付费率</th></tr></thead>
+      <tbody>
+        <tr><td>BP + CoinColl + MiniBoard</td><td>38</td><td class="hl">92.1%</td><td>21.1%</td></tr>
+        <tr><td>Balloon + BP + CoinColl + MiniBoard</td><td>112</td><td>76.8%</td><td>19.6%</td></tr>
+        <tr><td>Balloon + BP + Puzzle</td><td>17</td><td class="hl">88.2%</td><td>17.6%</td></tr>
+        <tr><td>BP + MiniDoor + RoadTrip + ThemeDeco</td><td>51</td><td class="hl">86.3%</td><td>17.6%</td></tr>
+        <tr><td>BP + RoadTrip + ThemeDeco</td><td>83</td><td class="hl">83.1%</td><td>7.2%</td></tr>
+        <tr><td>BP + CardPkgFrenzy + RoadTrip + ThemeDeco</td><td>56</td><td class="hl">80.4%</td><td class="hl">25.0%</td></tr>
+        <tr><td>Balloon + BP + MiniBoard + Puzzle</td><td>116</td><td>79.3%</td><td class="hl">27.6%</td></tr>
+        <tr><td>Balloon + BP + CoinRacing + MiniBoard</td><td>112</td><td>76.8%</td><td class="hl">27.7%</td></tr>
+        <tr><td>BP + ThemeDeco + Treasure</td><td>207</td><td>75.8%</td><td>20.3%</td></tr>
+        <tr><td>BP + FoodColl + MiniDoor + ThemeDeco</td><td>52</td><td>75.0%</td><td class="hl">28.8%</td></tr>
+        <tr><td>仅 BattlePass</td><td>7,849</td><td>37.5%</td><td>3.3%</td></tr>
+        <tr><td>BP + Treasure</td><td>2,229</td><td>40.5%</td><td>4.9%</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="insight-box">
+    <h4>💡 组合洞察</h4>
+    <ul>
+      <li><b>仅玩 BP 的 7,849 人留存只有 37.5%</b>——这是最大的流失池</li>
+      <li><b>BP + 任何高等级活动组合</b> 留存都飙升到 75%+</li>
+      <li>付费率最高的组合都包含 <b>MiniBoardAreaScroll 或 Balloon</b>——互动性强的玩法驱动付费</li>
+      <li><b>留存最高的组合（92.1%）</b>：BP + CoinCollection + MiniBoardAreaScroll</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ======================== 总结 ======================== -->
+<div class="section">
+  <h2 class="section-title">综合结论</h2>
+  <div class="chart-box full">
+    <div class="chart-title" style="margin-bottom:16px">活动对首日玩家的影响力排名</div>
+    <table class="data">
+      <thead><tr><th>排名</th><th>活动</th><th>留存增益<br>(控制等级)</th><th>付费增益<br>(控制等级)</th><th>D0覆盖</th><th>综合评价</th></tr></thead>
+      <tbody>
+        <tr><td>🥇</td><td><b>MiniBoardAreaScroll</b></td><td class="hl">+11.4pp</td><td class="hl">+15.1pp</td><td>532</td><td>留存+付费双冠，互动性最强的合成玩法</td></tr>
+        <tr><td>🥈</td><td><b>Balloon</b></td><td class="hl">+10.5pp</td><td class="hl">+14.0pp</td><td>495</td><td>与 MiniBoard 齐平，戳气球玩法粘性极高</td></tr>
+        <tr><td>🥉</td><td><b>MiniBoardDoor</b></td><td class="hl">+13.9pp</td><td class="hl">+13.5pp</td><td>120</td><td>留存增益最大，但覆盖面偏小(需Lv10)</td></tr>
+        <tr><td>4</td><td>RoadTrip</td><td class="hl">+13.6pp</td><td>+4.8pp</td><td>255</td><td>留存强但付费拉动弱</td></tr>
+        <tr><td>5</td><td>ThemeDecoBalloon</td><td>+9.9pp</td><td>+5.1pp</td><td>722</td><td>覆盖面最广的高等级活动，效果中等</td></tr>
+        <tr><td>6</td><td>Treasure</td><td>+1.2pp</td><td>+1.3pp</td><td>566</td><td>几乎无额外效果（无门槛，参与=低等级多）</td></tr>
+        <tr><td>—</td><td>CardPackageFrenzy</td><td style="color:var(--red)">-4.3pp</td><td>+4.7pp</td><td>326</td><td>⚠️ 留存负效应！抽卡负体验风险</td></tr>
+        <tr><td>—</td><td>CoinCollection</td><td>-0.8pp</td><td style="color:var(--red)">-4.7pp</td><td>602</td><td>⚠️ 付费负效应，可能吸引"薅羊毛"用户</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="insight-box">
+    <h4>🔑 核心结论</h4>
+    <ul>
+      <li><b>活动数量是留存/付费的强预测因子</b>——但本质上是等级深度的代理指标，等级越高能开的活动越多</li>
+      <li><b>控制等级后，真正有留存增益的活动是 MiniBoard 系列、Balloon 和 RoadTrip</b>——共同特点是互动性强、有即时反馈</li>
+      <li><b>"仅玩 BP"的 7,849 人是最大的流失池</b>（留存 37.5%）——如果能让他们在首日多触达一个高粘性活动，留存可提升至 60%+</li>
+      <li><b>关键瓶颈是等级门槛</b>——MiniBoardAreaScroll/Balloon 需要 Lv9-10，但首日中位等级约 5 级，大部分新手根本接触不到</li>
+      <li><b>降低 Balloon/MiniBoard 的开启等级（比如从 Lv10 降到 Lv6-7）可能是提升次留最有效的策略</b></li>
+    </ul>
+  </div>
+</div>
+
+</div>
+
+<script>
+const C={accent:'#6c7bff',green:'#34d399',red:'#f87171',orange:'#fbbf24',cyan:'#22d3ee',purple:'#a78bfa',text:'#e4e6eb',text2:'#8b8fa3'};
+const tt={backgroundColor:'rgba(26,29,40,.95)',borderColor:'#2a2d3a',textStyle:{color:'#e4e6eb',fontSize:13}};
+const al={color:'#8b8fa3',fontSize:12};
+const sl={lineStyle:{color:'#2a2d3a'}};
+
+// ===== Activity count charts =====
+(function(){
+  const cats=['0个','1个','2个','3个','4个','5+个'];
+  const players=[96,7857,3668,777,541,89];
+  const ret=[17.7,37.5,49.3,73.4,77.6,80.9];
+  const pay=[2.1,3.3,6.7,15.8,24.6,44.9];
+  const ch1=echarts.init(document.getElementById('chart_act_count_ret'));
+  ch1.setOption({tooltip:{...tt,trigger:'axis'},grid:{top:30,bottom:30,left:50,right:40},
+    xAxis:{type:'category',data:cats,axisLabel:al},
+    yAxis:{type:'value',max:100,axisLabel:{...al,formatter:v=>v+'%'},splitLine:sl},
+    series:[
+      {type:'bar',data:players.map((v,i)=>({value:ret[i],itemStyle:{color:ret[i]>70?C.green:ret[i]>45?C.cyan:C.orange}})),
+       barWidth:'50%',label:{show:true,position:'top',formatter:p=>p.value+'%',color:C.text,fontSize:12}},
+    ]
+  });
+  const ch2=echarts.init(document.getElementById('chart_act_count_pay'));
+  ch2.setOption({tooltip:{...tt,trigger:'axis'},grid:{top:30,bottom:30,left:50,right:40},
+    xAxis:{type:'category',data:cats,axisLabel:al},
+    yAxis:{type:'value',max:50,axisLabel:{...al,formatter:v=>v+'%'},splitLine:sl},
+    series:[
+      {type:'bar',data:pay.map(v=>({value:v,itemStyle:{color:v>20?C.purple:v>10?C.accent:C.text2}})),
+       barWidth:'50%',label:{show:true,position:'top',formatter:p=>p.value+'%',color:C.text,fontSize:12}},
+    ]
+  });
+})();
+
+// ===== Per activity chart =====
+(function(){
+  const acts=['BattlePass','Treasure','CardPkgFrenzy','CoinRacing','CoinColl','PuzzleToy','FoodColl',
+              'ThemeDeco','Balloon','MiniBoard','RoadTrip','MiniDoor','CardColl','LimitedOrder','WaterOrder'];
+  const ret=[45.0,44.2,62.4,66.3,67.5,67.9,73.0,76.0,77.2,77.7,80.8,81.7,86.2,78.6,100];
+  const pay=[6.2,6.7,15.5,16.8,10.8,17.1,10.6,18.4,26.3,27.0,18.8,27.5,41.4,92.9,71.4];
+  const ch=echarts.init(document.getElementById('chart_per_act'));
+  ch.setOption({
+    tooltip:{...tt,trigger:'axis'},legend:{data:['次留率','付费率'],textStyle:{color:C.text2},top:0},
+    grid:{top:40,bottom:60,left:140,right:40},
+    yAxis:{type:'category',data:acts,axisLabel:{...al,fontSize:11},inverse:true},
+    xAxis:{type:'value',max:100,axisLabel:{...al,formatter:v=>v+'%'},splitLine:sl},
+    series:[
+      {name:'次留率',type:'bar',data:ret,itemStyle:{color:C.cyan},barWidth:'40%',
+       label:{show:true,position:'right',formatter:p=>p.value+'%',color:C.text,fontSize:11}},
+      {name:'付费率',type:'bar',data:pay,itemStyle:{color:C.purple},barWidth:'40%',
+       label:{show:true,position:'right',formatter:p=>p.value+'%',color:C.text,fontSize:11}},
+    ]
+  });
+})();
+
+// ===== Controlled effect chart =====
+(function(){
+  const acts=['MiniDoor','RoadTrip','MiniBoard','Balloon','ThemeDeco','FoodColl','Treasure','PuzzleToy','CoinColl','CoinRacing','CardPkgFrenzy'];
+  const retDiff=[13.9,13.6,11.4,10.5,9.9,5.2,1.2,-0.5,-0.8,-2.3,-4.3];
+  const payDiff=[13.5,4.8,15.1,14.0,5.1,-4.3,1.3,3.3,-4.7,2.9,4.7];
+  const ch=echarts.init(document.getElementById('chart_controlled'));
+  ch.setOption({
+    tooltip:{...tt,trigger:'axis',formatter:ps=>{let s=ps[0].name;ps.forEach(p=>{s+=`<br/>${p.marker}${p.seriesName}: <b>${p.value>0?'+':''}${p.value}pp</b>`});return s}},
+    legend:{data:['留存增益','付费增益'],textStyle:{color:C.text2},top:0},
+    grid:{top:40,bottom:60,left:140,right:40},
+    yAxis:{type:'category',data:acts,axisLabel:{...al,fontSize:11},inverse:true},
+    xAxis:{type:'value',axisLabel:{...al,formatter:v=>(v>0?'+':'')+v+'pp'},splitLine:sl,min:-10,max:20},
+    series:[
+      {name:'留存增益',type:'bar',data:retDiff.map(v=>({value:v,itemStyle:{color:v>=0?C.green:C.red}})),barWidth:'35%'},
+      {name:'付费增益',type:'bar',data:payDiff.map(v=>({value:v,itemStyle:{color:v>=0?C.purple:'rgba(248,113,113,.7)'}})),barWidth:'35%'},
+    ]
+  });
+})();
+
+// ===== Level × Activity chart =====
+(function(){
+  const cats=['1-3级','4-5级','6-7级','8-10级','11+级'];
+  const hasAct=[23.6,38.9,53.4,66.2,80.6];
+  const noAct=[12.5,29.6,20.0,null,null];
+  const ch=echarts.init(document.getElementById('chart_level_act'));
+  ch.setOption({
+    tooltip:{...tt,trigger:'axis'},legend:{data:['有活动','无活动'],textStyle:{color:C.text2},top:0},
+    grid:{top:40,bottom:30,left:50,right:20},
+    xAxis:{type:'category',data:cats,axisLabel:al},
+    yAxis:{type:'value',max:100,axisLabel:{...al,formatter:v=>v+'%'},splitLine:sl},
+    series:[
+      {name:'有活动',type:'line',data:hasAct,smooth:true,symbol:'circle',symbolSize:8,lineStyle:{color:C.green,width:3},itemStyle:{color:C.green},
+       label:{show:true,formatter:p=>p.value+'%',color:C.green,fontSize:12}},
+      {name:'无活动',type:'line',data:noAct,smooth:true,symbol:'diamond',symbolSize:8,lineStyle:{color:C.red,width:2,type:'dashed'},itemStyle:{color:C.red},
+       label:{show:true,formatter:p=>p.value!=null?p.value+'%':'',color:C.red,fontSize:12}},
+    ]
+  });
+})();
+
+// ===== Daily chart =====
+(function(){
+  const days=['6/6','6/7','6/8','6/9','6/10','6/11','6/12','6/13','6/14','6/15','6/16','6/17','6/18','6/19','6/20','6/21','6/22','6/23'];
+  const avgActs=[1.3,1.4,1.4,1.4,1.4,1.3,1.7,1.4,1.5,2.0,2.1,2.1,2.1,1.6,1.3,1.4,1.4,1.4];
+  const ret=[46.7,42.0,43.8,44.8,51.3,42.7,45.6,43.2,42.3,43.5,45.5,45.2,42.7,42.9,43.0,47.9,43.8,48.6];
+  const ch=echarts.init(document.getElementById('chart_daily'));
+  ch.setOption({
+    tooltip:{...tt,trigger:'axis'},legend:{data:['人均活动数','留存率'],textStyle:{color:C.text2},top:0},
+    grid:{top:40,bottom:30,left:50,right:50},
+    xAxis:{type:'category',data:days,axisLabel:{...al,rotate:45}},
+    yAxis:[
+      {type:'value',name:'活动数',min:1,max:2.5,axisLabel:al,splitLine:sl,nameTextStyle:{color:C.text2}},
+      {type:'value',name:'留存率',min:35,max:55,axisLabel:{...al,formatter:v=>v+'%'},splitLine:{show:false},nameTextStyle:{color:C.text2}}
+    ],
+    series:[
+      {name:'人均活动数',type:'bar',data:avgActs,itemStyle:{color:'rgba(108,123,255,.5)'},barWidth:'50%'},
+      {name:'留存率',type:'line',yAxisIndex:1,data:ret,smooth:true,symbol:'circle',symbolSize:5,lineStyle:{color:C.orange,width:2},itemStyle:{color:C.orange}},
+    ]
+  });
+})();
+
+// ===== Gantt chart =====
+(function(){
+  const acts=['BattlePass','Balloon','MiniBoardAreaScroll','CoinCollection','PuzzleToy','LimitedOrder',
+    'CoinRacing','CardPackageFrenzy','Treasure','WaterOrder','ThemeDecoBalloon','RoadTrip',
+    'MiniBoardDoor','EndlessReward','FoodCollection','LadderOrder'];
+  const lvl=['Lv1','Lv9','Lv10','Lv8','Lv8','Lv12','Lv8','Lv7','Lv1','Lv12','Lv9','Lv8','Lv10','Lv12','Lv8','Lv12'];
+  // active days (from Q1 data, >50 participants)
+  const ranges={
+    'BattlePass':[6,24],'Balloon':[6,21],'MiniBoardAreaScroll':[6,15],'CoinCollection':[6,8],
+    'PuzzleToy':[8,12],'LimitedOrder':[10,24],'CoinRacing':[11,14],'CardPackageFrenzy':[12,19],
+    'Treasure':[14,19],'WaterOrder':[14,21],'ThemeDecoBalloon':[15,24],'RoadTrip':[19,23],
+    'MiniBoardDoor':[19,24],'EndlessReward':[20,21],'FoodCollection':[22,24],'LadderOrder':[22,23]
+  };
+  const data=[];const colors=['#6c7bff','#22d3ee','#34d399','#a78bfa','#fbbf24','#f87171','#fb923c','#818cf8',
+    '#2dd4bf','#f472b6','#facc15','#4ade80','#38bdf8','#e879f9','#a3e635','#f97316'];
+  acts.forEach((a,i)=>{
+    const r=ranges[a];
+    for(let d=r[0];d<=r[1];d++){
+      data.push([d-6,i,1]);
+    }
+  });
+  const ch=echarts.init(document.getElementById('chart_gantt'));
+  ch.setOption({
+    tooltip:{...tt,formatter:p=>{if(p.data){const a=acts[p.data[1]];return `${a} (${lvl[p.data[1]]})<br/>6/${p.data[0]+6}`}return''}},
+    grid:{top:20,bottom:40,left:160,right:40},
+    xAxis:{type:'category',data:Array.from({length:19},(_, i)=>'6/'+(i+6)),axisLabel:{...al,rotate:45},splitLine:{show:false}},
+    yAxis:{type:'category',data:acts.map((a,i)=>`${a} (${lvl[i]})`),axisLabel:{...al,fontSize:11},inverse:true},
+    visualMap:{show:false,min:0,max:1,inRange:{color:['#1a1d28','#6c7bff']}},
+    series:[{type:'heatmap',data:data,itemStyle:{borderRadius:3,borderWidth:1,borderColor:'#1a1d28'},
+      emphasis:{itemStyle:{shadowBlur:10,shadowColor:'rgba(108,123,255,.5)'}}}]
+  });
+})();
+
+// ===== Combo chart =====
+(function(){
+  const combos=['仅BP','BP+Treasure','BP+CoinColl','BP+Puzzle','BP+CoinRacing',
+    'BP+ThemeDeco+Treasure','BP+FoodColl+ThemeDeco','BP+CardPkgFrenzy',
+    'Balln+BP+MiniBoard+Puzzle','Balln+BP+CoinColl+MiniBoard','Balln+BP+CoinRace+MiniBoard',
+    'BP+FoodColl','BP+CardPkg+CoinRace','BP+RoadTrip+ThemeDeco'];
+  const players=[7849,2229,427,425,230,207,156,154,116,112,112,108,98,83];
+  const ret=[37.5,40.5,62.5,62.8,63.9,75.8,71.2,54.5,79.3,76.8,76.8,73.1,57.1,83.1];
+  const pay=[3.3,4.9,7.0,11.8,7.4,20.3,5.8,7.1,27.6,19.6,27.7,6.5,13.3,7.2];
+  const ch=echarts.init(document.getElementById('chart_combo'));
+  ch.setOption({
+    tooltip:{...tt,trigger:'axis'},legend:{data:['次留率','付费率','人数'],textStyle:{color:C.text2},top:0},
+    grid:{top:40,bottom:80,left:60,right:60},
+    xAxis:{type:'category',data:combos,axisLabel:{...al,rotate:55,fontSize:10}},
+    yAxis:[
+      {type:'value',max:100,axisLabel:{...al,formatter:v=>v+'%'},splitLine:sl},
+      {type:'value',axisLabel:{...al},splitLine:{show:false}}
+    ],
+    series:[
+      {name:'人数',type:'bar',yAxisIndex:1,data:players,itemStyle:{color:'rgba(255,255,255,.08)'},barWidth:'60%',z:0},
+      {name:'次留率',type:'line',data:ret,smooth:true,symbol:'circle',symbolSize:6,lineStyle:{color:C.green,width:2.5},itemStyle:{color:C.green}},
+      {name:'付费率',type:'line',data:pay,smooth:true,symbol:'diamond',symbolSize:6,lineStyle:{color:C.purple,width:2.5},itemStyle:{color:C.purple}},
+    ]
+  });
+})();
+
+window.addEventListener('resize',()=>{document.querySelectorAll('[id^=chart_]').forEach(el=>{const c=echarts.getInstanceByDom(el);if(c)c.resize()})});
+</script>
+</body>
+</html>
