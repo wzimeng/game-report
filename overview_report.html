@@ -129,23 +129,24 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
   <div class="chart-row" style="margin-top:24px">
     <div class="chart-box">
       <div class="chart-title">付费 vs 免费留存（分群对比）</div>
-      <div class="chart-sub">注意：此为分群数据，非整体留存。付费用户留存是免费的 1.6~2.4 倍</div>
+      <div class="chart-sub">注意：此为分群数据，非整体留存。付费用户留存是免费的 1.8~3.1 倍</div>
       <div id="chart_payret" class="chart"></div>
     </div>
     <div class="chart-box">
       <table class="data">
         <thead><tr><th>分群</th><th>人数</th><th>次留</th><th>3留</th><th>7留</th><th>14留</th></tr></thead>
         <tbody>
-          <tr><td><span class="tag tag-active">付费</span></td><td>812</td><td class="hl">93.5%</td><td class="hl">86.1%</td><td class="hl">71.8%</td><td class="hl">33.0%</td></tr>
-          <tr><td>免费</td><td>11,533</td><td>58.8%</td><td>44.3%</td><td>31.9%</td><td>13.8%</td></tr>
-          <tr style="color:var(--text2)"><td>倍率</td><td>—</td><td>×1.6</td><td>×1.9</td><td>×2.3</td><td>×2.4</td></tr>
+          <tr><td><span class="tag tag-active">付费</span></td><td>482</td><td class="hl">74.9%</td><td class="hl">61.4%</td><td class="hl">50.8%</td><td class="hl">43.2%</td></tr>
+          <tr><td>免费</td><td>7,146</td><td>40.6%</td><td>25.2%</td><td>19.0%</td><td>14.1%</td></tr>
+          <tr style="color:var(--text2)"><td>倍率</td><td>—</td><td>×1.8</td><td>×2.4</td><td>×2.7</td><td>×3.1</td></tr>
         </tbody>
       </table>
       <div class="insight-box" style="margin-top:16px">
         <h4>💡 解读</h4>
         <ul>
-          <li>14 留差距最大：付费 33% vs 免费 13.8%</li>
+          <li>14 留差距最大：付费 43.2% vs 免费 14.1%（×3.1）</li>
           <li>付费行为与长期留存强绑定</li>
+          <li>注册范围 6/6-6/14（确保 14 留观察窗口完整）</li>
         </ul>
       </div>
     </div>
@@ -155,12 +156,12 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
   <div class="chart-row" style="margin-top:24px">
     <div class="chart-box">
       <div class="chart-title">免费用户：首日等级 × 留存</div>
-      <div class="chart-sub">lv 8 是关键"留存锚"：7留从 16% 跳到 50.8%</div>
+      <div class="chart-sub">lv 8 是关键"留存锚"：7留从 7.3% 跳到 33.4%</div>
       <div id="chart_d0_free" class="chart"></div>
     </div>
     <div class="chart-box">
       <div class="chart-title">付费用户：首日等级 × 留存</div>
-      <div class="chart-sub">付费用户对首日等级不敏感，次留均 91-95%</div>
+      <div class="chart-sub">付费用户对首日等级不敏感，次留均 67-81%</div>
       <div id="chart_d0_pay" class="chart"></div>
     </div>
   </div>
@@ -171,21 +172,21 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
       <thead><tr><th rowspan="2">首日等级</th><th colspan="4" style="text-align:center">免费用户</th><th colspan="4" style="text-align:center">付费用户</th></tr>
       <tr><th>人数</th><th>次留</th><th>3留</th><th>7留</th><th>人数</th><th>次留</th><th>3留</th><th>7留</th></tr></thead>
       <tbody>
-        <tr><td>lv 1-3</td><td>3,790</td><td>38.0%</td><td>25.4%</td><td class="hl-red">16.0%</td><td>62</td><td>91.9%</td><td>83.9%</td><td>69.4%</td></tr>
-        <tr><td>lv 4-5</td><td>2,690</td><td>58.2%</td><td>41.7%</td><td>28.8%</td><td>116</td><td>94.0%</td><td>88.8%</td><td>75.9%</td></tr>
-        <tr><td>lv 6-7</td><td>2,362</td><td>69.4%</td><td>52.4%</td><td>37.7%</td><td>170</td><td>91.8%</td><td class="hl-red">78.8%</td><td>64.1%</td></tr>
-        <tr><td style="font-weight:600">lv 8-10</td><td>2,204</td><td class="hl-green">79.9%</td><td class="hl-green">66.1%</td><td class="hl-green">50.8%</td><td>306</td><td class="hl-green">95.1%</td><td class="hl-green">90.2%</td><td class="hl-green">75.5%</td></tr>
-        <tr><td>lv 11+</td><td>486</td><td>77.6%</td><td>68.3%</td><td>58.4%</td><td>158</td><td>92.4%</td><td>84.8%</td><td>70.9%</td></tr>
+        <tr><td>lv 1-3</td><td>3,790</td><td>22.1%</td><td>10.9%</td><td class="hl-red">7.3%</td><td>62</td><td>71.0%</td><td>61.3%</td><td>43.5%</td></tr>
+        <tr><td>lv 4-5</td><td>2,690</td><td>37.0%</td><td>21.0%</td><td>15.4%</td><td>116</td><td>67.2%</td><td>63.8%</td><td>56.0%</td></tr>
+        <tr><td>lv 6-7</td><td>2,362</td><td>50.0%</td><td>30.6%</td><td>23.5%</td><td>170</td><td>79.4%</td><td class="hl-red">54.1%</td><td>48.2%</td></tr>
+        <tr><td style="font-weight:600">lv 8-10</td><td>2,204</td><td class="hl-green">62.5%</td><td class="hl-green">44.7%</td><td class="hl-green">33.4%</td><td>306</td><td class="hl-green">80.1%</td><td class="hl-green">65.0%</td><td class="hl-green">56.5%</td></tr>
+        <tr><td>lv 11+</td><td>486</td><td>54.1%</td><td>42.4%</td><td>37.0%</td><td>158</td><td>81.0%</td><td>68.4%</td><td>55.1%</td></tr>
       </tbody>
     </table>
     </div>
     <div class="insight-box">
       <h4>💡 核心发现</h4>
       <ul>
-        <li><b>免费用户留存跳变点在 lv 8</b>：7留 50.8% 是 lv 1-3（16.0%）的 <b>3.2 倍</b></li>
-        <li><b>付费用户留存对首日等级不敏感</b>：无论首日到几级，次留 91-95%</li>
-        <li>付费用户 lv 6-7 有一个"凹陷"：3留 78.8% 低于 lv 4-5 的 88.8%</li>
-        <li>33% 免费用户停在 lv 1-3，这部分 7留仅 16%——是最大的优化机会</li>
+        <li><b>免费用户留存跳变点在 lv 8</b>：7留 33.4% 是 lv 1-3（7.3%）的 <b>4.6 倍</b></li>
+        <li><b>付费用户留存对首日等级不敏感</b>：无论首日到几级，次留都在 67-81%，7留在 43-57%</li>
+        <li>付费用户 lv 6-7 有一个"凹陷"：3留 54.1% 低于 lv 4-5 的 63.8%</li>
+        <li>33% 免费用户停在 lv 1-3，这部分 7留仅 7.3%——是最大的优化机会</li>
       </ul>
     </div>
   </div>
@@ -506,7 +507,7 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
       <thead><tr><th>维度</th><th>发现</th></tr></thead>
       <tbody>
         <tr><td>增长</td><td>DAU 持续增长至 4,010，未见顶；日均新增 747</td></tr>
-        <tr><td>留存</td><td>次留 42.5% 稳定无改善；付费用户留存是免费的 2 倍+</td></tr>
+        <tr><td>留存</td><td>次留 42.5% 稳定无改善；付费用户留存是免费的 1.8~3.1 倍</td></tr>
         <tr><td>付费</td><td>复购率 54.5%；ARPPU $25.7；Top 5% 贡献 33% 流水</td></tr>
         <tr><td>流失</td><td>35.8% 付费用户已流失；主力在 lv 11-15、D2-D7 期间</td></tr>
         <tr><td>资源</td><td>流失用户体力/宝石囤积但不消耗；金币对大 R 是卡点</td></tr>
@@ -519,7 +520,7 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
     <table class="data">
       <thead><tr><th>优先级</th><th>方向</th><th>具体措施</th><th>预期影响</th></tr></thead>
       <tbody>
-        <tr><td class="hl-red">🔴 高</td><td style="font-weight:600">首日到 lv 8</td><td>优化新手引导节奏，确保更多免费用户首日到 lv 8（当前 33% 停在 lv 1-3，7 留仅 16%；到 lv 8 后 7 留 50.8%）</td><td>次留 +5-10pp</td></tr>
+        <tr><td class="hl-red">🔴 高</td><td style="font-weight:600">首日到 lv 8</td><td>优化新手引导节奏，确保更多免费用户首日到 lv 8（当前 33% 停在 lv 1-3，7 留仅 7.3%；到 lv 8 后 7 留 33.4%）</td><td>次留 +5-10pp</td></tr>
         <tr><td class="hl-red">🔴 高</td><td style="font-weight:600">lv 11-15 推进支撑</td><td>该等级段是付费流失重灾区（148 人、40%），检查关卡难度曲线，考虑在 lv 12-14 增加阶段性金币/体力补给</td><td>付费流失率 -5pp</td></tr>
         <tr><td class="hl">🟡 中</td><td>付费后即时正反馈</td><td>41% 流失用户"付完即走"；对首次付费用户当天推送专属奖励/内容，D1 跟进触达</td><td>当日流失率 -10pp</td></tr>
         <tr><td class="hl">🟡 中</td><td>体力消耗场景</td><td>流失用户体力中位 48 > 活跃 3，有体力但没动力消耗；可增加限时体力消耗活动</td><td>提升日活跃度</td></tr>
@@ -589,8 +590,8 @@ const gridBase = {left:60,right:30,top:40,bottom:40};
 // ============================================================
 (function(){
   const cats = ['次留','3留','7留','14留'];
-  const pay = [93.5,86.1,71.8,33.0];
-  const free = [58.8,44.3,31.9,13.8];
+  const pay = [74.9,61.4,50.8,43.2];
+  const free = [40.6,25.2,19.0,14.1];
   echarts.init(document.getElementById('chart_payret')).setOption({
     tooltip:{trigger:'axis',formatter:p=>p[0].name+'<br/>'+p.map(s=>s.marker+s.seriesName+': <b>'+s.value+'%</b>').join('<br/>')},
     legend:{data:['付费','免费'],textStyle:{color:C.text2},top:0},
@@ -609,9 +610,9 @@ const gridBase = {left:60,right:30,top:40,bottom:40};
 // ============================================================
 (function(){
   const segs = ['lv 1-3','lv 4-5','lv 6-7','lv 8-10','lv 11+'];
-  const r1 = [38.0,58.2,69.4,79.9,77.6];
-  const r3 = [25.4,41.7,52.4,66.1,68.3];
-  const r7 = [16.0,28.8,37.7,50.8,58.4];
+  const r1 = [22.1,37.0,50.0,62.5,54.1];
+  const r3 = [10.9,21.0,30.6,44.7,42.4];
+  const r7 = [7.3,15.4,23.5,33.4,37.0];
   echarts.init(document.getElementById('chart_d0_free')).setOption({
     tooltip:{trigger:'axis',formatter:p=>p[0].name+'<br/>'+p.map(s=>s.marker+s.seriesName+': <b>'+s.value+'%</b>').join('<br/>')},
     legend:{data:['次留','3留','7留'],textStyle:{color:C.text2},top:0},
@@ -621,7 +622,7 @@ const gridBase = {left:60,right:30,top:40,bottom:40};
     series:[
       {name:'次留',type:'line',data:r1,smooth:true,lineStyle:{width:2,color:C.accent},itemStyle:{color:C.accent}},
       {name:'3留',type:'line',data:r3,smooth:true,lineStyle:{width:2,color:C.cyan},itemStyle:{color:C.cyan}},
-      {name:'7留',type:'line',data:r7,smooth:true,lineStyle:{width:2,color:C.green},itemStyle:{color:C.green},markPoint:{data:[{coord:['lv 8-10',50.8],value:'50.8%',itemStyle:{color:C.green}}],label:{color:'#fff',fontSize:11}}}
+      {name:'7留',type:'line',data:r7,smooth:true,lineStyle:{width:2,color:C.green},itemStyle:{color:C.green},markPoint:{data:[{coord:['lv 8-10',33.4],value:'33.4%',itemStyle:{color:C.green}}],label:{color:'#fff',fontSize:11}}}
     ]
   });
 })();
@@ -631,18 +632,18 @@ const gridBase = {left:60,right:30,top:40,bottom:40};
 // ============================================================
 (function(){
   const segs = ['lv 1-3','lv 4-5','lv 6-7','lv 8-10','lv 11+'];
-  const r1 = [91.9,94.0,91.8,95.1,92.4];
-  const r3 = [83.9,88.8,78.8,90.2,84.8];
-  const r7 = [69.4,75.9,64.1,75.5,70.9];
+  const r1 = [71.0,67.2,79.4,80.1,81.0];
+  const r3 = [61.3,63.8,54.1,65.0,68.4];
+  const r7 = [43.5,56.0,48.2,56.5,55.1];
   echarts.init(document.getElementById('chart_d0_pay')).setOption({
     tooltip:{trigger:'axis',formatter:p=>p[0].name+'<br/>'+p.map(s=>s.marker+s.seriesName+': <b>'+s.value+'%</b>').join('<br/>')},
     legend:{data:['次留','3留','7留'],textStyle:{color:C.text2},top:0},
     grid:{...gridBase,top:30},
     xAxis:{type:'category',data:segs,axisLabel:{color:C.text2,fontSize:11},axisLine:{lineStyle:{color:'#2a2d3a'}}},
-    yAxis:{type:'value',min:50,max:100,axisLabel:{color:C.text2,formatter:v=>v+'%'},splitLine:{lineStyle:{color:'#1e2130'}}},
+    yAxis:{type:'value',min:30,max:100,axisLabel:{color:C.text2,formatter:v=>v+'%'},splitLine:{lineStyle:{color:'#1e2130'}}},
     series:[
       {name:'次留',type:'line',data:r1,smooth:true,lineStyle:{width:2,color:C.accent},itemStyle:{color:C.accent}},
-      {name:'3留',type:'line',data:r3,smooth:true,lineStyle:{width:2,color:C.cyan},itemStyle:{color:C.cyan},markPoint:{data:[{coord:['lv 6-7',78.8],value:'凹陷',symbolSize:40,itemStyle:{color:C.red}}],label:{color:'#fff',fontSize:10}}},
+      {name:'3留',type:'line',data:r3,smooth:true,lineStyle:{width:2,color:C.cyan},itemStyle:{color:C.cyan},markPoint:{data:[{coord:['lv 6-7',54.1],value:'凹陷',symbolSize:40,itemStyle:{color:C.red}}],label:{color:'#fff',fontSize:10}}},
       {name:'7留',type:'line',data:r7,smooth:true,lineStyle:{width:2,color:C.green},itemStyle:{color:C.green}}
     ]
   });
