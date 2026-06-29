@@ -1,0 +1,597 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>付费玩家复购行为规律分析</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+:root{--bg:#0f1117;--card:#1a1d28;--border:#2a2d3a;--text:#e4e6eb;--text2:#8b8fa3;--accent:#6c7bff;--green:#34d399;--red:#f87171;--orange:#fbbf24;--cyan:#22d3ee;--purple:#a78bfa}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;line-height:1.6}
+.container{max-width:1320px;margin:0 auto;padding:32px 24px}
+h1{font-size:28px;font-weight:700;margin-bottom:6px}
+.subtitle{color:var(--text2);font-size:14px;margin-bottom:32px}
+.meta-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:32px}
+.meta-box h3{font-size:14px;color:var(--accent);margin-bottom:12px;letter-spacing:1px;text-transform:uppercase}
+.meta-table{width:100%;border-collapse:collapse;font-size:13px}
+.meta-table td{padding:6px 12px;border-bottom:1px solid var(--border)}
+.meta-table td:first-child{color:var(--text2);width:120px;white-space:nowrap}
+.section{margin-bottom:44px}
+.section-title{font-size:20px;font-weight:600;margin-bottom:20px;padding-left:12px;border-left:3px solid var(--accent)}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:14px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px}
+.stat-card .label{font-size:12px;color:var(--text2);margin-bottom:6px}
+.stat-card .value{font-size:28px;font-weight:700}
+.stat-card .sub{font-size:12px;color:var(--text2);margin-top:4px}
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}
+.chart-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px}
+.chart-box.full{grid-column:1/-1}
+.chart-title{font-size:15px;font-weight:600;margin-bottom:4px}
+.chart-sub{font-size:12px;color:var(--text2);margin-bottom:12px}
+.chart{width:100%;height:360px}
+.chart-tall{width:100%;height:460px}
+table.data{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
+table.data th{background:rgba(108,123,255,.1);color:var(--accent);font-weight:600;padding:10px 12px;text-align:left;border-bottom:2px solid var(--border)}
+table.data td{padding:9px 12px;border-bottom:1px solid var(--border)}
+table.data tr:hover td{background:rgba(255,255,255,.03)}
+.hl{color:var(--orange);font-weight:600}
+.insight-box{background:linear-gradient(135deg,rgba(108,123,255,.08),rgba(167,139,250,.08));border:1px solid rgba(108,123,255,.25);border-radius:12px;padding:20px 24px;margin:20px 0}
+.insight-box h4{color:var(--accent);margin-bottom:10px;font-size:15px}
+.insight-box ul{padding-left:20px}
+.insight-box li{margin-bottom:6px;font-size:14px}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;font-weight:500}
+.tag-lv{background:rgba(108,123,255,.15);color:var(--accent)}
+.footer{text-align:center;padding:40px 0 24px;color:var(--text2);font-size:12px;border-top:1px solid var(--border);margin-top:40px}
+@media(max-width:768px){.chart-row{grid-template-columns:1fr}.card-grid{grid-template-columns:1fr 1fr}h1{font-size:22px}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<h1>付费玩家复购行为规律分析</h1>
+<p class="subtitle">从付费次数、间隔、价格迁移、礼包偏好、资源状态等多维度解析复购驱动力</p>
+
+<div class="meta-box">
+  <h3>数据筛选条件</h3>
+  <table class="meta-table">
+    <tr><td>数据来源</td><td><code>USER_PAY</code> 事件 + <code>ACTIVITY</code> 事件</td></tr>
+    <tr><td>时间范围</td><td>2026-06-06 ~ 2026-06-24</td></tr>
+    <tr><td>筛选条件</td><td>正式服（<code>common_debug = false</code>）</td></tr>
+    <tr><td>时区</td><td>UTC-4</td></tr>
+    <tr><td>总付费玩家</td><td><b>816 人</b>，其中复购者 <b>430 人</b>（<span class="hl">52.7%</span>）</td></tr>
+  </table>
+</div>
+
+<!-- ======================== 1. 付费次数分布 ======================== -->
+<div class="section">
+  <h2 class="section-title">1. 付费次数分布</h2>
+  <div class="chart-box full">
+    <div class="chart-title">付费次数 × 人数 × 人均消费</div>
+    <div class="chart-sub">左轴=人数（柱），右轴=人均消费金额（线）</div>
+    <div id="chart_pay_count" class="chart"></div>
+  </div>
+  <div class="chart-box full">
+    <table class="data">
+      <thead><tr><th>付费次数</th><th>人数</th><th>占比</th><th>人均消费</th></tr></thead>
+      <tbody>
+        <tr><td>仅 1 次</td><td>386</td><td>47.3%</td><td>$7.00</td></tr>
+        <tr><td>2 次</td><td>163</td><td>20.0%</td><td>$14.78</td></tr>
+        <tr><td>3 次</td><td>71</td><td>8.7%</td><td>$22.04</td></tr>
+        <tr><td>4-5 次</td><td>85</td><td>10.4%</td><td>$33.66</td></tr>
+        <tr><td>6-10 次</td><td>68</td><td>8.3%</td><td>$57.91</td></tr>
+        <tr><td>11 次+</td><td class="hl">43</td><td>5.3%</td><td class="hl">$139.97</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="insight-box">
+    <h4>💡 洞察</h4>
+    <ul>
+      <li><b>52.7%</b> 的付费玩家有复购行为。</li>
+      <li>多一次付费 ≈ 多 ~$7 累计消费，复购深度与 LTV 高度正相关。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ======================== 2. 复购间隔分布 ======================== -->
+<div class="section">
+  <h2 class="section-title">2. 复购间隔分布</h2>
+  <div class="chart-row">
+    <div class="chart-box">
+      <div class="chart-title">复购间隔占比</div>
+      <div class="chart-sub">首付→二付的天数间隔分布（饼图）</div>
+      <div id="chart_interval_pie" class="chart"></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">复购间隔人数</div>
+      <div class="chart-sub">各间隔段的复购者人数</div>
+      <div id="chart_interval_bar" class="chart"></div>
+    </div>
+  </div>
+  <div class="insight-box">
+    <h4>💡 洞察</h4>
+    <ul>
+      <li>近半数复购（<b>49.5%</b>）发生在首付<b>当天</b>。</li>
+      <li>首付后的即时追售机制是最关键窗口——<b>70.4%</b> 在次日内完成。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ======================== 3. 价格迁移矩阵 ======================== -->
+<div class="section">
+  <h2 class="section-title">3. 价格迁移矩阵</h2>
+  <div class="chart-box full">
+    <div class="chart-title">首付价格档 → 二付价格档 迁移热力图</div>
+    <div class="chart-sub">颜色深浅代表迁移人数，Y 轴=首付档位，X 轴=二付档位</div>
+    <div id="chart_heatmap" class="chart-tall"></div>
+  </div>
+  <div class="insight-box">
+    <h4>💡 洞察</h4>
+    <ul>
+      <li><b>$3-10 区间粘性最强</b>（60%+ 留在同档）。</li>
+      <li><b>$10+ 首付者大多降档</b>（冲动消费回归）。</li>
+      <li><b>$1-3 是好钩子</b>——约 53% 升档到更高价位。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ======================== 4. 首付金额 vs 复购率 ======================== -->
+<div class="section">
+  <h2 class="section-title">4. 首付金额 vs 复购率</h2>
+  <div class="chart-box full">
+    <div class="chart-title">各首付价格档的买家数 & 复购率</div>
+    <div class="chart-sub">柱=买家人数，线=复购率（带数据标签）</div>
+    <div id="chart_first_repurchase" class="chart"></div>
+  </div>
+  <div class="insight-box">
+    <h4>💡 洞察</h4>
+    <ul>
+      <li><b>$5-20 首付玩家复购率最高</b>（55-61%）。</li>
+      <li>$3-5 反而偏低（46.7%），可能是某些 $3-5 礼包性价比不够。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ======================== 5. 礼包忠诚度 ======================== -->
+<div class="section">
+  <h2 class="section-title">5. 礼包忠诚度</h2>
+  <div class="chart-row">
+    <div class="chart-box">
+      <div class="chart-title">同类型 vs 不同类型礼包</div>
+      <div class="chart-sub">复购者买同一礼包 vs 不同礼包的比例</div>
+      <div id="chart_loyalty_pie" class="chart"></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">各 pay_type 复购率</div>
+      <div class="chart-sub">按复购率降序，柱长=复购率</div>
+      <div id="chart_paytype_bar" class="chart-tall"></div>
+    </div>
+  </div>
+  <div class="chart-box full" style="margin-bottom:24px">
+    <table class="data">
+      <thead><tr><th>类型</th><th>人数</th><th>占比</th><th>首付均价</th><th>二付均价</th></tr></thead>
+      <tbody>
+        <tr><td>不同礼包</td><td>329</td><td class="hl">76.5%</td><td>$8.32</td><td>$7.68</td></tr>
+        <tr><td>同一礼包</td><td>101</td><td>23.5%</td><td>$4.23</td><td>$5.29</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="insight-box">
+    <h4>💡 洞察</h4>
+    <ul>
+      <li><b>76.5%</b> 复购买的是<b>不同</b>礼包——玩家偏好多样化消费。</li>
+      <li><b>IceBreak 是复购发动机</b>（73.3%），BattlePass 复购率最低（47.6%）。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ======================== 6. 首付→二付礼包组合 TOP ======================== -->
+<div class="section">
+  <h2 class="section-title">6. 首付 → 二付礼包组合 TOP 10</h2>
+  <div class="chart-box full">
+    <table class="data">
+      <thead><tr><th>排名</th><th>首付类型</th><th>二付类型</th><th>人数</th></tr></thead>
+      <tbody>
+        <tr><td>1</td><td>Shop</td><td>Shop</td><td class="hl">78</td></tr>
+        <tr><td>2</td><td>BattlePassTwo</td><td>LevelPack</td><td>26</td></tr>
+        <tr><td>3</td><td>BattlePassTwo</td><td>Shop</td><td>22</td></tr>
+        <tr><td>4</td><td>BattlePassTwo</td><td>MiniBoardDoor</td><td>21</td></tr>
+        <tr><td>5</td><td>DailyPack</td><td>BattlePassTwo</td><td>18</td></tr>
+        <tr><td>6</td><td>BattlePassTwo</td><td>MiniBoardAreaScroll</td><td>17</td></tr>
+        <tr><td>7</td><td>Shop</td><td>LevelPack</td><td>17</td></tr>
+        <tr><td>8</td><td>Shop</td><td>BattlePassTwo</td><td>16</td></tr>
+        <tr><td>9</td><td>BattlePassTwo</td><td>EnergyPack</td><td>14</td></tr>
+        <tr><td>10</td><td>BattlePassTwo</td><td>DailyPack</td><td>13</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="insight-box">
+    <h4>💡 洞察</h4>
+    <ul>
+      <li><b>Shop→Shop</b> 是最大的复购路径（78 人）。</li>
+      <li>BP 买家二付方向非常分散——BP 是"入门票"，后续消费流向多种礼包。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ======================== 7. 付费时刻资源状态 ======================== -->
+<div class="section">
+  <h2 class="section-title">7. 付费时刻资源状态</h2>
+  <div class="chart-box full">
+    <div class="chart-title">不同付费阶段的平均资源快照</div>
+    <div class="chart-sub">4 组对比：仅付1次 / 复购者首付 / 二次付费 / 3次+付费</div>
+    <div id="chart_resource" class="chart-tall"></div>
+  </div>
+  <div class="chart-box full">
+    <table class="data">
+      <thead><tr><th>分组</th><th>付费次</th><th>体力</th><th>金币</th><th>宝石</th><th>等级</th></tr></thead>
+      <tbody>
+        <tr><td>仅付 1 次</td><td>386</td><td>50.7</td><td>115</td><td>51</td><td>9.4</td></tr>
+        <tr><td>复购者首付</td><td>430</td><td>45.9</td><td>109</td><td class="hl">24</td><td>8.7</td></tr>
+        <tr><td>二次付费</td><td>430</td><td>118</td><td>163</td><td>153</td><td>11.9</td></tr>
+        <tr><td>3 次+付费</td><td>999</td><td>230.1</td><td>251</td><td>281</td><td>16.8</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="insight-box">
+    <h4>💡 洞察</h4>
+    <ul>
+      <li><b>反直觉</b>——复购时资源并不低，反而更高。驱动力不是"资源耗尽被迫购买"，而是<b>"深度投入后主动消费"</b>。</li>
+      <li>会复购的玩家首付时宝石（24）反而比只付 1 次的（51）更低——低宝石首付者更可能复购。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ======================== 8. 等级变化 ======================== -->
+<div class="section">
+  <h2 class="section-title">8. 首付→二付等级变化</h2>
+  <div class="chart-box full">
+    <div class="chart-title">复购者首付 vs 二付时的等级对比</div>
+    <div class="chart-sub">柱=等级值，线=涨级数</div>
+    <div id="chart_level" class="chart"></div>
+  </div>
+  <div class="chart-box full">
+    <table class="data">
+      <thead><tr><th>等级变化</th><th>人数</th><th>占比</th><th>首付等级</th><th>二付等级</th></tr></thead>
+      <tbody>
+        <tr><td>没变</td><td>79</td><td>18.4%</td><td>9.3</td><td>9.3</td></tr>
+        <tr><td>涨 1-2 级</td><td>128</td><td>29.8%</td><td>8.6</td><td>10.1</td></tr>
+        <tr><td>涨 3-5 级</td><td class="hl">153</td><td class="hl">35.6%</td><td>8.8</td><td>12.7</td></tr>
+        <tr><td>涨 6 级+</td><td>70</td><td>16.3%</td><td>8.2</td><td>16.0</td></tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="insight-box">
+    <h4>💡 洞察</h4>
+    <ul>
+      <li><b>52%</b> 的复购发生在涨 3 级以上之后。</li>
+      <li>等级推进是复购的重要驱动力——玩得越深越愿意继续付费。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ======================== 9. 活动上下文 ======================== -->
+<div class="section">
+  <h2 class="section-title">9. 活动上下文</h2>
+  <div class="chart-row">
+    <div class="chart-box">
+      <div class="chart-title">首付 vs 二付当天活动参与人数</div>
+      <div class="chart-sub">并列条形图对比各活动在首付日/二付日的参与人数</div>
+      <div id="chart_activity_compare" class="chart-tall"></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">首付&二付当天活动重叠数</div>
+      <div class="chart-sub">首付和二付当天有多少相同活动在运行</div>
+      <div id="chart_overlap_pie" class="chart"></div>
+    </div>
+  </div>
+  <div class="insight-box">
+    <h4>💡 洞察</h4>
+    <ul>
+      <li><b>59%</b> 的复购者首付和二付当天有 <b>3+</b> 个相同活动在跑。</li>
+      <li><b>LimitedOrder</b>（二付/首付比 0.90）和 <b>CardCollection</b>（二付 > 首付）对复购有独特驱动力。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ======================== 10. Session 深度 & 时段 ======================== -->
+<div class="section">
+  <h2 class="section-title">10. Session 深度 & 付费时段</h2>
+  <div class="chart-row">
+    <div class="chart-box">
+      <div class="chart-title">二付前当天事件数分布</div>
+      <div class="chart-sub">复购当天在付费前已产生多少事件</div>
+      <div id="chart_session_depth" class="chart"></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">首付 vs 复购时段分布</div>
+      <div class="chart-sub">UTC-4 时段的付费次数分布</div>
+      <div id="chart_time_dist" class="chart"></div>
+    </div>
+  </div>
+  <div class="insight-box">
+    <h4>💡 洞察</h4>
+    <ul>
+      <li><b>86%</b> 的复购在当天 200+ 事件后发生——复购是深度投入的结果。</li>
+      <li>付费高峰在 0-9 点 UTC-4（= 北京时间 12-21 点）。</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ======================== 核心结论 ======================== -->
+<div class="section">
+  <h2 class="section-title">核心结论</h2>
+  <div class="insight-box">
+    <h4>📌 六大主要发现</h4>
+    <ul>
+      <li><b>复购是即时行为</b>：50% 当天复购，70% 次日内完成。首付后的即时追售窗口最关键。</li>
+      <li><b>资源不是复购动因</b>：复购时资源反而更充裕。驱动力是等级推进和深度投入（86% 在 200+ 事件后）。</li>
+      <li><b>$5-10 是黄金首付区间</b>：最大首付人群（380 人），复购率也最高（55.8%）。</li>
+      <li><b>礼包类型分散</b>：76.5% 复购买的是不同礼包。IceBreak 是复购发动机（73.3%），BP 复购率最低。</li>
+      <li><b>活动环境驱动复购</b>：59% 的复购者首付和二付当天有 3+ 个相同活动在跑。</li>
+      <li><b>价格锚定在同档</b>：60%+ 的 $3-10 首付玩家二付留在同价位，$10+ 首付者大多降档。</li>
+    </ul>
+  </div>
+</div>
+
+<div class="footer">Merge Hope Analytics · Data: 2026-06-06 ~ 2026-06-24 · Powered by ECharts</div>
+
+</div><!-- /.container -->
+
+<script>
+// ---- 通用暗色主题配置 ----
+const T = {
+  textStyle: { color: '#8b8fa3' },
+  axisLine: { lineStyle: { color: '#2a2d3a' } },
+  splitLine: { lineStyle: { color: '#2a2d3a' } },
+  axisLabel: { color: '#8b8fa3', fontSize: 11 },
+  legend: { textStyle: { color: '#8b8fa3' }, top: 0 }
+};
+function initChart(id, opt) {
+  const c = echarts.init(document.getElementById(id));
+  c.setOption(opt);
+  window.addEventListener('resize', () => c.resize());
+  return c;
+}
+
+// ======================== 1. 付费次数分布 ========================
+initChart('chart_pay_count', {
+  tooltip: { trigger: 'axis', backgroundColor: '#1a1d28', borderColor: '#2a2d3a', textStyle: { color: '#e4e6eb' } },
+  legend: { ...T.legend, data: ['人数', '人均消费'] },
+  grid: { left: 60, right: 70, top: 50, bottom: 30 },
+  xAxis: { type: 'category', data: ['仅1次', '2次', '3次', '4-5次', '6-10次', '11次+'], axisLine: T.axisLine, axisLabel: T.axisLabel },
+  yAxis: [
+    { type: 'value', name: '人数', nameTextStyle: { color: '#8b8fa3' }, axisLine: T.axisLine, splitLine: T.splitLine, axisLabel: T.axisLabel },
+    { type: 'value', name: '人均消费($)', nameTextStyle: { color: '#8b8fa3' }, axisLine: T.axisLine, splitLine: { show: false }, axisLabel: { ...T.axisLabel, formatter: '${value}' } }
+  ],
+  series: [
+    { name: '人数', type: 'bar', data: [386, 163, 71, 85, 68, 43], itemStyle: { color: '#6c7bff', borderRadius: [4,4,0,0] }, barWidth: '40%' },
+    { name: '人均消费', type: 'line', yAxisIndex: 1, data: [7, 14.78, 22.04, 33.66, 57.91, 139.97], lineStyle: { color: '#fbbf24', width: 2 }, itemStyle: { color: '#fbbf24' }, symbol: 'circle', symbolSize: 8, label: { show: true, formatter: '${c}', color: '#fbbf24', fontSize: 11 } }
+  ]
+});
+
+// ======================== 2. 复购间隔 - 饼图 ========================
+initChart('chart_interval_pie', {
+  tooltip: { trigger: 'item', backgroundColor: '#1a1d28', borderColor: '#2a2d3a', textStyle: { color: '#e4e6eb' } },
+  series: [{
+    type: 'pie', radius: ['40%', '70%'], center: ['50%', '55%'],
+    label: { color: '#e4e6eb', fontSize: 12, formatter: '{b}\n{d}%' },
+    data: [
+      { value: 213, name: '当天', itemStyle: { color: '#6c7bff' } },
+      { value: 90, name: '次日', itemStyle: { color: '#22d3ee' } },
+      { value: 67, name: '2-3天', itemStyle: { color: '#34d399' } },
+      { value: 43, name: '4-7天', itemStyle: { color: '#fbbf24' } },
+      { value: 17, name: '8天+', itemStyle: { color: '#f87171' } }
+    ]
+  }]
+});
+
+// ======================== 2. 复购间隔 - 柱状图 ========================
+initChart('chart_interval_bar', {
+  tooltip: { trigger: 'axis', backgroundColor: '#1a1d28', borderColor: '#2a2d3a', textStyle: { color: '#e4e6eb' } },
+  grid: { left: 50, right: 20, top: 20, bottom: 30 },
+  xAxis: { type: 'category', data: ['当天', '次日', '2-3天', '4-7天', '8天+'], axisLine: T.axisLine, axisLabel: T.axisLabel },
+  yAxis: { type: 'value', axisLine: T.axisLine, splitLine: T.splitLine, axisLabel: T.axisLabel },
+  series: [{
+    type: 'bar', barWidth: '50%',
+    data: [
+      { value: 213, itemStyle: { color: '#6c7bff' } },
+      { value: 90, itemStyle: { color: '#22d3ee' } },
+      { value: 67, itemStyle: { color: '#34d399' } },
+      { value: 43, itemStyle: { color: '#fbbf24' } },
+      { value: 17, itemStyle: { color: '#f87171' } }
+    ],
+    itemStyle: { borderRadius: [4,4,0,0] },
+    label: { show: true, position: 'top', color: '#e4e6eb', fontSize: 11 }
+  }]
+});
+
+// ======================== 3. 价格迁移矩阵 ========================
+(function(){
+  const yLabels = ['$20+', '$10-20', '$5-10', '$3-5', '$1-3'];
+  const xLabels = ['$1-3', '$3-5', '$5-10', '$10-20', '$20+'];
+  // data: [xIdx, yIdx, value]
+  const raw = [
+    // $1-3 首付 (yIdx=4)
+    [0,4,46],[1,4,27],[2,4,23],[3,4,0],[4,4,1],
+    // $3-5 首付 (yIdx=3)
+    [0,3,19],[1,3,39],[2,3,41],[3,3,1],[4,3,0],
+    // $5-10 首付 (yIdx=2)
+    [0,2,11],[1,2,52],[2,2,133],[3,2,14],[4,2,2],
+    // $10-20 首付 (yIdx=1)
+    [0,1,0],[1,1,4],[2,1,12],[3,1,3],[4,1,0],
+    // $20+ 首付 (yIdx=0)
+    [0,0,0],[1,0,1],[2,0,1],[3,0,0],[4,0,0]
+  ];
+  const data = raw.map(d => [d[0], d[1], d[2] || '-']);
+  initChart('chart_heatmap', {
+    tooltip: { backgroundColor: '#1a1d28', borderColor: '#2a2d3a', textStyle: { color: '#e4e6eb' },
+      formatter: p => `首付 ${yLabels[p.value[1]]} → 二付 ${xLabels[p.value[0]]}<br/>人数: <b>${p.value[2]}</b>` },
+    grid: { left: 80, right: 80, top: 20, bottom: 60 },
+    xAxis: { type: 'category', data: xLabels, name: '二付价格档', nameLocation: 'center', nameGap: 35, nameTextStyle: { color: '#8b8fa3' }, axisLine: T.axisLine, axisLabel: T.axisLabel, splitArea: { show: true, areaStyle: { color: ['rgba(255,255,255,.01)', 'rgba(255,255,255,.03)'] } } },
+    yAxis: { type: 'category', data: yLabels, name: '首付价格档', nameLocation: 'center', nameGap: 55, nameTextStyle: { color: '#8b8fa3' }, axisLine: T.axisLine, axisLabel: T.axisLabel, splitArea: { show: true, areaStyle: { color: ['rgba(255,255,255,.01)', 'rgba(255,255,255,.03)'] } } },
+    visualMap: { min: 0, max: 133, calculable: true, orient: 'vertical', right: 10, top: 'center', textStyle: { color: '#8b8fa3' },
+      inRange: { color: ['#1a1d28', '#3b3f80', '#6c7bff', '#a78bfa', '#fbbf24'] } },
+    series: [{
+      type: 'heatmap', data: data,
+      label: { show: true, color: '#e4e6eb', fontSize: 12, formatter: p => p.value[2] === '-' ? '' : p.value[2] },
+      emphasis: { itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.5)' } }
+    }]
+  });
+})();
+
+// ======================== 4. 首付金额 vs 复购率 ========================
+initChart('chart_first_repurchase', {
+  tooltip: { trigger: 'axis', backgroundColor: '#1a1d28', borderColor: '#2a2d3a', textStyle: { color: '#e4e6eb' } },
+  legend: { ...T.legend, data: ['买家数', '复购率'] },
+  grid: { left: 60, right: 60, top: 50, bottom: 30 },
+  xAxis: { type: 'category', data: ['$1-3', '$3-5', '$5-10', '$10-20', '$20+'], axisLine: T.axisLine, axisLabel: T.axisLabel },
+  yAxis: [
+    { type: 'value', name: '买家数', nameTextStyle: { color: '#8b8fa3' }, axisLine: T.axisLine, splitLine: T.splitLine, axisLabel: T.axisLabel },
+    { type: 'value', name: '复购率(%)', nameTextStyle: { color: '#8b8fa3' }, min: 0, max: 100, axisLine: T.axisLine, splitLine: { show: false }, axisLabel: { ...T.axisLabel, formatter: '{value}%' } }
+  ],
+  series: [
+    { name: '买家数', type: 'bar', data: [186, 214, 380, 31, 5], itemStyle: { color: 'rgba(139,143,163,0.4)', borderRadius: [4,4,0,0] }, barWidth: '40%' },
+    { name: '复购率', type: 'line', yAxisIndex: 1, data: [52.2, 46.7, 55.8, 61.3, 40.0], lineStyle: { color: '#34d399', width: 2 }, itemStyle: { color: '#34d399' }, symbol: 'circle', symbolSize: 8, label: { show: true, formatter: '{c}%', color: '#34d399', fontSize: 12 } }
+  ]
+});
+
+// ======================== 5A. 礼包忠诚度 - 环形图 ========================
+initChart('chart_loyalty_pie', {
+  tooltip: { trigger: 'item', backgroundColor: '#1a1d28', borderColor: '#2a2d3a', textStyle: { color: '#e4e6eb' } },
+  series: [{
+    type: 'pie', radius: ['45%', '72%'], center: ['50%', '55%'],
+    label: { color: '#e4e6eb', fontSize: 12, formatter: '{b}\n{c}人 ({d}%)' },
+    data: [
+      { value: 329, name: '不同礼包', itemStyle: { color: '#6c7bff' } },
+      { value: 101, name: '同一礼包', itemStyle: { color: '#a78bfa' } }
+    ]
+  }]
+});
+
+// ======================== 5B. 各 pay_type 复购率 ========================
+(function(){
+  const names = ['ChainPack','BattlePassTwo','LevelPack','MiniBoardDoor','EnergyPack','Shop','MiniBoardAreaScroll','DailyPack','GiftOnAddOne','IceBreak'];
+  const rates = [44.4, 47.6, 48.3, 50.0, 52.8, 54.2, 60.0, 61.0, 61.5, 73.3];
+  const counts = [27, 273, 60, 22, 36, 264, 15, 59, 13, 45];
+  initChart('chart_paytype_bar', {
+    tooltip: { trigger: 'axis', backgroundColor: '#1a1d28', borderColor: '#2a2d3a', textStyle: { color: '#e4e6eb' },
+      formatter: p => `${p[0].name}<br/>首付人数: ${counts[p[0].dataIndex]}<br/>复购率: ${p[0].value}%` },
+    grid: { left: 140, right: 60, top: 10, bottom: 30 },
+    xAxis: { type: 'value', max: 100, axisLine: T.axisLine, splitLine: T.splitLine, axisLabel: { ...T.axisLabel, formatter: '{value}%' } },
+    yAxis: { type: 'category', data: names, axisLine: T.axisLine, axisLabel: { ...T.axisLabel, fontSize: 11 } },
+    series: [{
+      type: 'bar', data: rates.map((v, i) => ({
+        value: v,
+        itemStyle: { color: v >= 60 ? '#34d399' : v >= 50 ? '#6c7bff' : '#f87171', borderRadius: [0,4,4,0] }
+      })),
+      barWidth: '55%',
+      label: { show: true, position: 'right', formatter: '{c}%', color: '#e4e6eb', fontSize: 11 }
+    }]
+  });
+})();
+
+// ======================== 7. 付费时刻资源状态 ========================
+initChart('chart_resource', {
+  tooltip: { trigger: 'axis', backgroundColor: '#1a1d28', borderColor: '#2a2d3a', textStyle: { color: '#e4e6eb' } },
+  legend: { ...T.legend, data: ['仅付1次', '复购者首付', '二次付费', '3次+付费'] },
+  grid: { left: 60, right: 20, top: 50, bottom: 30 },
+  xAxis: { type: 'category', data: ['体力', '金币', '宝石', '等级'], axisLine: T.axisLine, axisLabel: T.axisLabel },
+  yAxis: { type: 'value', axisLine: T.axisLine, splitLine: T.splitLine, axisLabel: T.axisLabel },
+  series: [
+    { name: '仅付1次', type: 'bar', data: [50.7, 115, 51, 9.4], itemStyle: { color: 'rgba(139,143,163,0.5)', borderRadius: [4,4,0,0] } },
+    { name: '复购者首付', type: 'bar', data: [45.9, 109, 24, 8.7], itemStyle: { color: '#6c7bff', borderRadius: [4,4,0,0] } },
+    { name: '二次付费', type: 'bar', data: [118, 163, 153, 11.9], itemStyle: { color: '#22d3ee', borderRadius: [4,4,0,0] } },
+    { name: '3次+付费', type: 'bar', data: [230.1, 251, 281, 16.8], itemStyle: { color: '#34d399', borderRadius: [4,4,0,0] } }
+  ]
+});
+
+// ======================== 8. 等级变化 ========================
+initChart('chart_level', {
+  tooltip: { trigger: 'axis', backgroundColor: '#1a1d28', borderColor: '#2a2d3a', textStyle: { color: '#e4e6eb' } },
+  legend: { ...T.legend, data: ['首付等级', '二付等级', '涨级数'] },
+  grid: { left: 50, right: 60, top: 50, bottom: 30 },
+  xAxis: { type: 'category', data: ['没变', '涨1-2级', '涨3-5级', '涨6级+'], axisLine: T.axisLine, axisLabel: T.axisLabel },
+  yAxis: [
+    { type: 'value', name: '等级', nameTextStyle: { color: '#8b8fa3' }, axisLine: T.axisLine, splitLine: T.splitLine, axisLabel: T.axisLabel },
+    { type: 'value', name: '涨级数', nameTextStyle: { color: '#8b8fa3' }, axisLine: T.axisLine, splitLine: { show: false }, axisLabel: T.axisLabel }
+  ],
+  series: [
+    { name: '首付等级', type: 'bar', data: [9.3, 8.6, 8.8, 8.2], itemStyle: { color: '#6c7bff', borderRadius: [4,4,0,0] } },
+    { name: '二付等级', type: 'bar', data: [9.3, 10.1, 12.7, 16.0], itemStyle: { color: '#22d3ee', borderRadius: [4,4,0,0] } },
+    { name: '涨级数', type: 'line', yAxisIndex: 1, data: [0, 1.5, 3.9, 7.8], lineStyle: { color: '#fbbf24', width: 2 }, itemStyle: { color: '#fbbf24' }, symbol: 'circle', symbolSize: 8, label: { show: true, color: '#fbbf24', fontSize: 11 } }
+  ]
+});
+
+// ======================== 9A. 活动上下文对比 ========================
+(function(){
+  const acts = ['CardPackageFrenzy','CardCollection','CoinRacing','PuzzleToy','LimitedOrder','RoadTrip','FoodCollection','MiniBoardDoor','Treasure','MiniBoardAreaScroll','Balloon','ThemeDecoBalloon','BattlePass'];
+  const firstPay = [100,41,126,130,79,146,149,152,179,206,218,336,804];
+  const secondPay = [44,49,66,67,71,97,101,100,97,122,131,216,421];
+  initChart('chart_activity_compare', {
+    tooltip: { trigger: 'axis', backgroundColor: '#1a1d28', borderColor: '#2a2d3a', textStyle: { color: '#e4e6eb' } },
+    legend: { ...T.legend, data: ['首付日参与', '二付日参与'] },
+    grid: { left: 150, right: 30, top: 30, bottom: 20 },
+    yAxis: { type: 'category', data: acts, axisLine: T.axisLine, axisLabel: { ...T.axisLabel, fontSize: 10 } },
+    xAxis: { type: 'value', axisLine: T.axisLine, splitLine: T.splitLine, axisLabel: T.axisLabel },
+    series: [
+      { name: '首付日参与', type: 'bar', data: firstPay, itemStyle: { color: '#6c7bff', borderRadius: [0,4,4,0] } },
+      { name: '二付日参与', type: 'bar', data: secondPay, itemStyle: { color: '#22d3ee', borderRadius: [0,4,4,0] } }
+    ]
+  });
+})();
+
+// ======================== 9B. 活动重叠数 ========================
+initChart('chart_overlap_pie', {
+  tooltip: { trigger: 'item', backgroundColor: '#1a1d28', borderColor: '#2a2d3a', textStyle: { color: '#e4e6eb' } },
+  series: [{
+    type: 'pie', radius: ['40%', '70%'], center: ['50%', '55%'],
+    label: { color: '#e4e6eb', fontSize: 12, formatter: '{b}\n{c}人 ({d}%)' },
+    data: [
+      { value: 10, name: '0个重叠', itemStyle: { color: '#f87171' } },
+      { value: 78, name: '1个', itemStyle: { color: '#fbbf24' } },
+      { value: 87, name: '2个', itemStyle: { color: '#22d3ee' } },
+      { value: 255, name: '3个以上', itemStyle: { color: '#34d399' } }
+    ]
+  }]
+});
+
+// ======================== 10A. Session 深度 ========================
+initChart('chart_session_depth', {
+  tooltip: { trigger: 'axis', backgroundColor: '#1a1d28', borderColor: '#2a2d3a', textStyle: { color: '#e4e6eb' } },
+  grid: { left: 50, right: 20, top: 20, bottom: 30 },
+  xAxis: { type: 'category', data: ['<5', '5-19', '20-49', '50-99', '100-199', '200+'], axisLine: T.axisLine, axisLabel: T.axisLabel },
+  yAxis: { type: 'value', axisLine: T.axisLine, splitLine: T.splitLine, axisLabel: T.axisLabel },
+  series: [{
+    type: 'bar', barWidth: '50%',
+    data: [
+      { value: 34, itemStyle: { color: 'rgba(139,143,163,0.4)' } },
+      { value: 11, itemStyle: { color: 'rgba(139,143,163,0.4)' } },
+      { value: 4, itemStyle: { color: 'rgba(139,143,163,0.4)' } },
+      { value: 3, itemStyle: { color: 'rgba(139,143,163,0.4)' } },
+      { value: 8, itemStyle: { color: 'rgba(139,143,163,0.4)' } },
+      { value: 370, itemStyle: { color: '#6c7bff' } }
+    ],
+    itemStyle: { borderRadius: [4,4,0,0] },
+    label: { show: true, position: 'top', color: '#e4e6eb', fontSize: 11, formatter: p => {
+      const pcts = ['7.9%','2.6%','0.9%','0.7%','1.9%','86.0%'];
+      return p.value + '\n' + pcts[p.dataIndex];
+    }}
+  }]
+});
+
+// ======================== 10B. 首付 vs 复购时段 ========================
+initChart('chart_time_dist', {
+  tooltip: { trigger: 'axis', backgroundColor: '#1a1d28', borderColor: '#2a2d3a', textStyle: { color: '#e4e6eb' } },
+  legend: { ...T.legend, data: ['首付', '复购'] },
+  grid: { left: 50, right: 20, top: 40, bottom: 30 },
+  xAxis: { type: 'category', data: ['0-5点', '6-9点', '10-13点', '14-17点', '18-21点', '22-23点'], axisLine: T.axisLine, axisLabel: T.axisLabel },
+  yAxis: { type: 'value', axisLine: T.axisLine, splitLine: T.splitLine, axisLabel: T.axisLabel },
+  series: [
+    { name: '首付', type: 'bar', data: [269, 207, 132, 53, 89, 66], itemStyle: { color: '#6c7bff', borderRadius: [4,4,0,0] } },
+    { name: '复购', type: 'bar', data: [560, 453, 289, 105, 199, 122], itemStyle: { color: '#a78bfa', borderRadius: [4,4,0,0] } }
+  ]
+});
+</script>
+</body>
+</html>

@@ -47,9 +47,10 @@ h1 { font-size: 36px; font-weight: 700; margin-bottom: 8px; }
   height: 3px;
   border-radius: 16px 16px 0 0;
 }
-.report-card:nth-child(1)::before { background: linear-gradient(90deg, var(--accent), var(--cyan)); }
-.report-card:nth-child(2)::before { background: linear-gradient(90deg, var(--green), var(--orange)); }
-.report-card:nth-child(3)::before { background: linear-gradient(90deg, var(--purple), var(--red)); }
+.report-card:nth-child(1)::before { background: linear-gradient(90deg, var(--orange), var(--red)); }
+.report-card:nth-child(2)::before { background: linear-gradient(90deg, var(--accent), var(--cyan)); }
+.report-card:nth-child(3)::before { background: linear-gradient(90deg, var(--green), var(--orange)); }
+.report-card:nth-child(4)::before { background: linear-gradient(90deg, var(--purple), var(--red)); }
 .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .card-title { font-size: 20px; font-weight: 600; }
 .card-badge {
@@ -89,10 +90,28 @@ h1 { font-size: 36px; font-weight: 700; margin-bottom: 8px; }
   <p class="subtitle">项目数据洞察合集 &mdash; 点击查看详细报告</p>
 
   <div class="report-list">
+    <a class="report-card" href="repurchase_report.html">
+      <div class="card-header">
+        <span class="card-title">付费玩家复购行为规律分析</span>
+        <span class="card-badge badge-new">NEW</span>
+      </div>
+      <p class="card-desc">
+        深度拆解 816 位付费玩家的复购行为：复购间隔、价格迁移矩阵、礼包忠诚度、
+        资源状态驱动力、等级推进影响、活动环境关联、Session 深度等 10 个维度。
+      </p>
+      <div class="card-tags">
+        <span class="tag">6/6 - 6/24</span>
+        <span class="tag">816 付费玩家</span>
+        <span class="tag">52.7% 复购率</span>
+        <span class="tag">10 维分析</span>
+      </div>
+      <span class="card-arrow">&rarr;</span>
+    </a>
+
     <a class="report-card" href="d0_activity_report.html">
       <div class="card-header">
         <span class="card-title">首日活动参与 &times; 留存 &times; 付费分析</span>
-        <span class="card-badge badge-new">NEW</span>
+        <span class="card-badge badge-live">LIVE</span>
       </div>
       <p class="card-desc">
         分析新玩家首日能玩到的活动对次日留存和付费的影响。覆盖 17 个活动的参与率、留存差异、
