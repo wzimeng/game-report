@@ -105,22 +105,36 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
   </div>
 
   <!-- 次留趋势 -->
-  <div class="chart-box full" style="margin-bottom:24px;margin-top:24px">
-    <div class="chart-title">次日留存率趋势</div>
+  <!-- 全体留存汇总 -->
+  <div class="chart-box full" style="margin-top:24px;margin-bottom:24px">
+    <div class="chart-title">整体留存指标（全体用户）</div>
+    <div class="chart-sub">留存稳定但未见改善趋势</div>
+    <table class="data">
+      <thead><tr><th>留存指标</th><th>均值</th><th>范围</th></tr></thead>
+      <tbody>
+        <tr><td>次留</td><td class="hl">42.5%</td><td>37.9% ~ 49.7%</td></tr>
+        <tr><td>3留</td><td class="hl">27.7%</td><td>26.0% ~ 30.0%</td></tr>
+        <tr><td>7留</td><td class="hl">21.0%</td><td>18.5% ~ 24.9%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="chart-box full" style="margin-bottom:24px">
+    <div class="chart-title">次日留存率趋势（全体用户）</div>
     <div class="chart-sub">均值 42.5%，波动范围 37.9% ~ 49.7%，整体稳定无改善</div>
     <div id="chart_ret" class="chart"></div>
   </div>
 
-  <!-- 付费 vs 免费留存 -->
+  <!-- 付费 vs 免费留存（分群数据，非整体） -->
   <div class="chart-row" style="margin-top:24px">
     <div class="chart-box">
-      <div class="chart-title">付费 vs 免费留存</div>
-      <div class="chart-sub">付费用户留存是免费的 1.6~2.4 倍</div>
+      <div class="chart-title">付费 vs 免费留存（分群对比）</div>
+      <div class="chart-sub">注意：此为分群数据，非整体留存。付费用户留存是免费的 1.6~2.4 倍</div>
       <div id="chart_payret" class="chart"></div>
     </div>
     <div class="chart-box">
       <table class="data">
-        <thead><tr><th>类型</th><th>人数</th><th>次留</th><th>3留</th><th>7留</th><th>14留</th></tr></thead>
+        <thead><tr><th>分群</th><th>人数</th><th>次留</th><th>3留</th><th>7留</th><th>14留</th></tr></thead>
         <tbody>
           <tr><td><span class="tag tag-active">付费</span></td><td>812</td><td class="hl">93.5%</td><td class="hl">86.1%</td><td class="hl">71.8%</td><td class="hl">33.0%</td></tr>
           <tr><td>免费</td><td>11,533</td><td>58.8%</td><td>44.3%</td><td>31.9%</td><td>13.8%</td></tr>
