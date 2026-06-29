@@ -47,10 +47,11 @@ h1 { font-size: 36px; font-weight: 700; margin-bottom: 8px; }
   height: 3px;
   border-radius: 16px 16px 0 0;
 }
-.report-card:nth-child(1)::before { background: linear-gradient(90deg, var(--orange), var(--red)); }
-.report-card:nth-child(2)::before { background: linear-gradient(90deg, var(--accent), var(--cyan)); }
-.report-card:nth-child(3)::before { background: linear-gradient(90deg, var(--green), var(--orange)); }
-.report-card:nth-child(4)::before { background: linear-gradient(90deg, var(--purple), var(--red)); }
+.report-card:nth-child(1)::before { background: linear-gradient(90deg, var(--red), var(--orange)); }
+.report-card:nth-child(2)::before { background: linear-gradient(90deg, var(--orange), var(--red)); }
+.report-card:nth-child(3)::before { background: linear-gradient(90deg, var(--accent), var(--cyan)); }
+.report-card:nth-child(4)::before { background: linear-gradient(90deg, var(--green), var(--orange)); }
+.report-card:nth-child(5)::before { background: linear-gradient(90deg, var(--purple), var(--red)); }
 .card-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
 .card-title { font-size: 20px; font-weight: 600; }
 .card-badge {
@@ -90,6 +91,24 @@ h1 { font-size: 36px; font-weight: 700; margin-bottom: 8px; }
   <p class="subtitle">项目数据洞察合集 &mdash; 点击查看详细报告</p>
 
   <div class="report-list">
+    <a class="report-card" href="overview_report.html">
+      <div class="card-header">
+        <span class="card-title">6/6-6/28 整体数据分析报告</span>
+        <span class="card-badge badge-new">NEW</span>
+      </div>
+      <p class="card-desc">
+        23 天全量数据分析：DAU/新增/留存趋势、付费表现与结构、等级推进节奏、
+        付费用户流失画像（含分付费/免费留存、中位数资源对比、Top 20 大 R 明细、流失等级×天数热力图）。
+      </p>
+      <div class="card-tags">
+        <span class="tag">6/6 - 6/28</span>
+        <span class="tag">17,170 用户</span>
+        <span class="tag">$26,547 流水</span>
+        <span class="tag">6 章 19 图表</span>
+      </div>
+      <span class="card-arrow">&rarr;</span>
+    </a>
+
     <a class="report-card" href="repurchase_report.html">
       <div class="card-header">
         <span class="card-title">付费玩家复购行为规律分析</span>
