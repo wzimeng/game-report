@@ -3,459 +3,1067 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>单日活动效果分析 v5 - 通过率·难度·付费</title>
+<title>单日活动运营分析报告 v5 | 6/6 – 6/29</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 <style>
-:root {
-  --bg: #0f1117;
-  --card: #1a1d28;
-  --border: #2a2d3a;
-  --text: #e4e6eb;
-  --text2: #8b8fa3;
-  --accent: #6c7bff;
-  --green: #34d399;
-  --red: #f87171;
-  --orange: #fbbf24;
-  --cyan: #22d3ee;
-  --purple: #a78bfa;
-}
-* { margin: 0; padding: 0; box-sizing: border-box; }
-body { background: var(--bg); color: var(--text); font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif; line-height: 1.6; min-height: 100vh; }
-.container { max-width: 1200px; margin: 0 auto; padding: 40px 24px; }
-h1 { font-size: 32px; font-weight: 700; margin-bottom: 8px; }
-h2 { font-size: 22px; font-weight: 600; margin: 48px 0 20px; padding-bottom: 12px; border-bottom: 1px solid var(--border); }
-h3 { font-size: 16px; font-weight: 600; margin: 32px 0 16px; color: var(--text); }
-.subtitle { color: var(--text2); font-size: 14px; margin-bottom: 32px; }
-.card { background: var(--card); border: 1px solid var(--border); border-radius: 12px; padding: 24px; margin-bottom: 24px; }
-.card-title { font-size: 16px; font-weight: 600; margin-bottom: 16px; color: var(--text); }
-.chart { width: 100%; height: 400px; }
-.chart-large { height: 500px; }
-.insight-box { background: rgba(108, 123, 255, 0.08); border-left: 3px solid var(--accent); padding: 16px 20px; margin: 20px 0; border-radius: 0 8px 8px 0; }
-.insight-box h4 { color: var(--accent); font-size: 13px; font-weight: 600; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-.insight-box p { color: var(--text2); font-size: 14px; line-height: 1.8; }
-.tag { display: inline-block; font-size: 11px; padding: 3px 10px; border-radius: 4px; background: rgba(255,255,255,0.06); color: var(--text2); margin-right: 8px; }
-.tag-highlight { background: rgba(52, 211, 153, 0.15); color: var(--green); }
-.tag-warning { background: rgba(251, 191, 36, 0.15); color: var(--orange); }
-.tag-danger { background: rgba(248, 113, 113, 0.15); color: var(--red); }
-table { width: 100%; border-collapse: collapse; font-size: 13px; margin: 16px 0; }
-th, td { padding: 10px 12px; text-align: left; border-bottom: 1px solid var(--border); }
-th { color: var(--text2); font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px; }
-tr:hover td { background: rgba(255,255,255,0.02); }
-.num { font-family: 'SF Mono', Monaco, monospace; }
-.positive { color: var(--green); }
-.negative { color: var(--red); }
-.grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 24px; }
-@media (max-width: 768px) { .grid-2 { grid-template-columns: 1fr; } }
-.nav { display: flex; gap: 16px; margin-bottom: 32px; flex-wrap: wrap; }
-.nav a { color: var(--text2); text-decoration: none; font-size: 13px; padding: 6px 12px; border-radius: 6px; transition: all 0.2s; }
-.nav a:hover { color: var(--text); background: rgba(255,255,255,0.05); }
-.nav a.active { color: var(--accent); background: rgba(108, 123, 255, 0.1); }
-.footer { text-align: center; color: var(--text2); font-size: 12px; margin-top: 60px; padding-top: 24px; border-top: 1px solid var(--border); }
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d28;
+    --border: #2a2d3a;
+    --text: #e4e6eb;
+    --text2: #8b8fa3;
+    --accent: #6c7bff;
+    --blue: #3b82f6;
+    --green: #34d399;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --purple: #a78bfa;
+    --cyan: #22d3ee;
+    --pink: #ff6b9d;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .container { max-width:1200px; margin:0 auto; padding:20px; }
+
+  /* Navigation */
+  .top-nav {
+    position: sticky; top:0; z-index:100;
+    background: rgba(15,17,23,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+    padding: 12px 0;
+  }
+  .top-nav .container {
+    display: flex; align-items: center; gap: 8px;
+    flex-wrap: wrap; padding: 0 20px;
+  }
+  .top-nav a {
+    color: var(--text2); text-decoration: none;
+    font-size: 13px; padding: 4px 10px;
+    border-radius: 4px; transition: all .2s;
+    white-space: nowrap;
+  }
+  .top-nav a:hover { color: var(--text); background: var(--card); }
+  .nav-title {
+    font-weight: 700; color: var(--accent) !important;
+    font-size: 14px !important; margin-right: 8px;
+  }
+  .nav-sep { color: var(--border); margin: 0 2px; }
+
+  /* Header */
+  .report-header {
+    text-align: center; padding: 50px 20px 30px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 30px;
+  }
+  .report-header h1 { font-size: 28px; margin-bottom: 8px; }
+  .report-header .subtitle { color: var(--text2); font-size: 15px; }
+  .report-header .meta {
+    display: flex; justify-content: center; gap: 30px;
+    margin-top: 16px; font-size: 13px; color: var(--text2);
+  }
+  .report-header .meta span { display: flex; align-items: center; gap: 6px; }
+
+  /* Sections */
+  .chapter { margin-bottom: 50px; scroll-margin-top: 60px; }
+  .chapter-title {
+    font-size: 22px; font-weight: 700;
+    padding-bottom: 12px; margin-bottom: 24px;
+    border-bottom: 2px solid var(--accent);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .chapter-num {
+    background: var(--accent); color: #fff;
+    font-size: 13px; padding: 2px 10px;
+    border-radius: 4px; font-weight: 600;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .card-title {
+    font-size: 16px; font-weight: 600;
+    margin-bottom: 16px; color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title .tag {
+    font-size: 11px; padding: 2px 8px;
+    border-radius: 3px; font-weight: 500;
+  }
+
+  /* Charts */
+  .chart-box { width: 100%; height: 400px; }
+  .chart-box.tall { height: 700px; }
+
+  /* Insight boxes */
+  .insight-box {
+    background: rgba(59,130,246,0.08);
+    border-left: 4px solid var(--blue);
+    border-radius: 0 8px 8px 0;
+    padding: 14px 18px;
+    margin-top: 16px;
+    font-size: 14px;
+    color: #c0cfe8;
+    line-height: 1.7;
+  }
+  .insight-box strong { color: var(--text); }
+  .insight-box .insight-title {
+    font-weight: 700; color: var(--blue);
+    margin-bottom: 6px; font-size: 13px;
+  }
+
+  /* Info cards */
+  .info-card {
+    background: rgba(167,139,250,0.08);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+  }
+  .info-card.warn {
+    background: rgba(251,191,36,0.08);
+    border-color: rgba(251,191,36,0.2);
+  }
+
+  /* Tables */
+  .data-table {
+    width: 100%; border-collapse: collapse;
+    font-size: 13px; margin-top: 12px;
+  }
+  .data-table th {
+    background: rgba(108,123,255,0.1);
+    color: var(--text); font-weight: 600;
+    padding: 10px 14px; text-align: left;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+  }
+  .data-table td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .data-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .data-table .highlight { color: var(--green); font-weight: 600; }
+  .data-table .neg { color: var(--red); }
+
+  /* Legend */
+  .legend-row {
+    display: flex; flex-wrap: wrap; gap: 16px;
+    margin-top: 12px; font-size: 13px;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 6px;
+  }
+  .legend-dot {
+    width: 12px; height: 12px; border-radius: 3px;
+  }
+
+  /* Two columns */
+  .grid-2 {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  @media (max-width: 768px) {
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+
+  /* Footer */
+  .report-footer {
+    text-align: center;
+    padding: 30px 20px;
+    border-top: 1px solid var(--border);
+    color: var(--text2);
+    font-size: 13px;
+    margin-top: 40px;
+  }
+
+  /* conclusion list */
+  .conclusion-list { list-style: none; padding: 0; }
+  .conclusion-list li {
+    padding: 14px 18px;
+    border-left: 3px solid var(--accent);
+    background: rgba(108,123,255,0.05);
+    margin-bottom: 10px;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+  }
+  .conclusion-list li strong { color: var(--accent); }
+
+  .rec-list { list-style: none; padding: 0; }
+  .rec-list li {
+    padding: 14px 18px;
+    border-left: 3px solid var(--green);
+    background: rgba(52,211,153,0.05);
+    margin-bottom: 10px;
+    border-radius: 0 8px 8px 0;
+    font-size: 14px;
+  }
+  .rec-list li strong { color: var(--green); }
+
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 600;
+  }
+  .badge-red { background: rgba(248,113,113,0.15); color: var(--red); }
+  .badge-green { background: rgba(52,211,153,0.15); color: var(--green); }
 </style>
 </head>
 <body>
-<div class="container">
-  <h1>单日活动效果分析 v5</h1>
-  <p class="subtitle">通过率 · 难度调整 · 付费影响 · 6/7-6/25 全量数据</p>
-  
-  <div class="nav">
-    <a href="#overview">活动概况</a>
-    <a href="#passrate">通过率</a>
-    <a href="#difficulty">难度调整</a>
-    <a href="#revenue">付费效果</a>
-    <a href="#category">品类偏好</a>
-    <a href="#retention">留存影响</a>
-    <a href="#conclusion">结论建议</a>
-  </div>
 
-  <!-- 第一章：活动概况 -->
-  <h2 id="overview">一、活动排期与参与概况</h2>
-  
-  <div class="card">
-    <div class="card-title">活动解锁等级与类型</div>
-    <table>
-      <tr><th>活动</th><th>解锁等级</th><th>类型</th><th>排期日期</th><th>配套礼包</th></tr>
-      <tr><td>WaterOrder (WO)</td><td>Lv.12</td><td>正常订单额外奖励</td><td>6/7, 6/14, 6/21</td><td>GiftOnAddOne</td></tr>
-      <tr><td>CardPackageFrenzy (CPF)</td><td>Lv.7</td><td>正常订单额外奖励</td><td>6/12, 6/19</td><td>ThreeInOnePack</td></tr>
-      <tr><td>LimitedOrder (LO)</td><td>Lv.12</td><td>额外高难度订单</td><td>6/10, 6/17, 6/24</td><td>GiftOnAddOne</td></tr>
-      <tr><td>LadderOrder (LadO)</td><td>Lv.12</td><td>额外高难度订单</td><td>6/22</td><td>ThreeInOnePack</td></tr>
-      <tr><td>EndlessReward (ER)</td><td>Lv.12</td><td>单独活动窗口</td><td>6/20</td><td>无</td></tr>
-    </table>
+<!-- Navigation -->
+<nav class="top-nav">
+  <div class="container">
+    <a href="#" class="nav-title">📊 活动分析 v5</a>
+    <span class="nav-sep">|</span>
+    <a href="#ch1">一·排期总览</a>
+    <a href="#ch2">二·通过率</a>
+    <a href="#ch3">三·难度调整</a>
+    <a href="#ch4">四·付费效果</a>
+    <a href="#ch5">五·品类偏好</a>
+    <a href="#ch6">六·留存影响</a>
+    <a href="#ch7">七·结论建议</a>
   </div>
+</nav>
 
-  <div class="card">
-    <div class="card-title">每实例参与人数趋势</div>
-    <div id="chart-participation" class="chart"></div>
-  </div>
-
-  <!-- 第二章：通过率 -->
-  <h2 id="passrate">二、活动通过率与完成深度</h2>
-  
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-title">LimitedOrder 通过率</div>
-      <div id="chart-lo-pass" class="chart"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">LadderOrder 阶梯漏斗 (6/22)</div>
-      <div id="chart-lado-funnel" class="chart"></div>
-    </div>
-  </div>
-
-  <div class="insight-box">
-    <h4>关键发现</h4>
-    <p><strong>LO通过率极低：</strong> 6/10仅13.7%完成，6/17调整后提升至17.7%，6/24回落至14.0%。高难度设计意图明显——刺激付费买体力/礼包。</p>
-    <p><strong>LadO阶梯流失严重：</strong> Step 4最终完成率仅37.2%，前3阶保持在72%-79%，第4阶难度跳变导致大量流失。</p>
-  </div>
-
-  <div class="card">
-    <div class="card-title">WaterOrder 完成轮次分布</div>
-    <div id="chart-wo-rounds" class="chart"></div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">EndlessReward 里程碑进度 (6/20)</div>
-    <div id="chart-er-milestones" class="chart"></div>
-  </div>
-
-  <!-- 第三章：难度调整 -->
-  <h2 id="difficulty">三、难度调整前后对比</h2>
-  
-  <div class="card">
-    <div class="card-title">难度调整说明</div>
-    <p style="margin-bottom: 16px; color: var(--text2);">
-      <span class="tag tag-warning">6/19 调整</span>
-      单日活动日均通关体力：800体 → 1500体<br>
-      <span class="tag tag-warning">6/19 调整</span>
-      三四日活动日均通关体力：800体 → 1200体
-    </p>
-  </div>
-
-  <div class="grid-2">
-    <div class="card">
-      <div class="card-title">LO参与者人均体力消耗</div>
-      <div id="chart-lo-energy" class="chart"></div>
-    </div>
-    <div class="card">
-      <div class="card-title">LO通过率变化</div>
-      <div id="chart-lo-pass-trend" class="chart"></div>
-    </div>
-  </div>
-
-  <div class="insight-box">
-    <h4>难度调整效果</h4>
-    <p><strong>人均体力下降：</strong> 6/10(调前)人均1111体 → 6/17(调后)人均827体，降幅25.6%。调整后通关更容易，但通过率仅微升4个百分点。</p>
-    <p><strong>参与人数激增：</strong> LO参与者从315人(6/10)增至690人(6/17)，说明难度降低吸引了更多玩家尝试。</p>
-  </div>
-
-  <!-- 第四章：付费效果 -->
-  <h2 id="revenue">四、活动对付费的近邻效果</h2>
-  
-  <div class="card">
-    <div class="card-title">每实例 vs 相邻无活动日：总流水对比</div>
-    <div id="chart-revenue-compare" class="chart chart-large"></div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">首付 vs 复付流水演变</div>
-    <div id="chart-first-repeat" class="chart chart-large"></div>
-  </div>
-
-  <div class="insight-box">
-    <h4>付费角色演变</h4>
-    <p><strong>早期(6/7-6/12)：</strong> 活动是"首付催化器"——首付流水占比61%-84%，WO+Gift首日首付36人/$489。</p>
-    <p><strong>后期(6/17+)：</strong> 活动转为"复购驱动器"——复付流水占比70%+，6/17 LO复付$1,202 vs 无活动日$676(+78%)。</p>
-  </div>
-
-  <!-- 第五章：品类偏好 -->
-  <h2 id="category">五、各活动日品类偏好</h2>
-  
-  <div class="card">
-    <div class="card-title">活动日 vs 无活动日：热销品类对比</div>
-    <div id="chart-category" class="chart chart-large"></div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">活动独占品类增量分析</div>
-    <table>
-      <tr><th>品类</th><th>均价</th><th>活动日销量</th><th>无活动日销量</th><th>增量倍数</th></tr>
-      <tr><td>GiftOnAddOne</td><td class="num">$10-13</td><td class="num">$897</td><td class="num">$35</td><td class="positive num">25.6x</td></tr>
-      <tr><td>ThreeInOnePack</td><td class="num">$20-24</td><td class="num">$490</td><td class="num">$135</td><td class="positive num">3.6x</td></tr>
-      <tr><td>EnergyPack</td><td class="num">$11-14</td><td class="num">$1,390</td><td class="num">$661</td><td class="positive num">2.1x</td></tr>
-    </table>
-  </div>
-
-  <!-- 第六章：留存影响 -->
-  <h2 id="retention">六、活动对次日留存的影响</h2>
-  
-  <div class="card">
-    <div class="card-title">次日回访率趋势</div>
-    <div id="chart-retention" class="chart"></div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">活动日 vs 无活动日：留存配对对比</div>
-    <table>
-      <tr><th>活动实例</th><th>活动日留存</th><th>近邻无活动日</th><th>差异</th></tr>
-      <tr><td>6/10 LO</td><td class="num">60.3%</td><td class="num">58.7%</td><td class="positive num">+1.6pp</td></tr>
-      <tr><td>6/12 CPF</td><td class="num">56.8%</td><td class="num">58.7%</td><td class="negative num">-1.9pp</td></tr>
-      <tr><td>6/14 WO</td><td class="num">58.1%</td><td class="num">60.4%</td><td class="negative num">-2.3pp</td></tr>
-      <tr><td>6/17 LO</td><td class="num">61.0%</td><td class="num">59.0%</td><td class="positive num">+2.0pp</td></tr>
-      <tr><td>6/19 CPF</td><td class="num">60.5%</td><td class="num">59.0%</td><td class="positive num">+1.5pp</td></tr>
-      <tr><td>6/20 ER</td><td class="num">62.9%</td><td class="num">65.1%</td><td class="negative num">-2.2pp</td></tr>
-    </table>
-  </div>
-
-  <div class="insight-box">
-    <h4>留存结论</h4>
-    <p>活动对次日留存影响有限（±2pp以内），不足以作为活动设计的主要考量。留存整体上升趋势（46%→65%）主要由玩家群体成熟度驱动，与单日活动类型关系不大。</p>
-  </div>
-
-  <!-- 第七章：结论建议 -->
-  <h2 id="conclusion">七、综合结论与运营建议</h2>
-  
-  <div class="card">
-    <div class="card-title">5条核心发现</div>
-    <div style="line-height: 2; color: var(--text2);">
-      <p><span class="tag tag-highlight">1</span> <strong>LO是付费最强驱动：</strong> 每次实例带来$300-430增量（最高+70%），但通过率仅13-18%，高难度设计有效刺激付费。</p>
-      <p><span class="tag tag-highlight">2</span> <strong>配套礼包是关键放大器：</strong> WO+Gift增量+26%-42%，WO_only仅+8%；CPF+3in1增量+75%，CPF_only仅+12%。</p>
-      <p><span class="tag tag-highlight">3</span> <strong>活动角色随时间演变：</strong> 早期是"新手首付催化器"（首付占84%），后期变为"老玩家复购驱动器"（复付占70%）。</p>
-      <p><span class="tag tag-highlight">4</span> <strong>GiftOnAddOne和ThreeInOnePack是纯增量：</strong> 无活动日几乎不卖，活动日专属收入，不抢占其他品类。</p>
-      <p><span class="tag tag-highlight">5</span> <strong>难度调整效果：</strong> 6/19调整后人均体力下降25%，参与人数翻倍，但通过率仅微升，说明难度仍是核心付费驱动力。</p>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">运营排期优化建议</div>
-    <div style="line-height: 2; color: var(--text2);">
-      <p><span class="tag">建议1</span> <strong>LO保持高频：</strong> 每7天一次，配合GiftOnAddOne，是复购最强驱动。</p>
-      <p><span class="tag">建议2</span> <strong>WO必须配礼包：</strong> WO_only效果差，必须搭配GiftOnAddOne才能有效刺激付费。</p>
-      <p><span class="tag">建议3</span> <strong>CPF配三合一：</strong> CPF+ThreeInOnePack组合付费增量显著，单独开效果差。</p>
-      <p><span class="tag">建议4</span> <strong>LadO阶梯优化：</span> Step 4完成率仅37%，考虑降低第4-5阶难度或增加中途奖励。</p>
-      <p><span class="tag">建议5</span> <strong>难度平衡：</span> 当前800-1500体通关区间合理，过低则付费刺激不足，过高则参与率下降。</p>
-    </div>
-  </div>
-
-  <div class="footer">
-    Merge Hope Analytics &bull; Data by ShuShu &bull; Generated 2026-06-29
+<!-- Header -->
+<div class="report-header">
+  <h1>单日活动运营分析报告</h1>
+  <p class="subtitle">Analysis Period: 2026/06/06 – 2026/06/29 · UTC-4</p>
+  <div class="meta">
+    <span>📅 分析周期 24 天</span>
+    <span>🎯 活动实例 30+</span>
+    <span>📊 覆盖 38 条活动排期</span>
+    <span>🕐 时区 UTC-4</span>
   </div>
 </div>
 
+<div class="container">
+
+<!-- ==================== 第一章 ==================== -->
+<section class="chapter" id="ch1">
+  <div class="chapter-title"><span class="chapter-num">第一章</span> 活动排期总览</div>
+
+  <div class="card">
+    <div class="card-title">甘特图 · 6/1 – 7/3 活动排期 <span class="tag" style="background:rgba(108,123,255,0.15);color:#6c7bff;">38条活动</span></div>
+    <div id="ganttChart" class="chart-box tall"></div>
+    <div class="legend-row">
+      <div class="legend-item"><div class="legend-dot" style="background:#6c7bff"></div> 长期活动(整月)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div> 中长期活动</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#22d3ee"></div> 棋盘/ER</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#34d399"></div> 3-4天活动</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div> WO(单日)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#f87171"></div> LO(单日)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#ff6b9d"></div> CPF(单日)</div>
+      <div class="legend-item"><div class="legend-dot" style="background:#8b8fa3"></div> 3in1(单日)</div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">五种单日活动说明</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>活动类型</th><th>解锁等级</th><th>类型说明</th><th>实例数</th><th>附加奖励</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span style="color:#fbbf24">●</span> WO (Weekend Offer)</td><td>Lv.5+</td><td>周末限时优惠</td><td>4次</td><td>3次附带Gift</td></tr>
+        <tr><td><span style="color:#f87171">●</span> LO (Limited Offer)</td><td>Lv.8+</td><td>限时挑战关卡</td><td>3次</td><td>2次附带Gift</td></tr>
+        <tr><td><span style="color:#ff6b9d">●</span> CPF (Challenge Pack)</td><td>Lv.10+</td><td>挑战礼包</td><td>3次</td><td>2次附带3in1</td></tr>
+        <tr><td><span style="color:#22d3ee">●</span> ER (Energy Rush)</td><td>Lv.12+</td><td>体力冲刺里程碑</td><td>2次</td><td>—</td></tr>
+        <tr><td><span style="color:#a78bfa">●</span> LadO (Ladder Offer)</td><td>Lv.10+</td><td>阶梯挑战(5步)</td><td>1次</td><td>附带3in1</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ==================== 第二章 ==================== -->
+<section class="chapter" id="ch2">
+  <div class="chapter-title"><span class="chapter-num">第二章</span> 活动通过率与完成深度</div>
+
+  <div class="card">
+    <div class="card-title">图2-1 · LO 通过率（堆叠柱状图）</div>
+    <div id="loPassChart" class="chart-box"></div>
+    <div class="insight-box">
+      <div class="insight-title">💡 洞察</div>
+      三期LO通过率分别为13.7%、17.7%、14.0%。6/10和6/17均为难度调整前，6/24为调整后。6/17通过率最高（17.7%），推测与该批参与者画像偏核心有关。6/24调整后通过率14.0%，虽然绝对值略低，但参与人数从690跃升至1078（+56%），说明难度调整成功扩大了参与基数。
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">图2-2 · LadO 阶梯漏斗（6/22）</div>
+    <div id="ladoFunnelChart" class="chart-box"></div>
+    <div class="insight-box">
+      <div class="insight-title">💡 洞察</div>
+      LadO漏斗呈经典衰减曲线：前三步通过率维持在72%-79%，但Step 3骤降至44.5%，Step 4仅37.2%。<strong>Step 3是核心难度分水岭</strong>，有146人（55.5%）在此失败。可考虑适当降低Step 3难度或增加激励，以提升完成率。最终仅32人（占898起始人数的3.6%）完成全部5步。
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">图2-3 · WO 完成轮次分布</div>
+      <div id="woRoundChart" class="chart-box" style="height:350px"></div>
+      <div class="insight-box">
+        <div class="insight-title">💡 洞察</div>
+        6/7首期WO仅23人参与（DAU低），后续实例参与者暴增。多轮完成集中在R1，R2+比例约20%，表明多数玩家仅完成单轮即停止。
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">图2-4 · ER 里程碑衰减（6/20）</div>
+      <div id="erDecayChart" class="chart-box" style="height:350px"></div>
+      <div class="insight-box">
+        <div class="insight-title">💡 洞察</div>
+        ER从M1的1143人到M10仅剩65人（留存5.7%），M12起低于25人。<strong>M7-M9是最大流失段</strong>（从334→65，流失80%），建议在此区间增加里程碑奖励密度。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 第三章 ==================== -->
+<section class="chapter" id="ch3">
+  <div class="chapter-title"><span class="chapter-num">第三章</span> 难度调整前后对比</div>
+
+  <div class="info-card warn">
+    <strong>⚠️ 难度调整节点：6/20日起生效</strong>
+    <ul style="margin-top:8px;padding-left:20px;color:var(--text2);font-size:14px;">
+      <li>单日活动通关体力门槛：<span class="badge badge-red">800体</span> → <span class="badge badge-green">1500体</span></li>
+      <li>6/22 – 6/26：商店礼包改为售卖气球嘉年华道具</li>
+    </ul>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title">图3-1 · LO 参与者人均体力消耗</div>
+      <div id="loEnergyChart" class="chart-box" style="height:350px"></div>
+      <div class="insight-box">
+        <div class="insight-title">💡 洞察</div>
+        6/10人均体力1111最高，但当日DAU仅1876，LO参与者315人（占16.8%），这些<strong>早期参与者等级高、活跃度高</strong>，自然体力消耗更多。6/17参与者690人（占DAU 26%），更多中等活跃玩家加入拉低均值至827。6/24调整后参与者1078人，人均868体——<strong>难度调整成功吸引了更多中等活跃玩家参与</strong>。
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-title">图3-2 · LO 通过率变化</div>
+      <div id="loPassTrendChart" class="chart-box" style="height:350px"></div>
+      <div class="insight-box">
+        <div class="insight-title">💡 洞察</div>
+        调前两期通过率趋势向上（13.7%→17.7%），调后6/24回落至14.0%。结合参与人数大幅增长（+56%），说明调整后以"降低门槛吸引更多玩家"为代价，整体通过率略有摊薄，但通过绝对人数从122增至151。
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 第四章 ==================== -->
+<section class="chapter" id="ch4">
+  <div class="chapter-title"><span class="chapter-num">第四章</span> 活动对付费的近邻效果</div>
+
+  <div class="card">
+    <div class="card-title">图4-1 · 活动类型汇总（Level≥12 队列） <span class="tag" style="background:rgba(52,211,153,0.15);color:#34d399;">ARPDAU排序</span></div>
+    <div id="actSummaryChart" class="chart-box"></div>
+    <div class="insight-box">
+      <div class="insight-title">💡 洞察</div>
+      <strong>LadO和ER是ARPDAU最高的活动类型</strong>（$0.42、$0.41），但付费率最低（3.0%、3.9%），说明这两类活动吸引的是高付费能力的核心用户，单笔金额较高。LO付费率最高（8.3%）但ARPDAU中等（$0.35），属于"广撒网"型。无活动日付费率12.6%看似最高，实际因为基数是全体DAU——说明日常也有稳定的付费基本盘。
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">图4-2 · 逐日 ARPDAU 走势（Level≥12，6/12起）</div>
+    <div id="dailyArpdauChart" class="chart-box"></div>
+    <div class="insight-box">
+      <div class="insight-title">💡 洞察</div>
+      CPF+3in1组合日（6/12）ARPDAU达峰值$0.48，LadO+3in1（6/22）紧随$0.42。<strong>3in1礼包的叠加效应显著</strong>。无活动日ARPDAU波动大（$0.09-$0.34），说明活动日是收入稳定器。6/23-6/25连续低谷（$0.12/$0.20/$0.09）值得关注。
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">图4-3 · 每实例近邻对比（全服总流水）</div>
+    <div id="neighborChart" class="chart-box"></div>
+    <table class="data-table" style="margin-top:16px">
+      <thead>
+        <tr><th>活动日</th><th>活动</th><th class="num">流水</th><th>近邻无活动日</th><th class="num">流水</th><th class="num">增量</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>6/12</td><td>CPF+3in1</td><td class="num">$966</td><td>6/11</td><td class="num">$551</td><td class="num highlight">+75%</td></tr>
+        <tr><td>6/14</td><td>WO+Gift</td><td class="num">$1,107</td><td>6/15</td><td class="num">$882</td><td class="num highlight">+26%</td></tr>
+        <tr><td>6/17</td><td>LO+Gift</td><td class="num">$1,584</td><td>6/18</td><td class="num">$1,259</td><td class="num highlight">+26%</td></tr>
+        <tr><td>6/19</td><td>CPF</td><td class="num">$1,415</td><td>6/18</td><td class="num">$1,259</td><td class="num highlight">+12%</td></tr>
+        <tr><td>6/20</td><td>ER</td><td class="num">$1,350</td><td>6/18</td><td class="num">$1,259</td><td class="num highlight">+7%</td></tr>
+        <tr><td>6/22</td><td>LadO+3in1</td><td class="num">$1,534</td><td>6/23</td><td class="num">$1,371</td><td class="num highlight">+12%</td></tr>
+        <tr><td>6/24</td><td>LO+Gift</td><td class="num">$1,746</td><td>6/25</td><td class="num">$1,313</td><td class="num highlight">+33%</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="card">
+    <div class="card-title">图4-4 · 首付 vs 复付流水堆叠面积图</div>
+    <div id="firstRepeatChart" class="chart-box"></div>
+    <div class="insight-box">
+      <div class="insight-title">💡 洞察</div>
+      复付流水从6/7的$91逐步攀升至6/22的$1,065，占比从15.7%提升至69.4%。<strong>活动对复付用户的激活效果远强于首付</strong>。6/17（LO+Gift日）复付首次破$1,200，6/24（LO+Gift日）复付$1,212创峰值。首付流水相对稳定在$400-$700区间。
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">参与者分段对比（活动日 vs 无活动日 ARPDAU）</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>参与者队列</th><th class="num">人数</th><th class="num">活动日 ARPDAU</th><th class="num">无活动日 ARPDAU</th><th class="num">增量</th></tr>
+      </thead>
+      <tbody>
+        <tr><td><span style="color:#fbbf24">●</span> WO</td><td class="num">189</td><td class="num">$0.75</td><td class="num">$0.50</td><td class="num highlight">+50%</td></tr>
+        <tr><td><span style="color:#f87171">●</span> LO</td><td class="num">495</td><td class="num">$0.34</td><td class="num">$0.26</td><td class="num highlight">+31%</td></tr>
+        <tr><td><span style="color:#ff6b9d">●</span> CPF</td><td class="num">445</td><td class="num">$0.43</td><td class="num">$0.26</td><td class="num highlight">+65%</td></tr>
+        <tr><td><span style="color:#a78bfa">●</span> LadO</td><td class="num">336</td><td class="num">$0.55</td><td class="num">$0.24</td><td class="num highlight">+129%</td></tr>
+        <tr><td><span style="color:#22d3ee">●</span> ER</td><td class="num">387</td><td class="num">$0.47</td><td class="num">$0.29</td><td class="num highlight">+62%</td></tr>
+      </tbody>
+    </table>
+    <div class="insight-box">
+      <div class="insight-title">💡 洞察</div>
+      <strong>LadO参与者增量最高（+129%）</strong>，活动日ARPDAU达$0.55，是无活动日的2.3倍。CPF（+65%）和ER（+62%）紧随其后。WO虽然增量"仅"+50%，但其无活动日ARPDAU基线就高达$0.50，说明WO参与者本身就是高付费人群。
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 第五章 ==================== -->
+<section class="chapter" id="ch5">
+  <div class="chapter-title"><span class="chapter-num">第五章</span> 品类偏好</div>
+
+  <div class="card">
+    <div class="card-title">图5-1 · 各活动日热销品类对比（日均流水） <span class="tag" style="background:rgba(34,211,238,0.15);color:#22d3ee;">按日均计算</span></div>
+    <div id="categoryChart" class="chart-box" style="height:450px"></div>
+    <div class="insight-box">
+      <div class="insight-title">💡 洞察</div>
+      <strong>ThreeInOnePack是LadO的爆款品类</strong>，日均$326远超其他活动（CPF日均$83）。LO和CPF的Shop品类日均接近$400，显著高于其他活动。GiftOnAddOne完全是LO/WO的专属品类，无活动日几乎无销量。EnergyPack在LadO日最高（$197），体力需求驱动明显。
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">活动独占品类增量</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>品类</th><th>均价区间</th><th class="num">活动日总销量</th><th class="num">无活动日总销量</th><th class="num">增量倍数</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>GiftOnAddOne</td><td>$10 – $13</td><td class="num">$897</td><td class="num">$35</td><td class="num highlight">25.6x</td></tr>
+        <tr><td>ThreeInOnePack</td><td>$20 – $24</td><td class="num">$490</td><td class="num">$135</td><td class="num highlight">3.6x</td></tr>
+        <tr><td>EnergyPack</td><td>$11 – $14</td><td class="num">日均 $132</td><td class="num">日均 $74</td><td class="num highlight">1.8x</td></tr>
+      </tbody>
+    </table>
+    <div class="insight-box">
+      <div class="insight-title">💡 洞察</div>
+      <strong>GiftOnAddOne的活动依赖度极高（25.6倍）</strong>，几乎完全依赖LO/WO活动日驱动。ThreeInOnePack增量3.6倍，主要受LadO和CPF带动。EnergyPack在活动日需求增加1.8倍，说明玩家为通关活动愿意额外购买体力。
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 第六章 ==================== -->
+<section class="chapter" id="ch6">
+  <div class="chapter-title"><span class="chapter-num">第六章</span> 留存影响</div>
+
+  <div class="card">
+    <div class="card-title">图6-1 · 次日回访率趋势（6/7 – 6/24）</div>
+    <div id="retentionChart" class="chart-box"></div>
+    <div class="insight-box">
+      <div class="insight-title">💡 洞察</div>
+      次日回访率从6/7的46.3%稳步提升至6/24的65.1%，整体提升<strong>+18.8个百分点</strong>。活动日回访率普遍高于前后无活动日，尤其LO+Gift（6/17: 60.4%→次日60.7%）和LO+Gift（6/24: 65.1%）表现突出。回访率提升主要受DAU结构优化驱动——随着低活玩家自然流失，留存池质量持续提升。
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">留存配对对比</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>对比组</th><th>日期</th><th class="num">次日回访率</th><th>对照日</th><th class="num">次日回访率</th><th class="num">差值</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>WO+Gift</td><td>6/7</td><td class="num">46.3%</td><td>6/8</td><td class="num">54.1%</td><td class="num neg">-7.8pp</td></tr>
+        <tr><td>LO①</td><td>6/10</td><td class="num">60.3%</td><td>6/9</td><td class="num">54.7%</td><td class="num highlight">+5.6pp</td></tr>
+        <tr><td>WO②+Gift</td><td>6/14</td><td class="num">58.7%</td><td>6/13</td><td class="num">58.7%</td><td class="num">0.0pp</td></tr>
+        <tr><td>LO②+Gift</td><td>6/17</td><td class="num">60.4%</td><td>6/18</td><td class="num">60.7%</td><td class="num neg">-0.3pp</td></tr>
+        <tr><td>ER①</td><td>6/20</td><td class="num">62.6%</td><td>6/18</td><td class="num">60.7%</td><td class="num highlight">+1.9pp</td></tr>
+        <tr><td>LadO+3in1</td><td>6/22</td><td class="num">63.0%</td><td>6/23</td><td class="num">65.1%</td><td class="num neg">-2.1pp</td></tr>
+        <tr><td>LO③+Gift</td><td>6/24</td><td class="num">63.7%</td><td>6/25 (推算)</td><td class="num">~63%</td><td class="num highlight">+0.7pp</td></tr>
+      </tbody>
+    </table>
+    <div class="insight-box">
+      <div class="insight-title">💡 洞察</div>
+      活动日与近邻无活动日的回访率差异较小（±2pp以内为主），表明<strong>单日活动对次日留存的直接影响有限</strong>，回访率主要受整体DAU成熟度和生命周期阶段驱动。但6/10 LO表现出+5.6pp的正向影响，可能因为早期DAU波动较大。
+    </div>
+  </div>
+</section>
+
+<!-- ==================== 第七章 ==================== -->
+<section class="chapter" id="ch7">
+  <div class="chapter-title"><span class="chapter-num">第七章</span> 综合结论与运营建议</div>
+
+  <div class="card">
+    <div class="card-title">🔍 五大核心发现</div>
+    <ol class="conclusion-list">
+      <li><strong>Finding 1 — 活动是收入稳定器：</strong>有活动日ARPDAU均值$0.38，无活动日仅$0.26（Level≥12队列），活动带来的增量约46%。全服数据显示单日活动平均带来+27%的流水增量。</li>
+      <li><strong>Finding 2 — LadO是ARPDAU冠军：</strong>参与者维度增量+129%，ARPDAU $0.42领跑。其核心引擎是ThreeInOnePack（日均$326）和EnergyPack（日均$197）。5步阶梯设计创造了强烈的"沉没成本"付费动机。</li>
+      <li><strong>Finding 3 — 3in1叠加效果显著：</strong>CPF+3in1（$0.48）和LadO+3in1（$0.42）是ARPDAU最高的两天。3in1的存在将ThreeInOnePack品类销量提升3.6倍。建议未来所有适配活动均叠加3in1。</li>
+      <li><strong>Finding 4 — 难度调整扩大参与但未提升通过率：</strong>6/20调整后LO参与者从690增至1078（+56%），但通过率从17.7%降至14.0%。绝对通过人数增加（122→151），表明调整方向正确——更多玩家有机会接触和尝试活动。</li>
+      <li><strong>Finding 5 — 复付驱动收入增长：</strong>复付流水从6/7的$91增至6/24的$1,212（13倍增长），占比从16%攀升至69%。活动对复付激活的效果远强于首付转化，说明活动的核心价值在于"激活已付费用户复购"而非"转化新付费用户"。</li>
+    </ol>
+  </div>
+
+  <div class="card">
+    <div class="card-title">📋 运营建议</div>
+    <ul class="rec-list">
+      <li><strong>建议 1 — 优化LadO阶梯设计：</strong>Step 3通过率骤降至44.5%，是最大流失点。建议在Step 3增加"复活币"机制或降低10%-15%难度，目标将Step 3通过率提升至55%+。同时增加Step 4-5的奖励价值，提高完成动机。</li>
+      <li><strong>建议 2 — 常态化3in1叠加：</strong>数据显示3in1组合日ARPDAU显著高于单活动日。建议将3in1从"偶尔叠加"升级为"固定搭配"，尤其配合LadO、CPF使用。</li>
+      <li><strong>建议 3 — 优化ER里程碑曲线：</strong>M7-M9流失率高达80%，建议在M7-M8增加"额外奖励里程碑"或"体力折扣"，延缓衰减曲线。目标将M10留存从5.7%提升至10%+。</li>
+      <li><strong>建议 4 — 填补活动空窗：</strong>6/23、6/25等无活动日ARPDAU极低（$0.12、$0.09），建议保持"每日至少一个活动"的节奏。可用低成本活动（如迷你WO、限时折扣）填补空窗。</li>
+      <li><strong>建议 5 — 差异化定价复付礼包：</strong>复付用户贡献69%流水但付费率相对稳定。建议针对复付用户提供"累计购买折扣"或"VIP专属礼包"，进一步提升复购频次和客单价。</li>
+    </ul>
+  </div>
+</section>
+
+</div><!-- container end -->
+
+<!-- Footer -->
+<div class="report-footer">
+  <p>单日活动运营分析报告 v5 · 分析周期 2026/06/06 – 2026/06/29 (UTC-4)</p>
+  <p style="margin-top:6px;">数据来源：activity_schedule_full.json · 全服及Level≥12队列数据 · 生成时间 2026-06-30</p>
+</div>
+
 <script>
-// ========== 数据定义 ==========
-const v4Data = {"q1_daily_overview":{"title":["d","act_type","label","dau_cnt","total_rev","payers","first_payers","repeat_payers","arpdau","pay_rate"],"rows":[["2026-06-07","WaterOrder","WO+Gift","1930","580.29","43","36","7","0.3","2.2"],["2026-06-08","none","none","1786","408.27","40","26","14","0.23","2.2"],["2026-06-09","none","none","1709","408.36","41","27","14","0.24","2.4"],["2026-06-10","LimitedOrder","LO_only","1876","937.54","80","58","22","0.5","4.3"],["2026-06-11","none","none","1880","551.24","43","22","21","0.29","2.3"],["2026-06-12","CardPackageFrenzy","CPF+3in1","2129","965.89","72","49","23","0.45","3.4"],["2026-06-13","none","none","2323","1038.58","80","51","29","0.45","3.4"],["2026-06-14","WaterOrder","WO+Gift","2585","1106.55","80","40","40","0.43","3.1"],["2026-06-15","none","none","2517","881.73","76","42","34","0.35","3.0"],["2026-06-16","none","none","2593","703.9","76","30","46","0.27","2.9"],["2026-06-17","LimitedOrder","LO+Gift","2656","1583.57","94","37","57","0.6","3.5"],["2026-06-18","none","none","2815","1259.41","102","50","52","0.45","3.6"],["2026-06-19","CardPackageFrenzy","CPF_only","2835","1415.05","119","62","57","0.5","4.2"],["2026-06-20","EndlessReward","ER","2873","1350.24","117","39","78","0.47","4.1"],["2026-06-21","WaterOrder","WO_only","3242","1487.12","120","60","60","0.46","3.7"],["2026-06-22","LadderOrder","LadO+3in1","3375","1534.19","119","43","76","0.45","3.5"],["2026-06-23","none","none","3391","1371.05","123","63","60","0.4","3.6"],["2026-06-24","LimitedOrder","LO+Gift","3493","1745.84","141","54","87","0.5","4.0"],["2026-06-25","none","none","3398","1313.35","118","49","69","0.39","3.5"]]},"q2_pay_type_by_act":{"title":["act_type","pay_type","days_sold","buyers","orders","total_rev","avg_price"],"rows":[["CardPackageFrenzy","Shop","2","77","111","787.89","7.1"],["CardPackageFrenzy","BattlePassTwo","2","60","60","468.4","7.81"],["CardPackageFrenzy","DailyPack","2","30","34","340.66","10.02"],["CardPackageFrenzy","LevelPack","2","44","62","307.38","4.96"],["CardPackageFrenzy","EnergyPack","1","18","18","205.82","11.43"],["CardPackageFrenzy","ThreeInOnePack","1","7","7","164.93","23.56"],["EndlessReward","MiniBoardDoor","1","34","34","237.66","6.99"],["EndlessReward","Shop","1","28","32","222.68","6.96"],["EndlessReward","BattlePassTwo","1","22","22","189.78","8.63"],["EndlessReward","DailyPack","1","15","18","187.82","10.43"],["EndlessReward","LevelPack","1","29","36","179.64","4.99"],["EndlessReward","EnergyPack","1","16","16","175.84","10.99"],["EndlessReward","ChainPack","1","14","17","146.83","8.64"],["LadderOrder","ThreeInOnePack","1","16","16","325.84","20.37"],["LadderOrder","Shop","1","32","45","249.55","5.55"],["LadderOrder","LevelPack","1","28","36","219.64","6.1"],["LadderOrder","BattlePassTwo","1","26","27","215.73","7.99"],["LadderOrder","DailyPack","1","19","21","202.79","9.66"],["LadderOrder","EnergyPack","1","19","20","196.8","9.84"],["LimitedOrder","Shop","3","102","147","1191.53","8.11"],["LimitedOrder","BattlePassTwo","3","72","75","650.25","8.67"],["LimitedOrder","GiftOnAddOne","2","42","45","594.55","13.21"],["LimitedOrder","DailyPack","3","48","60","588.4","9.81"],["LimitedOrder","EnergyPack","2","27","28","388.72","13.88"],["LimitedOrder","LevelPack","3","66","76","373.24","4.91"],["WaterOrder","Shop","3","76","112","746.88","6.67"],["WaterOrder","BattlePassTwo","3","65","68","570.32","8.39"],["WaterOrder","DailyPack","3","39","53","531.47","10.03"],["WaterOrder","GiftOnAddOne","2","29","30","301.7","10.06"],["WaterOrder","LevelPack","3","44","58","287.42","4.96"],["none","Shop","9","188","326","1969.74","6.04"],["none","BattlePassTwo","9","199","208","1694.92","8.15"],["none","DailyPack","9","106","154","1411.46","9.17"],["none","LevelPack","9","122","209","1040.91","4.98"],["none","EnergyPack","4","53","56","661.44","11.81"],["none","MiniBoardDoor","2","50","50","349.5","6.99"],["none","MiniBoardAreaScroll","5","43","43","300.57","6.99"],["none","IceBreak","9","27","27","264.73","9.8"],["none","ThreeInOnePack","3","7","7","134.93","19.28"],["none","GiftOnAddOne","2","3","3","34.97","11.66"]]},"q5_retention":{"title":["d","act_type","dau","returned_next_day","next_day_return_pct"],"rows":[["2026-06-07","WaterOrder","1930","894","46.3"],["2026-06-08","none","1786","967","54.1"],["2026-06-09","none","1709","935","54.7"],["2026-06-10","LimitedOrder","1876","1132","60.3"],["2026-06-11","none","1880","1104","58.7"],["2026-06-12","CardPackageFrenzy","2129","1210","56.8"],["2026-06-13","none","2323","1364","58.7"],["2026-06-14","WaterOrder","2585","1501","58.1"],["2026-06-15","none","2517","1520","60.4"],["2026-06-16","none","2593","1573","60.7"],["2026-06-17","LimitedOrder","2656","1620","61.0"],["2026-06-18","none","2815","1661","59.0"],["2026-06-19","CardPackageFrenzy","2835","1714","60.5"],["2026-06-20","EndlessReward","2873","1806","62.9"],["2026-06-21","WaterOrder","3242","2031","62.6"],["2026-06-22","LadderOrder","3375","2126","63.0"],["2026-06-23","none","3391","2209","65.1"],["2026-06-24","LimitedOrder","3493","2226","63.7"]]},"q6_first_repeat_rev":{"title":["d","pay_cat","payers","total_rev","avg_price"],"rows":[["2026-06-07","first_pay","36","489.41","8.3"],["2026-06-07","repeat_pay","7","90.88","7.57"],["2026-06-08","first_pay","26","229.58","5.47"],["2026-06-08","repeat_pay","14","178.69","5.76"],["2026-06-09","first_pay","27","206.63","5.58"],["2026-06-09","repeat_pay","14","201.73","7.47"],["2026-06-10","first_pay","58","718.93","6.72"],["2026-06-10","repeat_pay","22","218.61","5.61"],["2026-06-11","first_pay","22","192.73","7.14"],["2026-06-11","repeat_pay","21","358.51","7.32"],["2026-06-12","first_pay","49","585.28","8.13"],["2026-06-12","repeat_pay","23","380.61","9.76"],["2026-06-13","first_pay","51","657.08","7.14"],["2026-06-13","repeat_pay","29","381.5","7.63"],["2026-06-14","first_pay","40","486.32","7.15"],["2026-06-14","repeat_pay","40","620.23","8.05"],["2026-06-15","first_pay","42","444.35","6.84"],["2026-06-15","repeat_pay","34","437.38","7.05"],["2026-06-16","first_pay","30","345.58","8.23"],["2026-06-16","repeat_pay","46","358.32","5.27"],["2026-06-17","first_pay","37","381.54","8.29"],["2026-06-17","repeat_pay","57","1202.03","12.39"],["2026-06-18","first_pay","50","583.26","7.88"],["2026-06-18","repeat_pay","52","676.15","7.95"],["2026-06-19","first_pay","62","585.19","7.22"],["2026-06-19","repeat_pay","57","829.86","7.28"],["2026-06-20","first_pay","39","403.47","7.61"],["2026-06-20","repeat_pay","78","946.77","7.7"],["2026-06-21","first_pay","60","684.14","7.96"],["2026-06-21","repeat_pay","60","802.98","7.87"],["2026-06-22","first_pay","43","469.42","8.09"],["2026-06-22","repeat_pay","76","1064.77","8.66"],["2026-06-23","first_pay","63","668.99","6.62"],["2026-06-23","repeat_pay","60","702.06","7.47"],["2026-06-24","first_pay","54","534.25","7.12"],["2026-06-24","repeat_pay","87","1211.59","8.59"],["2026-06-25","first_pay","49","571.36","8.93"],["2026-06-25","repeat_pay","69","741.99","7.35"]]}};
-
-const passData = {"q1_lo_lado_level_type":{"title":["d","activity_type","lvl_type","events","players"],"rows":[["2026-06-10","LimitedOrder","0","272","272"],["2026-06-10","LimitedOrder","1","43","43"],["2026-06-17","LimitedOrder","0","568","568"],["2026-06-17","LimitedOrder","1","122","122"],["2026-06-22","LadderOrder","0","747","746"],["2026-06-22","LadderOrder","1","1999","898"],["2026-06-22","LimitedOrder","0","9","9"],["2026-06-24","LadderOrder","0","67","67"],["2026-06-24","LimitedOrder","0","927","924"],["2026-06-24","LimitedOrder","1","151","151"]]},"q3_wo_rounds":{"title":["d","round","players","avg_total_diff"],"rows":[["2026-06-07","1","17","888"],["2026-06-07","2","5","828"],["2026-06-07","3","1","741"],["2026-06-14","1","249","926"],["2026-06-14","2","49","825"],["2026-06-14","3","16","859"],["2026-06-14","4","9","1015"],["2026-06-14","5","5","1075"],["2026-06-14","6","2","824"],["2026-06-14","7","2","853"],["2026-06-14","8","2","828"],["2026-06-21","1","338","875"],["2026-06-21","2","83","878"],["2026-06-21","3","25","902"],["2026-06-21","4","10","1033"],["2026-06-21","5","3","1024"],["2026-06-21","6","2","853"],["2026-06-21","7","1","778"],["2026-06-21","8","1","778"]]},"q4_er_milestones":{"title":["d","milestone","players"],"rows":[["2026-06-20","1","1143"],["2026-06-20","2","1101"],["2026-06-20","3","1005"],["2026-06-20","4","855"],["2026-06-20","5","701"],["2026-06-20","6","513"],["2026-06-20","7","334"],["2026-06-20","8","217"],["2026-06-20","9","144"],["2026-06-20","10","65"],["2026-06-20","11","38"],["2026-06-20","12","21"],["2026-06-20","13","15"],["2026-06-20","14","9"],["2026-06-20","15","4"],["2026-06-20","16","3"],["2026-06-20","17","2"],["2026-06-20","18","2"]]},"q6_energy_by_instance":{"title":["d","activity_type","participants","total_energy","avg_energy"],"rows":[["2026-06-10","LimitedOrder","315","349894","1111"],["2026-06-17","LimitedOrder","690","570939","827"],["2026-06-22","LadderOrder","1134","905212","798"],["2026-06-22","LimitedOrder","9","2822","314"],["2026-06-24","LadderOrder","67","33542","501"],["2026-06-24","LimitedOrder","1075","932870","868"]]},"q9_lado_funnel":{"title":["d","step","result_type","players","events"],"rows":[["2026-06-22","0","0","237","237"],["2026-06-22","0","1","898","900"],["2026-06-22","1","0","172","172"],["2026-06-22","1","1","594","595"],["2026-06-22","2","0","137","138"],["2026-06-22","2","1","355","355"],["2026-06-22","3","0","146","146"],["2026-06-22","3","1","117","117"],["2026-06-22","4","0","54","54"],["2026-06-22","4","1","32","32"],["2026-06-23","0","0","101","101"],["2026-06-23","0","1","27","27"],["2026-06-23","1","0","94","94"],["2026-06-23","1","1","21","21"],["2026-06-23","2","0","82","82"],["2026-06-23","2","1","21","21"],["2026-06-23","3","0","21","21"],["2026-06-23","3","1","2","2"],["2026-06-23","4","0","2","2"]]}};
-
-// ========== 图表初始化 ==========
-const themeColor = '#e4e6eb';
-const gridColor = '#2a2d3a';
-
-// 1. 参与人数趋势
-const chartParticipation = echarts.init(document.getElementById('chart-participation'));
-const participationData = {
-  'LimitedOrder': [['2026-06-10', 315], ['2026-06-17', 690], ['2026-06-24', 1075]],
-  'WaterOrder': [['2026-06-07', 17], ['2026-06-14', 249], ['2026-06-21', 338]],
-  'CardPackageFrenzy': [['2026-06-12', 1126], ['2026-06-19', 1443]],
-  'LadderOrder': [['2026-06-22', 1134]],
-  'EndlessReward': [['2026-06-20', 1144]]
+// ============================================================
+// Common theme
+// ============================================================
+const THEME = {
+  bg: 'transparent',
+  textColor: '#e4e6eb',
+  textColor2: '#8b8fa3',
+  splitLine: '#2a2d3a',
+  axisLine: '#2a2d3a',
 };
-chartParticipation.setOption({
-  tooltip: { trigger: 'axis' },
-  legend: { data: Object.keys(participationData), textStyle: { color: themeColor } },
-  grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true, borderColor: gridColor },
-  xAxis: { type: 'time', axisLine: { lineStyle: { color: gridColor } }, axisLabel: { color: themeColor } },
-  yAxis: { type: 'value', axisLine: { lineStyle: { color: gridColor } }, axisLabel: { color: themeColor }, splitLine: { lineStyle: { color: gridColor } } },
-  series: Object.entries(participationData).map(([name, data]) => ({
-    name, type: 'line', data: data.map(d => [d[0], parseInt(d[1])]),
-    symbol: 'circle', symbolSize: 8, smooth: true
-  }))
-});
+function baseOption(extra = {}) {
+  return Object.assign({
+    backgroundColor: THEME.bg,
+    textStyle: { color: THEME.textColor, fontFamily: "-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif" },
+    grid: { left: 60, right: 30, top: 50, bottom: 40, containLabel: true },
+  }, extra);
+}
+function axisCommon() {
+  return {
+    axisLine: { lineStyle: { color: THEME.axisLine } },
+    axisTick: { lineStyle: { color: THEME.axisLine } },
+    axisLabel: { color: THEME.textColor2, fontSize: 11 },
+    splitLine: { lineStyle: { color: THEME.splitLine, type: 'dashed' } },
+  };
+}
 
-// 2. LO通过率
-const chartLoPass = echarts.init(document.getElementById('chart-lo-pass'));
-chartLoPass.setOption({
-  tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-  legend: { data: ['完成', '未完成'], textStyle: { color: themeColor } },
-  grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-  xAxis: { type: 'category', data: ['6/10', '6/17', '6/24'], axisLine: { lineStyle: { color: gridColor } }, axisLabel: { color: themeColor } },
-  yAxis: { type: 'value', axisLine: { lineStyle: { color: gridColor } }, axisLabel: { color: themeColor }, splitLine: { lineStyle: { color: gridColor } } },
-  series: [
-    { name: '完成', type: 'bar', stack: 'total', data: [43, 122, 151], itemStyle: { color: '#34d399' } },
-    { name: '未完成', type: 'bar', stack: 'total', data: [272, 568, 924], itemStyle: { color: '#f87171' } }
-  ]
-});
+// Responsive resize
+const charts = [];
+function makeChart(dom) {
+  const c = echarts.init(dom);
+  charts.push(c);
+  return c;
+}
+window.addEventListener('resize', () => charts.forEach(c => c.resize()));
 
-// 3. LadO漏斗
-const chartLadoFunnel = echarts.init(document.getElementById('chart-lado-funnel'));
-const ladoSteps = [
-  { value: 898, name: 'Step 0' },
-  { value: 594, name: 'Step 1' },
-  { value: 355, name: 'Step 2' },
-  { value: 117, name: 'Step 3' },
-  { value: 32, name: 'Step 4' }
-];
-chartLadoFunnel.setOption({
-  tooltip: { trigger: 'item', formatter: '{b}: {c}人 ({d}%)' },
-  series: [{
-    type: 'funnel', left: '10%', top: 20, bottom: 20, width: '80%',
-    min: 0, max: 898, minSize: '0%', maxSize: '100%',
-    sort: 'none', gap: 2,
-    label: { show: true, position: 'inside', color: '#fff', formatter: '{b}\n{c}人' },
-    itemStyle: { borderColor: '#1a1d28', borderWidth: 1 },
-    data: ladoSteps,
-    color: ['#6c7bff', '#22d3ee', '#34d399', '#fbbf24', '#f87171']
-  }]
-});
+// ============================================================
+// 第一章 甘特图
+// ============================================================
+(function(){
+  const activities = [
+    {name:"战令2", start:"2026-06-01", end:"2026-07-01", color:"#6c7bff"},
+    {name:"组合活动", start:"2026-06-01", end:"2026-07-01", color:"#6c7bff"},
+    {name:"卡册", start:"2026-06-01", end:"2026-07-16", color:"#6c7bff"},
+    {name:"气球嘉年华", start:"2026-06-06", end:"2026-06-27", color:"#a78bfa"},
+    {name:"滚动棋盘", start:"2026-06-06", end:"2026-06-15", color:"#22d3ee"},
+    {name:"多层棋盘", start:"2026-06-20", end:"2026-06-29", color:"#22d3ee"},
+    {name:"基金募集①", start:"2026-06-05", end:"2026-06-08", color:"#34d399"},
+    {name:"基金募集②", start:"2026-06-26", end:"2026-06-29", color:"#34d399"},
+    {name:"拼图①", start:"2026-06-08", end:"2026-06-12", color:"#34d399"},
+    {name:"拼图②", start:"2026-06-29", end:"2026-07-03", color:"#34d399"},
+    {name:"礼包链①", start:"2026-06-08", end:"2026-06-11", color:"#34d399"},
+    {name:"礼包链②", start:"2026-06-19", end:"2026-06-22", color:"#34d399"},
+    {name:"竞速", start:"2026-06-12", end:"2026-06-15", color:"#34d399"},
+    {name:"钓鱼", start:"2026-06-15", end:"2026-06-19", color:"#34d399"},
+    {name:"探险", start:"2026-06-19", end:"2026-06-22", color:"#34d399"},
+    {name:"食品券", start:"2026-06-22", end:"2026-06-26", color:"#34d399"},
+    {name:"WO①+Gift", start:"2026-06-07", end:"2026-06-08", color:"#fbbf24"},
+    {name:"WO②+Gift", start:"2026-06-14", end:"2026-06-15", color:"#fbbf24"},
+    {name:"WO③", start:"2026-06-21", end:"2026-06-22", color:"#fbbf24"},
+    {name:"WO④+Gift", start:"2026-06-28", end:"2026-06-29", color:"#fbbf24"},
+    {name:"LO①", start:"2026-06-10", end:"2026-06-11", color:"#f87171"},
+    {name:"LO②+Gift", start:"2026-06-17", end:"2026-06-18", color:"#f87171"},
+    {name:"LO③+Gift", start:"2026-06-24", end:"2026-06-25", color:"#f87171"},
+    {name:"CPF①+3in1", start:"2026-06-12", end:"2026-06-13", color:"#ff6b9d"},
+    {name:"CPF②", start:"2026-06-19", end:"2026-06-20", color:"#ff6b9d"},
+    {name:"CPF③+3in1", start:"2026-06-26", end:"2026-06-27", color:"#ff6b9d"},
+    {name:"ER①", start:"2026-06-20", end:"2026-06-21", color:"#22d3ee"},
+    {name:"ER②", start:"2026-06-27", end:"2026-06-28", color:"#22d3ee"},
+    {name:"LadO+3in1", start:"2026-06-22", end:"2026-06-23", color:"#a78bfa"},
+    {name:"3in1(6/16)", start:"2026-06-16", end:"2026-06-17", color:"#8b8fa3"},
+  ];
 
-// 4. WO轮次分布
-const chartWoRounds = echarts.init(document.getElementById('chart-wo-rounds'));
-const woDates = ['6/7', '6/14', '6/21'];
-const woRounds = {
-  'Round 1': [17, 249, 338],
-  'Round 2': [5, 49, 83],
-  'Round 3': [1, 16, 25],
-  'Round 4+': [0, 14, 12]
-};
-chartWoRounds.setOption({
-  tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-  legend: { data: Object.keys(woRounds), textStyle: { color: themeColor } },
-  grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-  xAxis: { type: 'category', data: woDates, axisLine: { lineStyle: { color: gridColor } }, axisLabel: { color: themeColor } },
-  yAxis: { type: 'value', axisLine: { lineStyle: { color: gridColor } }, axisLabel: { color: themeColor }, splitLine: { lineStyle: { color: gridColor } } },
-  series: Object.entries(woRounds).map(([name, data], i) => ({
-    name, type: 'bar', stack: 'total', data,
-    itemStyle: { color: ['#6c7bff', '#22d3ee', '#34d399', '#a78bfa'][i] }
-  }))
-});
+  // Sort by duration descending
+  const sorted = activities.slice().sort((a,b) => {
+    const dA = new Date(a.end) - new Date(a.start);
+    const dB = new Date(b.end) - new Date(b.start);
+    return dB - dA;
+  });
 
-// 5. ER里程碑
-const chartErMilestones = echarts.init(document.getElementById('chart-er-milestones'));
-const erData = passData.q4_er_milestones.rows.map(r => [parseInt(r[1]), parseInt(r[2])]);
-chartErMilestones.setOption({
-  tooltip: { trigger: 'axis' },
-  grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-  xAxis: { type: 'category', data: erData.map(d => 'M' + d[0]), axisLine: { lineStyle: { color: gridColor } }, axisLabel: { color: themeColor } },
-  yAxis: { type: 'value', axisLine: { lineStyle: { color: gridColor } }, axisLabel: { color: themeColor }, splitLine: { lineStyle: { color: gridColor } } },
-  series: [{ type: 'line', data: erData.map(d => d[1]), smooth: true, areaStyle: { opacity: 0.3 }, itemStyle: { color: '#6c7bff' } }]
-});
+  const categories = sorted.map(a => a.name);
+  const baseTime = new Date('2026-06-01').getTime();
+  const data = sorted.map((a, i) => ({
+    value: [i, new Date(a.start).getTime(), new Date(a.end).getTime()],
+    itemStyle: { color: a.color }
+  }));
 
-// 6. LO能量消耗对比
-const chartLoEnergy = echarts.init(document.getElementById('chart-lo-energy'));
-chartLoEnergy.setOption({
-  tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-  grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-  xAxis: { type: 'category', data: ['6/10\n(调前)', '6/17\n(调后)', '6/24\n(调后)'], axisLine: { lineStyle: { color: gridColor } }, axisLabel: { color: themeColor } },
-  yAxis: { type: 'value', name: '人均体力', axisLine: { lineStyle: { color: gridColor } }, axisLabel: { color: themeColor }, splitLine: { lineStyle: { color: gridColor } } },
-  series: [{
-    type: 'bar', data: [1111, 827, 868],
-    itemStyle: { color: (p) => p.dataIndex === 0 ? '#f87171' : '#34d399' },
-    label: { show: true, position: 'top', color: themeColor, formatter: '{c}' }
-  }]
-});
+  const chart = makeChart(document.getElementById('ganttChart'));
+  chart.setOption({
+    ...baseOption({ grid: { left: 120, right: 30, top: 30, bottom: 50 } }),
+    tooltip: {
+      formatter: function(p) {
+        const d = p.data.value;
+        const s = new Date(d[1]), e = new Date(d[2]);
+        const days = Math.round((e - s) / 86400000);
+        return `<b>${categories[d[0]]}</b><br/>${s.getMonth()+1}/${s.getDate()} – ${e.getMonth()+1}/${e.getDate()}<br/>持续 ${days} 天`;
+      }
+    },
+    xAxis: {
+      type: 'time',
+      min: new Date('2026-06-01').getTime(),
+      max: new Date('2026-07-04').getTime(),
+      ...axisCommon(),
+      axisLabel: {
+        color: THEME.textColor2, fontSize: 11,
+        formatter: function(v) { const d = new Date(v); return (d.getMonth()+1)+'/'+d.getDate(); }
+      },
+      splitLine: { show: true, lineStyle: { color: THEME.splitLine, type: 'dashed' } },
+    },
+    yAxis: {
+      type: 'category',
+      data: categories,
+      inverse: true,
+      ...axisCommon(),
+      axisLabel: { color: THEME.textColor2, fontSize: 11 },
+      splitLine: { show: false },
+    },
+    series: [{
+      type: 'custom',
+      renderItem: function(params, api) {
+        const catIdx = api.value(0);
+        const startTime = api.value(1);
+        const endTime = api.value(2);
+        const start = api.coord([startTime, catIdx]);
+        const end = api.coord([endTime, catIdx]);
+        const height = api.size([0, 1])[1] * 0.6;
+        return {
+          type: 'rect',
+          shape: {
+            x: start[0], y: start[1] - height / 2,
+            width: Math.max(end[0] - start[0], 4), height: height
+          },
+          style: api.style({ fill: api.visual('color') }),
+          styleEmphasis: api.style({ fill: api.visual('color'), opacity: 0.8 })
+        };
+      },
+      encode: { x: [1, 2], y: 0 },
+      data: data,
+      clip: true,
+    }],
+    // Mark the analysis period
+    dataZoom: [{ type: 'inside', xAxisIndex: 0 }],
+  });
+})();
 
-// 7. LO通过率趋势
-const chartLoPassTrend = echarts.init(document.getElementById('chart-lo-pass-trend'));
-chartLoPassTrend.setOption({
-  tooltip: { trigger: 'axis' },
-  grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-  xAxis: { type: 'category', data: ['6/10\n(调前)', '6/17\n(调后)', '6/24\n(调后)'], axisLine: { lineStyle: { color: gridColor } }, axisLabel: { color: themeColor } },
-  yAxis: { type: 'value', name: '通过率', max: 25, axisLabel: { formatter: '{value}%', color: themeColor }, axisLine: { lineStyle: { color: gridColor } }, splitLine: { lineStyle: { color: gridColor } } },
-  series: [{
-    type: 'line', data: [13.7, 17.7, 14.0], smooth: true,
-    itemStyle: { color: '#fbbf24' }, lineStyle: { width: 3 },
-    label: { show: true, position: 'top', color: themeColor, formatter: '{c}%' },
-    markLine: { data: [{ xAxis: 0.5, lineStyle: { color: '#f87171', type: 'dashed' }, label: { formatter: '难度调整', color: themeColor } }] }
-  }]
-});
+// ============================================================
+// 第二章 图2-1 LO通过率
+// ============================================================
+(function(){
+  const chart = makeChart(document.getElementById('loPassChart'));
+  chart.setOption({
+    ...baseOption(),
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    legend: { data: ['通过','未通过'], textStyle: { color: THEME.textColor2 }, top: 10 },
+    xAxis: { type: 'category', data: ['6/10\n(调整前)', '6/17\n(调整前)', '6/24\n(调整后)'], ...axisCommon() },
+    yAxis: { type: 'value', name: '人数', ...axisCommon() },
+    series: [
+      {
+        name: '通过', type: 'bar', stack: 'lo', barWidth: 50,
+        data: [43, 122, 151],
+        itemStyle: { color: '#34d399' },
+        label: { show: true, position: 'inside', color: '#fff', fontSize: 12, fontWeight: 600 },
+      },
+      {
+        name: '未通过', type: 'bar', stack: 'lo',
+        data: [272, 568, 924],
+        itemStyle: { color: '#f87171' },
+        label: {
+          show: true, position: 'top', color: '#fbbf24', fontSize: 14, fontWeight: 700,
+          formatter: function(p) {
+            const pass = [43,122,151]; const total = [315,690,1075];
+            return (pass[p.dataIndex]/total[p.dataIndex]*100).toFixed(1) + '%';
+          }
+        },
+      }
+    ],
+  });
+})();
 
-// 8. 流水对比
-const chartRevenueCompare = echarts.init(document.getElementById('chart-revenue-compare'));
-const dailyData = v4Data.q1_daily_overview.rows;
-const actDays = dailyData.filter(r => r[1] !== 'none');
-const noActDays = dailyData.filter(r => r[1] === 'none');
-chartRevenueCompare.setOption({
-  tooltip: { trigger: 'axis' },
-  legend: { data: ['活动日流水', '无活动日流水', '活动增量'], textStyle: { color: themeColor } },
-  grid: { left: '3%', right: '4%', bottom: '10%', containLabel: true },
-  xAxis: { type: 'category', data: dailyData.map(r => r[0].slice(5)), axisLine: { lineStyle: { color: gridColor } }, axisLabel: { color: themeColor, rotate: 45 } },
-  yAxis: [
-    { type: 'value', name: '流水($)', axisLine: { lineStyle: { color: gridColor } }, axisLabel: { color: themeColor }, splitLine: { lineStyle: { color: gridColor } } },
-    { type: 'value', name: '增量', axisLine: { lineStyle: { color: gridColor } }, axisLabel: { color: themeColor } }
-  ],
-  series: [
-    { name: '活动日流水', type: 'bar', data: dailyData.map(r => r[1] !== 'none' ? parseFloat(r[4]).toFixed(0) : '-'), itemStyle: { color: '#6c7bff' } },
-    { name: '无活动日流水', type: 'bar', data: dailyData.map(r => r[1] === 'none' ? parseFloat(r[4]).toFixed(0) : '-'), itemStyle: { color: '#8b8fa3' } },
-    { name: '活动增量', type: 'line', yAxisIndex: 1, data: dailyData.map((r, i) => {
-      if (r[1] === 'none') return '-';
-      const prevNoAct = dailyData.slice(0, i).reverse().find(d => d[1] === 'none');
-      const nextNoAct = dailyData.slice(i + 1).find(d => d[1] === 'none');
-      const base = prevNoAct || nextNoAct;
-      return base ? (parseFloat(r[4]) - parseFloat(base[4])).toFixed(0) : '-';
-    }), itemStyle: { color: '#34d399' } }
-  ]
-});
+// ============================================================
+// 第二章 图2-2 LadO漏斗
+// ============================================================
+(function(){
+  const steps = ['Step 0', 'Step 1', 'Step 2', 'Step 3', 'Step 4'];
+  const pass = [898, 594, 355, 117, 32];
+  const fail = [237, 172, 137, 146, 54];
+  const rate = ['79.1%', '77.5%', '72.2%', '44.5%', '37.2%'];
 
-// 9. 首付复付演变
-const chartFirstRepeat = echarts.init(document.getElementById('chart-first-repeat'));
-const firstRepeatData = v4Data.q6_first_repeat_rev.rows;
-const dates = [...new Set(firstRepeatData.map(r => r[0]))];
-const firstPay = dates.map(d => parseFloat(firstRepeatData.find(r => r[0] === d && r[1] === 'first_pay')?.[3] || 0));
-const repeatPay = dates.map(d => parseFloat(firstRepeatData.find(r => r[0] === d && r[1] === 'repeat_pay')?.[3] || 0));
-chartFirstRepeat.setOption({
-  tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
-  legend: { data: ['首付流水', '复付流水'], textStyle: { color: themeColor } },
-  grid: { left: '3%', right: '4%', bottom: '10%', containLabel: true },
-  xAxis: { type: 'category', data: dates.map(d => d.slice(5)), axisLine: { lineStyle: { color: gridColor } }, axisLabel: { color: themeColor, rotate: 45 } },
-  yAxis: { type: 'value', name: '流水($)', axisLine: { lineStyle: { color: gridColor } }, axisLabel: { color: themeColor }, splitLine: { lineStyle: { color: gridColor } } },
-  series: [
-    { name: '首付流水', type: 'bar', stack: 'total', data: firstPay, itemStyle: { color: '#6c7bff' } },
-    { name: '复付流水', type: 'bar', stack: 'total', data: repeatPay, itemStyle: { color: '#34d399' } },
-    { name: '复付占比', type: 'line', data: dates.map((d, i) => ((repeatPay[i] / (firstPay[i] + repeatPay[i])) * 100).toFixed(1)), yAxisIndex: 0, itemStyle: { color: '#fbbf24' }, lineStyle: { type: 'dashed' } }
-  ]
-});
+  const chart = makeChart(document.getElementById('ladoFunnelChart'));
+  chart.setOption({
+    ...baseOption(),
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    legend: { data: ['通过','失败'], textStyle: { color: THEME.textColor2 }, top: 10 },
+    xAxis: { type: 'value', name: '人数', ...axisCommon() },
+    yAxis: { type: 'category', data: steps.slice().reverse(), ...axisCommon(), inverse: false },
+    series: [
+      {
+        name: '通过', type: 'bar', stack: 'f', barWidth: 30,
+        data: pass.slice().reverse(),
+        itemStyle: { color: '#34d399' },
+        label: { show: true, position: 'inside', color: '#fff', fontSize: 11, fontWeight: 600 },
+      },
+      {
+        name: '失败', type: 'bar', stack: 'f',
+        data: fail.slice().reverse(),
+        itemStyle: { color: '#f87171' },
+        label: {
+          show: true, position: 'right', color: '#fbbf24', fontSize: 13, fontWeight: 700,
+          formatter: function(p) { return rate.slice().reverse()[p.dataIndex]; }
+        },
+      }
+    ],
+  });
+})();
 
-// 10. 品类对比
-const chartCategory = echarts.init(document.getElementById('chart-category'));
-const catData = v4Data.q2_pay_type_by_act.rows;
-const topCats = ['Shop', 'BattlePassTwo', 'DailyPack', 'GiftOnAddOne', 'ThreeInOnePack', 'EnergyPack'];
-const actTypes = ['WaterOrder', 'LimitedOrder', 'CardPackageFrenzy', 'LadderOrder', 'none'];
-const catSeries = topCats.map((cat, i) => ({
-  name: cat, type: 'bar', data: actTypes.map(act => {
-    const row = catData.find(r => r[0] === act && r[1] === cat);
-    return row ? parseFloat(row[5]).toFixed(0) : 0;
-  }),
-  itemStyle: { color: ['#6c7bff', '#22d3ee', '#34d399', '#fbbf24', '#a78bfa', '#f87171'][i] }
-}));
-chartCategory.setOption({
-  tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-  legend: { data: topCats, textStyle: { color: themeColor } },
-  grid: { left: '3%', right: '4%', bottom: '3%', containLabel: true },
-  xAxis: { type: 'category', data: ['WO', 'LO', 'CPF', 'LadO', '无活动'], axisLine: { lineStyle: { color: gridColor } }, axisLabel: { color: themeColor } },
-  yAxis: { type: 'value', name: '流水($)', axisLine: { lineStyle: { color: gridColor } }, axisLabel: { color: themeColor }, splitLine: { lineStyle: { color: gridColor } } },
-  series: catSeries
-});
+// ============================================================
+// 第二章 图2-3 WO完成轮次
+// ============================================================
+(function(){
+  const chart = makeChart(document.getElementById('woRoundChart'));
+  chart.setOption({
+    ...baseOption({ grid: { left: 50, right: 20, top: 50, bottom: 30 } }),
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    legend: { data: ['R1','R2','R3','R4+'], textStyle: { color: THEME.textColor2 }, top: 5 },
+    xAxis: { type: 'category', data: ['6/7','6/14','6/21'], ...axisCommon() },
+    yAxis: { type: 'value', name: '人数', ...axisCommon() },
+    series: [
+      { name:'R1', type:'bar', data:[17,249,338], itemStyle:{color:'#6c7bff'}, barGap:'10%' },
+      { name:'R2', type:'bar', data:[5,49,83], itemStyle:{color:'#34d399'} },
+      { name:'R3', type:'bar', data:[1,16,25], itemStyle:{color:'#fbbf24'} },
+      { name:'R4+', type:'bar', data:[0,14,12], itemStyle:{color:'#f87171'} },
+    ],
+  });
+})();
 
-// 11. 留存趋势
-const chartRetention = echarts.init(document.getElementById('chart-retention'));
-const retData = v4Data.q5_retention.rows;
-chartRetention.setOption({
-  tooltip: { trigger: 'axis' },
-  grid: { left: '3%', right: '4%', bottom: '10%', containLabel: true },
-  xAxis: { type: 'category', data: retData.map(r => r[0].slice(5)), axisLine: { lineStyle: { color: gridColor } }, axisLabel: { color: themeColor, rotate: 45 } },
-  yAxis: { type: 'value', name: '次日回访率', min: 40, max: 70, axisLabel: { formatter: '{value}%', color: themeColor }, axisLine: { lineStyle: { color: gridColor } }, splitLine: { lineStyle: { color: gridColor } } },
-  series: [{
-    type: 'line', data: retData.map(r => parseFloat(r[4])),
-    smooth: true, itemStyle: { color: '#6c7bff' },
-    markPoint: { data: retData.filter((r, i) => r[1] !== 'none').map((r, i) => ({ coord: [retData.indexOf(r), parseFloat(r[4])], value: r[1].slice(0, 3), itemStyle: { color: '#fbbf24' } })) }
-  }]
-});
+// ============================================================
+// 第二章 图2-4 ER里程碑衰减
+// ============================================================
+(function(){
+  const ms = Array.from({length:18}, (_,i) => 'M'+(i+1));
+  const data = [1143,1101,1005,855,701,513,334,217,144,65,38,21,15,9,4,3,2,2];
+  const chart = makeChart(document.getElementById('erDecayChart'));
+  chart.setOption({
+    ...baseOption({ grid: { left: 50, right: 20, top: 40, bottom: 30 } }),
+    tooltip: { trigger: 'axis' },
+    xAxis: { type: 'category', data: ms, ...axisCommon(), boundaryGap: false },
+    yAxis: { type: 'value', name: '到达人数', ...axisCommon() },
+    series: [{
+      type: 'line', data: data, smooth: true,
+      areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[
+        {offset:0,color:'rgba(108,123,255,0.4)'},{offset:1,color:'rgba(108,123,255,0.02)'}
+      ])},
+      lineStyle: { color: '#6c7bff', width: 2 },
+      itemStyle: { color: '#6c7bff' },
+      symbol: 'circle', symbolSize: 5,
+      markArea: {
+        silent: true,
+        itemStyle: { color: 'rgba(248,113,113,0.08)' },
+        data: [[{ xAxis: 'M7' }, { xAxis: 'M9' }]]
+      },
+      markPoint: {
+        data: [
+          { name:'M7', coord:['M7',334], itemStyle:{color:'#f87171'}, label:{formatter:'334',color:'#f87171'} },
+          { name:'M10', coord:['M10',65], itemStyle:{color:'#f87171'}, label:{formatter:'65',color:'#f87171'} },
+        ],
+        symbolSize: 8,
+      }
+    }],
+  });
+})();
 
-// 响应式
-window.addEventListener('resize', () => {
-  [chartParticipation, chartLoPass, chartLadoFunnel, chartWoRounds, chartErMilestones,
-   chartLoEnergy, chartLoPassTrend, chartRevenueCompare, chartFirstRepeat, chartCategory, chartRetention].forEach(c => c.resize());
-});
+// ============================================================
+// 第三章 图3-1 LO人均体力
+// ============================================================
+(function(){
+  const chart = makeChart(document.getElementById('loEnergyChart'));
+  chart.setOption({
+    ...baseOption({ grid: { left: 50, right: 20, top: 40, bottom: 30 } }),
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    xAxis: { type: 'category', data: ['6/10','6/17','6/24'], ...axisCommon() },
+    yAxis: { type: 'value', name: '人均体力', ...axisCommon() },
+    series: [{
+      type: 'bar', barWidth: 50,
+      data: [
+        { value: 1111, itemStyle: { color: '#f87171' } },
+        { value: 827, itemStyle: { color: '#f87171' } },
+        { value: 868, itemStyle: { color: '#34d399' } },
+      ],
+      label: {
+        show: true, position: 'top', color: THEME.textColor, fontSize: 14, fontWeight: 700,
+        formatter: '{c} 体'
+      },
+      markLine: {
+        data: [{ xAxis: 1.5 }],
+        lineStyle: { color: '#fbbf24', type: 'dashed', width: 2 },
+        label: { formatter: '← 调整前 | 调整后 →', color: '#fbbf24', fontSize: 11 },
+        symbol: 'none',
+      }
+    }],
+  });
+})();
+
+// ============================================================
+// 第三章 图3-2 LO通过率折线
+// ============================================================
+(function(){
+  const chart = makeChart(document.getElementById('loPassTrendChart'));
+  chart.setOption({
+    ...baseOption({ grid: { left: 50, right: 30, top: 40, bottom: 40 } }),
+    tooltip: { trigger: 'axis', formatter: '{b}<br/>通过率: {c}%' },
+    xAxis: { type: 'category', data: ['6/10\n(调整前)','6/17\n(调整前)','6/24\n(调整后)'], ...axisCommon(), boundaryGap: false },
+    yAxis: { type: 'value', name: '通过率 %', min: 10, max: 22, ...axisCommon(), axisLabel:{formatter:'{value}%', color: THEME.textColor2} },
+    series: [{
+      type: 'line', data: [13.7, 17.7, 14.0],
+      lineStyle: { color: '#a78bfa', width: 3 },
+      itemStyle: { color: '#a78bfa' },
+      symbol: 'circle', symbolSize: 12,
+      label: { show: true, formatter: '{c}%', color: THEME.textColor, fontSize: 14, fontWeight: 700, position: 'top' },
+      areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[
+        {offset:0,color:'rgba(167,139,250,0.25)'},{offset:1,color:'rgba(167,139,250,0.02)'}
+      ])},
+      markArea: {
+        silent: true,
+        data: [
+          [{ xAxis: '6/10\n(调整前)', itemStyle: { color: 'rgba(248,113,113,0.06)' } }, { xAxis: '6/17\n(调整前)' }],
+          [{ xAxis: '6/17\n(调整前)', itemStyle: { color: 'rgba(52,211,153,0.06)' } }, { xAxis: '6/24\n(调整后)' }],
+        ]
+      }
+    }],
+  });
+})();
+
+// ============================================================
+// 第四章 图4-1 活动类型汇总
+// ============================================================
+(function(){
+  const acts = ['无活动','WO','LO','CPF','ER','LadO'];
+  const arpdau = [0.26, 0.32, 0.35, 0.40, 0.41, 0.42];
+  const colors = ['#8b8fa3','#fbbf24','#f87171','#ff6b9d','#22d3ee','#a78bfa'];
+
+  const chart = makeChart(document.getElementById('actSummaryChart'));
+  chart.setOption({
+    ...baseOption({ grid: { left: 80, right: 80, top: 40, bottom: 30 } }),
+    tooltip: {
+      trigger: 'axis',
+      formatter: function(ps) {
+        const payRate = [12.6,5.7,8.3,5.9,3.9,3.0];
+        const avgOrder = [13.5,13.7,13.0,17.2,16.5,15.7];
+        const avgEnergy = [476,485,506,609,631,609];
+        const i = ps[0].dataIndex;
+        return `<b>${acts[i]}</b><br/>ARPDAU: $${arpdau[i]}<br/>付费率: ${payRate[i]}%<br/>人均订单: $${avgOrder[i]}<br/>人均体力: ${avgEnergy[i]}`;
+      }
+    },
+    xAxis: { type: 'value', name: 'ARPDAU ($)', ...axisCommon(), axisLabel:{formatter:'${value}',color:THEME.textColor2} },
+    yAxis: { type: 'category', data: acts, ...axisCommon() },
+    series: [{
+      type: 'bar', barWidth: 25,
+      data: arpdau.map((v,i) => ({ value: v, itemStyle: { color: colors[i] } })),
+      label: { show: true, position: 'right', formatter: '${c}', color: THEME.textColor, fontSize: 13, fontWeight: 600 },
+    }],
+  });
+})();
+
+// ============================================================
+// 第四章 图4-2 逐日ARPDAU
+// ============================================================
+(function(){
+  const dates = ['6/12','6/13','6/14','6/15','6/16','6/17','6/18','6/19','6/20','6/21','6/22','6/23','6/24','6/25'];
+  const labels = ['CPF+3in1','无','WO+Gift','无','无','LO+Gift','无','CPF','ER','WO','LadO+3in1','无','LO+Gift','无'];
+  const values = [0.48,0.33,0.35,0.25,0.34,0.33,0.26,0.32,0.41,0.23,0.42,0.12,0.20,0.09];
+  const colorMap = {'CPF+3in1':'#ff6b9d','WO+Gift':'#fbbf24','LO+Gift':'#f87171','CPF':'#ff6b9d','ER':'#22d3ee','WO':'#fbbf24','LadO+3in1':'#a78bfa','无':'#8b8fa3'};
+
+  const chart = makeChart(document.getElementById('dailyArpdauChart'));
+  chart.setOption({
+    ...baseOption({ grid: { left: 50, right: 20, top: 70, bottom: 40 } }),
+    tooltip: { trigger: 'axis', formatter: function(ps) { return `${dates[ps[0].dataIndex]} (${labels[ps[0].dataIndex]})<br/>ARPDAU: $${values[ps[0].dataIndex]}`; } },
+    xAxis: { type: 'category', data: dates, ...axisCommon(), axisLabel:{rotate:30, color:THEME.textColor2} },
+    yAxis: { type: 'value', name: 'ARPDAU ($)', ...axisCommon(), axisLabel:{formatter:'${value}',color:THEME.textColor2} },
+    series: [{
+      type: 'line', data: values.map((v,i) => ({
+        value: v,
+        itemStyle: { color: colorMap[labels[i]] },
+        symbolSize: labels[i] !== '无' ? 12 : 6,
+      })),
+      lineStyle: { color: '#6c7bff', width: 2 },
+      symbol: 'circle',
+      label: {
+        show: true, position: 'top', fontSize: 10, color: THEME.textColor2,
+        formatter: function(p) {
+          const l = labels[p.dataIndex];
+          return l !== '无' ? l + '\n$' + values[p.dataIndex] : '';
+        }
+      },
+      markLine: {
+        data: [{ type: 'average', name: '均值' }],
+        lineStyle: { color: '#fbbf24', type: 'dotted' },
+        label: { formatter: '均值 ${c}', color: '#fbbf24', fontSize: 11 },
+      }
+    }],
+  });
+})();
+
+// ============================================================
+// 第四章 图4-3 近邻对比
+// ============================================================
+(function(){
+  const pairs = ['CPF+3in1\nvs 6/11','WO+Gift\nvs 6/15','LO+Gift\nvs 6/18','CPF\nvs 6/18','ER\nvs 6/18','LadO+3in1\nvs 6/23','LO+Gift\nvs 6/25'];
+  const actRev = [966,1107,1584,1415,1350,1534,1746];
+  const noActRev = [551,882,1259,1259,1259,1371,1313];
+  const incr = ['+75%','+26%','+26%','+12%','+7%','+12%','+33%'];
+
+  const chart = makeChart(document.getElementById('neighborChart'));
+  chart.setOption({
+    ...baseOption({ grid: { left: 60, right: 30, top: 50, bottom: 60 } }),
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    legend: { data: ['活动日流水','近邻无活动日'], textStyle: { color: THEME.textColor2 }, top: 10 },
+    xAxis: { type: 'category', data: pairs, ...axisCommon(), axisLabel:{fontSize:10,interval:0,color:THEME.textColor2} },
+    yAxis: { type: 'value', name: '流水 ($)', ...axisCommon(), axisLabel:{formatter:'${value}',color:THEME.textColor2} },
+    series: [
+      {
+        name: '活动日流水', type: 'bar', data: actRev, barGap: '15%',
+        itemStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#6c7bff'},{offset:1,color:'#4c5bc4'}]) },
+        label: {
+          show: true, position: 'top', color: '#34d399', fontSize: 12, fontWeight: 700,
+          formatter: function(p) { return incr[p.dataIndex]; }
+        },
+      },
+      {
+        name: '近邻无活动日', type: 'bar', data: noActRev,
+        itemStyle: { color: '#3a3d4a' },
+      }
+    ],
+  });
+})();
+
+// ============================================================
+// 第四章 图4-4 首付vs复付
+// ============================================================
+(function(){
+  const dates = ['6/7','6/8','6/9','6/10','6/11','6/12','6/13','6/14','6/15','6/16','6/17','6/18','6/19','6/20','6/21','6/22','6/23','6/24','6/25'];
+  const first = [489,230,207,719,193,585,657,486,444,346,382,583,585,403,684,469,669,534,571];
+  const repeat = [91,179,202,219,359,381,382,620,437,358,1202,676,830,947,803,1065,702,1212,742];
+
+  const chart = makeChart(document.getElementById('firstRepeatChart'));
+  chart.setOption({
+    ...baseOption(),
+    tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+    legend: { data: ['首付流水','复付流水'], textStyle: { color: THEME.textColor2 }, top: 10 },
+    xAxis: { type: 'category', data: dates, ...axisCommon(), boundaryGap: false },
+    yAxis: { type: 'value', name: '流水 ($)', ...axisCommon(), axisLabel:{formatter:'${value}',color:THEME.textColor2} },
+    series: [
+      {
+        name: '复付流水', type: 'line', stack: 'rev', data: repeat, smooth: true,
+        areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(167,139,250,0.5)'},{offset:1,color:'rgba(167,139,250,0.05)'}]) },
+        lineStyle: { color: '#a78bfa', width: 2 },
+        itemStyle: { color: '#a78bfa' },
+        symbol: 'none',
+      },
+      {
+        name: '首付流水', type: 'line', stack: 'rev', data: first, smooth: true,
+        areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(52,211,153,0.5)'},{offset:1,color:'rgba(52,211,153,0.05)'}]) },
+        lineStyle: { color: '#34d399', width: 2 },
+        itemStyle: { color: '#34d399' },
+        symbol: 'none',
+      },
+    ],
+  });
+})();
+
+// ============================================================
+// 第五章 图5-1 品类对比
+// ============================================================
+(function(){
+  const cats = ['Shop','BattlePassTwo','DailyPack','GiftOnAddOne','ThreeInOnePack','EnergyPack'];
+  const chart = makeChart(document.getElementById('categoryChart'));
+  chart.setOption({
+    ...baseOption({ grid: { left: 120, right: 30, top: 50, bottom: 40 } }),
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+    legend: { data: ['LO','WO','CPF','LadO','ER','无活动日'], textStyle: { color: THEME.textColor2, fontSize: 11 }, top: 5 },
+    yAxis: { type: 'category', data: cats.slice().reverse(), ...axisCommon() },
+    xAxis: { type: 'value', name: '日均流水 ($)', ...axisCommon(), axisLabel:{formatter:'${value}',color:THEME.textColor2} },
+    series: [
+      { name:'LO', type:'bar', data:[397,217,196,198,25,130].reverse(), itemStyle:{color:'#f87171'}, barGap:'5%' },
+      { name:'WO', type:'bar', data:[249,190,177,101,0,56].reverse(), itemStyle:{color:'#fbbf24'} },
+      { name:'CPF', type:'bar', data:[394,234,170,0,83,103].reverse(), itemStyle:{color:'#ff6b9d'} },
+      { name:'LadO', type:'bar', data:[250,216,203,0,326,197].reverse(), itemStyle:{color:'#a78bfa'} },
+      { name:'ER', type:'bar', data:[223,190,188,0,0,176].reverse(), itemStyle:{color:'#22d3ee'} },
+      { name:'无活动日', type:'bar', data:[219,188,157,4,15,74].reverse(), itemStyle:{color:'#3a3d4a'} },
+    ],
+  });
+})();
+
+// ============================================================
+// 第六章 图6-1 次日回访率
+// ============================================================
+(function(){
+  const dates = ['6/7','6/8','6/9','6/10','6/11','6/12','6/13','6/14','6/15','6/16','6/17','6/18','6/19','6/20','6/21','6/22','6/23','6/24'];
+  const retention = [46.3,54.1,54.7,60.3,58.7,56.8,58.7,58.1,60.4,60.7,61.0,59.0,60.5,62.9,62.6,63.0,65.1,63.7];
+  const actDays = {
+    '6/7':'WO①', '6/10':'LO①', '6/12':'CPF①', '6/14':'WO②',
+    '6/17':'LO②', '6/19':'CPF②', '6/20':'ER①', '6/21':'WO③',
+    '6/22':'LadO', '6/24':'LO③'
+  };
+  const isAct = dates.map(d => actDays[d] || null);
+
+  const chart = makeChart(document.getElementById('retentionChart'));
+  chart.setOption({
+    ...baseOption({ grid: { left: 50, right: 20, top: 60, bottom: 40 } }),
+    tooltip: { trigger: 'axis', formatter: function(ps) {
+      const i = ps[0].dataIndex;
+      let s = `${dates[i]}${isAct[i] ? ' ('+isAct[i]+')' : ''}<br/>次日回访率: ${retention[i]}%`;
+      return s;
+    }},
+    xAxis: { type: 'category', data: dates, ...axisCommon(), boundaryGap: false, axisLabel:{rotate:30,color:THEME.textColor2} },
+    yAxis: { type: 'value', name: '次日回访率 (%)', min: 40, max: 70, ...axisCommon(), axisLabel:{formatter:'{value}%',color:THEME.textColor2} },
+    series: [{
+      type: 'line', data: retention.map((v,i) => ({
+        value: v,
+        symbol: isAct[i] ? 'circle' : 'circle',
+        symbolSize: isAct[i] ? 14 : 5,
+        itemStyle: { color: isAct[i] ? '#fbbf24' : '#6c7bff', borderColor: isAct[i] ? '#fbbf24' : 'transparent', borderWidth: 2 },
+        label: isAct[i] ? { show: true, formatter: isAct[i] + '\n' + v + '%', position: 'top', color: '#fbbf24', fontSize: 10, fontWeight: 600, lineHeight: 14 } : { show: false },
+      })),
+      lineStyle: { color: '#6c7bff', width: 2 },
+      smooth: true,
+      areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[
+        {offset:0,color:'rgba(108,123,255,0.2)'},{offset:1,color:'rgba(108,123,255,0.02)'}
+      ])},
+    }],
+  });
+})();
 </script>
 </body>
 </html>
