@@ -226,7 +226,7 @@
   }
   .gantt-days {
     display: grid;
-    grid-template-columns: repeat(var(--day-count, 30), minmax(28px, 1fr));
+    grid-template-columns: 80px repeat(var(--day-count, 30), minmax(28px, 1fr));
     border-bottom: 1px solid var(--border);
     padding-bottom: 6px; margin-bottom: 4px;
   }
@@ -334,7 +334,7 @@
     <div class="gantt-scroll">
       <div class="gantt-canvas" id="ganttCanvas" style="--chart-height:520px;--day-count:30">
         <div class="gantt-days" style="grid-template-columns:repeat(30,minmax(28px,1fr))">
-          <span>01</span><span>02</span><span>03</span><span>04</span><span>05</span><span>06</span><span>07</span><span>08</span><span>09</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span><span>27</span><span>28</span><span>29</span><span>30</span>
+          <span></span><span>01</span><span>02</span><span>03</span><span>04</span><span>05</span><span>06</span><span>07</span><span>08</span><span>09</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span><span>27</span><span>28</span><span>29</span><span>30</span>
         </div>
         <div class="gantt-track" id="ganttTrack"></div>
       </div>
@@ -917,15 +917,16 @@ window.addEventListener('resize', () => charts.forEach(c => c.resize()));
       if (lane === -1) { lane = lanes.length; }
       lanes[lane] = e;
 
-      const leftPct = (s / TOTAL_DAYS * 100);
-      const widthPct = ((e - s) / TOTAL_DAYS * 100);
+      const leftFrac = s / TOTAL_DAYS;
+      const widthFrac = Math.min((e - s) / TOTAL_DAYS, 1 - leftFrac);
       const clipped = e > TOTAL_DAYS;
       const top = currentTop + lane * (BAR_H + GAP);
       const color = ROW_COLORS[rowIdx];
 
       const bar = document.createElement('div');
       bar.className = 'gantt-bar' + (clipped ? ' is-clipped-end' : '');
-      bar.style.cssText = `left:calc(80px + ${leftPct.toFixed(2)}% * (100% - 80px) / 100);width:calc(${Math.min(widthPct, 100 - leftPct).toFixed(2)}% * (100% - 80px) / 100);top:${top}px;--type-color:${color};height:${BAR_H}px;font-size:${(e-s)<=1.5?'9px':'11px'};`;
+      // Position: 80px label + fraction of remaining width
+      bar.style.cssText = `left:calc(80px + (100% - 80px) * ${leftFrac.toFixed(5)});width:calc((100% - 80px) * ${widthFrac.toFixed(5)});top:${top}px;--type-color:${color};height:${BAR_H}px;font-size:${(e-s)<=1.5?'9px':'11px'};`;
       bar.title = `${act.name}`;
       bar.innerHTML = `<strong>${act.name}</strong>`;
       track.appendChild(bar);
@@ -953,13 +954,7 @@ window.addEventListener('resize', () => charts.forEach(c => c.resize()));
   track.style.height = currentTop + 'px';
   document.getElementById('ganttCanvas').style.setProperty('--chart-height', currentTop + 'px');
 
-  // Fix bar positioning to use percentage of track-inner width
-  track.querySelectorAll('.gantt-bar').forEach(bar => {
-    // Recalculate using simple percentage of remaining width after label
-    const style = bar.style;
-    const leftMatch = style.left;
-    // Already set inline, keep as is - CSS calc handles it
-  });
+
 })();
 
 // ============================================================
