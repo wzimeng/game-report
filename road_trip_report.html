@@ -1,0 +1,474 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>杰西卡开车探险活动分析 — RoadTrip</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0d1117; color:#c9d1d9; font-family:'Segoe UI','Microsoft YaHei',sans-serif; padding:20px; }
+.header { text-align:center; margin-bottom:30px; }
+.header h1 { font-size:24px; color:#58a6ff; margin-bottom:8px; }
+.header .subtitle { color:#8b949e; font-size:14px; line-height:1.8; }
+.summary-cards { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:30px; }
+.card { background:#161b22; border:1px solid #30363d; border-radius:8px; padding:16px; text-align:center; }
+.card .label { font-size:12px; color:#8b949e; margin-bottom:6px; }
+.card .value { font-size:22px; font-weight:700; }
+.card .value.blue { color:#58a6ff; }
+.card .value.green { color:#3fb950; }
+.card .value.orange { color:#d29922; }
+.card .value.red { color:#f85149; }
+.card .value.purple { color:#bc8cff; }
+.card .sub { font-size:11px; color:#8b949e; margin-top:4px; }
+.section { background:#161b22; border:1px solid #30363d; border-radius:8px; padding:20px; margin-bottom:24px; }
+.section h2 { font-size:16px; color:#58a6ff; margin-bottom:16px; border-bottom:1px solid #30363d; padding-bottom:8px; }
+.chart-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:24px; }
+.chart-box { background:#0d1117; border:1px solid #30363d; border-radius:6px; padding:12px; }
+.chart-box h3 { font-size:13px; color:#8b949e; margin-bottom:8px; text-align:center; }
+.chart { width:100%; height:360px; }
+.chart-full { width:100%; height:400px; }
+.chart-tall { width:100%; height:450px; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th { background:#21262d; color:#8b949e; padding:8px 12px; text-align:right; border-bottom:2px solid #30363d; }
+th:first-child { text-align:left; }
+td { padding:8px 12px; text-align:right; border-bottom:1px solid #30363d; }
+td:first-child { text-align:left; color:#c9d1d9; font-weight:600; }
+tr:hover { background:#1c2128; }
+.highlight { background:#1c3a5f !important; }
+.tag { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; }
+.tag-main { background:rgba(88,166,255,0.15); color:#58a6ff; }
+.tag-ref { background:rgba(139,148,158,0.15); color:#8b949e; }
+.tag-milestone { background:rgba(210,153,34,0.15); color:#d29922; }
+.insight { background:#1c2128; border-left:3px solid #d29922; padding:12px 16px; margin-top:16px; border-radius:0 6px 6px 0; font-size:13px; line-height:1.6; }
+.insight strong { color:#d29922; }
+.footer { text-align:center; color:#484f58; font-size:12px; margin-top:30px; }
+.progress-bar { display:flex; align-items:center; gap:8px; margin:2px 0; }
+.progress-bar .bar-bg { flex:1; height:18px; background:#21262d; border-radius:3px; overflow:hidden; }
+.progress-bar .bar-fill { height:100%; border-radius:3px; transition:width 0.3s; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🚐 杰西卡开车探险活动分析 — RoadTrip</h1>
+  <div class="subtitle">
+    <span class="tag tag-main">活动时间 6.19-6.22</span>
+    &nbsp;|&nbsp; 活动类型: RoadTrip &nbsp;|&nbsp; 37个奖励节点 · 11个大奖节点 · 积分累计驱动<br>
+    完成订单获取积分 → 房车沿公路前进 → 抵达节点领取奖励 → 大奖节点含高价值宝箱
+  </div>
+</div>
+
+<!-- 概览卡片 -->
+<div class="summary-cards">
+  <div class="card">
+    <div class="label">活动参与人数</div>
+    <div class="value blue">2,614</div>
+    <div class="sub">同期活跃未参与: 3,409人</div>
+  </div>
+  <div class="card">
+    <div class="label">通关率(到达37节点)</div>
+    <div class="value green">3.8%</div>
+    <div class="sub">99人完成全部节点</div>
+  </div>
+  <div class="card">
+    <div class="label">通关玩家付费率</div>
+    <div class="value orange">44.5%</div>
+    <div class="sub">vs 对照组2.0%</div>
+  </div>
+  <div class="card">
+    <div class="label">通关玩家日均体力</div>
+    <div class="value purple">1,371</div>
+    <div class="sub">vs 对照组373 (3.7x)</div>
+  </div>
+  <div class="card">
+    <div class="label">半程到达率(≥19节点)</div>
+    <div class="value red">52.1%</div>
+    <div class="sub">1,361人到达中段</div>
+  </div>
+</div>
+
+<!-- 1. 大奖节点到达率 -->
+<div class="section">
+  <h2>🏁 1. 大奖节点到达率（漏斗）</h2>
+  <div class="chart-box" style="margin-bottom:16px;">
+    <div id="chart_funnel" class="chart-tall"></div>
+  </div>
+  <table>
+    <thead>
+      <tr><th>大奖节点</th><th>段内积分需求</th><th>到达人数</th><th>到达率</th><th>段间流失</th><th>备注</th></tr>
+    </thead>
+    <tbody>
+      <tr><td><span class="tag tag-milestone">★</span> 节点3</td><td>30</td><td>2,567</td><td>98.2%</td><td>-</td><td>入门段</td></tr>
+      <tr><td><span class="tag tag-milestone">★</span> 节点7</td><td>50</td><td>2,435</td><td>93.2%</td><td>-5.0pp</td><td></td></tr>
+      <tr><td><span class="tag tag-milestone">★</span> 节点10</td><td>60</td><td>2,261</td><td>86.5%</td><td>-6.7pp</td><td></td></tr>
+      <tr><td><span class="tag tag-milestone">★</span> 节点13</td><td>90</td><td>2,018</td><td>77.2%</td><td>-9.3pp</td><td></td></tr>
+      <tr><td><span class="tag tag-milestone">★</span> 节点16</td><td>120</td><td>1,693</td><td>64.8%</td><td>-12.4pp</td><td></td></tr>
+      <tr class="highlight"><td><span class="tag tag-milestone">★</span> 节点19</td><td>150</td><td>1,361</td><td>52.1%</td><td>-12.7pp</td><td>⚡ 半程分水岭</td></tr>
+      <tr><td><span class="tag tag-milestone">★</span> 节点23</td><td>250</td><td>1,015</td><td>38.8%</td><td>-13.3pp</td><td>段间积分跳增</td></tr>
+      <tr><td><span class="tag tag-milestone">★</span> 节点26</td><td>240</td><td>753</td><td>28.8%</td><td>-10.0pp</td><td></td></tr>
+      <tr><td><span class="tag tag-milestone">★</span> 节点29</td><td>300</td><td>517</td><td>19.8%</td><td>-9.0pp</td><td></td></tr>
+      <tr><td><span class="tag tag-milestone">★</span> 节点33</td><td>500</td><td>285</td><td>10.9%</td><td>-8.9pp</td><td>最后冲刺前</td></tr>
+      <tr style="background:#1a3020;"><td><span class="tag tag-milestone">★</span> 节点37(终点)</td><td>1000</td><td>99</td><td>3.8%</td><td>-7.1pp</td><td>🏆 通关</td></tr>
+    </tbody>
+  </table>
+  <div class="insight">
+    <strong>💡 关键发现：</strong>
+    到达率呈现<strong>平滑递减</strong>的漏斗形态，没有明显的"断崖式流失"，说明活动难度曲线设计合理。
+    半程分水岭在节点19(52.1%)，此后约每段流失10-13pp。
+    节点23段间积分需求从150跳增至250(+67%)，导致该段流失最大(-13.3pp)。
+    最后一段(节点34-37)需要1000积分(段内最高)，但仍有<strong>99人(3.8%)</strong>坚持通关。
+  </div>
+</div>
+
+<!-- 2. 按大奖段分组的停留分布 -->
+<div class="section">
+  <h2>📊 2. 各大奖段停留分布与消费行为</h2>
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>各段停留人数占比</h3>
+      <div id="chart_stage_pct" class="chart"></div>
+    </div>
+    <div class="chart-box">
+      <h3>各段付费率 vs 对照组</h3>
+      <div id="chart_pay_rate" class="chart"></div>
+    </div>
+  </div>
+  <table>
+    <thead>
+      <tr><th>阶段</th><th>节点范围</th><th>人数</th><th>占比</th><th>日均体力</th><th>日均宝石</th><th>付费率</th><th>ARPU$</th><th>ARPPU$</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>第1段</td><td>1-3</td><td>79</td><td>3.0%</td><td>377</td><td>20</td><td>3.8%</td><td>$0.25</td><td>$6.66</td></tr>
+      <tr><td>第2段</td><td>4-7</td><td>139</td><td>5.3%</td><td>351</td><td>21</td><td>0.7%</td><td>$0.14</td><td>$19.96</td></tr>
+      <tr><td>第3段</td><td>8-10</td><td>196</td><td>7.5%</td><td>441</td><td>19</td><td>2.6%</td><td>$0.16</td><td>$6.19</td></tr>
+      <tr><td>第4段</td><td>11-13</td><td>281</td><td>10.7%</td><td>439</td><td>22</td><td>3.2%</td><td>$0.37</td><td>$11.43</td></tr>
+      <tr class="highlight"><td>第5段</td><td>14-16</td><td>335</td><td>12.8%</td><td>497</td><td>23</td><td>3.9%</td><td>$0.37</td><td>$9.52</td></tr>
+      <tr><td>第6段</td><td>17-19</td><td>330</td><td>12.6%</td><td>567</td><td>25</td><td>5.2%</td><td>$0.39</td><td>$7.52</td></tr>
+      <tr><td>第7段</td><td>20-23</td><td>307</td><td>11.7%</td><td>605</td><td>28</td><td>5.5%</td><td>$0.54</td><td>$9.81</td></tr>
+      <tr><td>第8段</td><td>24-26</td><td>267</td><td>10.2%</td><td>657</td><td>39</td><td>9.7%</td><td>$1.20</td><td>$12.37</td></tr>
+      <tr><td>第9段</td><td>27-29</td><td>234</td><td>9.0%</td><td>730</td><td>45</td><td>14.5%</td><td>$1.61</td><td>$11.07</td></tr>
+      <tr><td>第10段</td><td>30-33</td><td>201</td><td>7.7%</td><td>869</td><td>69</td><td>15.9%</td><td>$2.16</td><td>$13.57</td></tr>
+      <tr style="background:#1a3020;"><td>第11段(通关)</td><td>34-37</td><td>245</td><td>9.4%</td><td>1,371</td><td>208</td><td>44.5%</td><td>$13.39</td><td>$30.09</td></tr>
+      <tr style="background:#21262d;"><td><span class="tag tag-ref">对照组</span></td><td>-</td><td>3,409</td><td>-</td><td>373</td><td>19</td><td>2.0%</td><td>$0.23</td><td>-</td></tr>
+    </tbody>
+  </table>
+  <div class="insight">
+    <strong>💡 关键发现：</strong>
+    停留分布呈<strong>"钟形+尾部隆起"</strong>：中段(第5-6段)停留最多(12.6-12.8%)，通关段(9.4%)形成小隆起。
+    第5段(节点14-16)是最大停留区，12.8%玩家止步于此，对应半程前的中等难度区间。
+    前3段合计仅15.8%停留，说明绝大多数玩家都能推过入门阶段。
+  </div>
+</div>
+
+<!-- 3. 体力消耗 -->
+<div class="section">
+  <h2>⚡ 3. 不同阶段的日均体力消耗</h2>
+  <div class="chart-box" style="margin-bottom:16px;">
+    <div id="chart_energy" class="chart-full"></div>
+  </div>
+  <table>
+    <thead>
+      <tr><th>阶段</th><th>日均体力</th><th>vs对照组倍数</th><th>对照组</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>第1段(节点1-3)</td><td>377</td><td style="color:#3fb950">1.0x</td><td rowspan="11" style="vertical-align:middle; text-align:center; color:#8b949e;">373</td></tr>
+      <tr><td>第2段(节点4-7)</td><td>351</td><td style="color:#8b949e">0.9x</td></tr>
+      <tr><td>第3段(节点8-10)</td><td>441</td><td style="color:#3fb950">1.2x</td></tr>
+      <tr><td>第4段(节点11-13)</td><td>439</td><td style="color:#3fb950">1.2x</td></tr>
+      <tr><td>第5段(节点14-16)</td><td>497</td><td style="color:#3fb950">1.3x</td></tr>
+      <tr><td>第6段(节点17-19)</td><td>567</td><td style="color:#3fb950">1.5x</td></tr>
+      <tr><td>第7段(节点20-23)</td><td>605</td><td style="color:#3fb950">1.6x</td></tr>
+      <tr><td>第8段(节点24-26)</td><td>657</td><td style="color:#3fb950">1.8x</td></tr>
+      <tr><td>第9段(节点27-29)</td><td>730</td><td style="color:#3fb950">2.0x</td></tr>
+      <tr><td>第10段(节点30-33)</td><td>869</td><td style="color:#3fb950">2.3x</td></tr>
+      <tr><td>第11段(通关)</td><td>1,371</td><td style="color:#3fb950"><strong>3.7x</strong></td></tr>
+    </tbody>
+  </table>
+  <div class="insight">
+    <strong>💡 关键发现：</strong>
+    体力消耗与进度深度呈<strong>线性正相关</strong>，从第1段377逐步增长到通关段1,371(+264%)。
+    前2段(节点1-7)的体力与对照组(373)相当，说明浅层参与者本身就是低活跃玩家。
+    从第6段开始明显拉开差距(1.5x+)，通关段(3.7x)体力消耗极为显著。
+    策划预期"提升日常体力消耗100左右"——通关玩家实际提升<strong>~1000</strong>，远超预期。
+  </div>
+</div>
+
+<!-- 4. 宝石消耗 -->
+<div class="section">
+  <h2>💎 4. 不同阶段的日均宝石消耗</h2>
+  <div class="chart-box" style="margin-bottom:16px;">
+    <div id="chart_gems" class="chart-full"></div>
+  </div>
+  <table>
+    <thead>
+      <tr><th>阶段</th><th>日均宝石</th><th>vs对照组倍数</th><th>对照组</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>第1-3段(节点1-10)</td><td>19-21</td><td style="color:#8b949e">~1.0x</td><td rowspan="5" style="vertical-align:middle; text-align:center; color:#8b949e;">19</td></tr>
+      <tr><td>第4-6段(节点11-19)</td><td>22-25</td><td style="color:#3fb950">1.2-1.3x</td></tr>
+      <tr><td>第7-8段(节点20-26)</td><td>28-39</td><td style="color:#3fb950">1.5-2.1x</td></tr>
+      <tr><td>第9-10段(节点27-33)</td><td>45-69</td><td style="color:#3fb950">2.4-3.6x</td></tr>
+      <tr style="background:#1a3020;"><td>第11段(通关)</td><td><strong>208</strong></td><td style="color:#3fb950"><strong>10.9x</strong></td></tr>
+    </tbody>
+  </table>
+  <div class="insight">
+    <strong>💡 关键发现：</strong>
+    宝石消耗在前6段几乎与对照组(19)持平，从第7段开始明显增长。
+    通关段日均宝石208，是对照组的<strong>10.9倍</strong>，核心玩家为冲终点大量消耗宝石。
+    宝石消耗的"拐点"出现在第8段(39)，此后加速增长，说明后半段对宝石的需求急剧上升。
+  </div>
+</div>
+
+<!-- 5. 付费分析 -->
+<div class="section">
+  <h2>💰 5. 不同阶段的付费行为</h2>
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>付费率随进度深度变化</h3>
+      <div id="chart_payrate_line" class="chart"></div>
+    </div>
+    <div class="chart-box">
+      <h3>ARPU vs ARPPU 对比</h3>
+      <div id="chart_arpu" class="chart"></div>
+    </div>
+  </div>
+  <div class="insight">
+    <strong>💡 关键发现：</strong><br>
+    ① 付费率呈"缓起步→加速递增"：前7段(1-7%)增长平缓，第8段起加速(9.7%→14.5%→15.9%→<strong>44.5%</strong>)。<br>
+    ② 通关玩家ARPU达<strong>$13.39</strong>，ARPPU达<strong>$30.09</strong>，是对照组($0.23)的<strong>58倍</strong>。<br>
+    ③ 第2段ARPPU出现异常高值($19.96)，但仅1人付费，统计意义有限。<br>
+    ④ 对比同类活动：通关ARPPU($30.09)与金币募集隐藏关($40.32)、小车竞速($27.44)处于同一水平。
+  </div>
+</div>
+
+<!-- 6. 每日参与趋势 -->
+<div class="section">
+  <h2>📈 6. 活动期间每日参与趋势</h2>
+  <div class="chart-box">
+    <div id="chart_daily" class="chart"></div>
+  </div>
+  <table style="margin-top:16px;">
+    <thead>
+      <tr><th>日期</th><th>参与人数</th><th>事件数</th><th>人均事件</th><th>备注</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>6月19日</td><td>1,516</td><td>44,336</td><td>29.2</td><td>活动开启日(16:00)</td></tr>
+      <tr><td>6月20日</td><td>1,678</td><td>43,040</td><td>25.7</td><td>全天开放</td></tr>
+      <tr><td>6月21日</td><td>1,928</td><td>45,284</td><td>23.5</td><td>全天开放(峰值)</td></tr>
+      <tr><td>6月22日</td><td>1,085</td><td>4,994</td><td>4.6</td><td>活动结束日(16:00)</td></tr>
+    </tbody>
+  </table>
+  <div class="insight">
+    <strong>💡 关键发现：</strong>
+    参与人数逐日增长(1,516→1,928)，第3天达到峰值，说明活动<strong>吸引力递增</strong>。
+    人均事件数极高(23-29次/天)，远超金币募集和小车竞速(2-4次/天)，说明RoadTrip的<strong>节点密集</strong>(37个节点)带来高频互动。
+    结束日仍有1,085人参与，收尾参与度较高。
+  </div>
+</div>
+
+<!-- 7. 三活动横向对比 -->
+<div class="section">
+  <h2>🔄 7. 三款同类活动横向对比</h2>
+  <table>
+    <thead>
+      <tr><th>指标</th><th>🪙 金币募集(二期)</th><th>🏎️ 小车竞速</th><th>🚐 开车探险</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>活动机制</td><td>10关累计+1隐藏关</td><td>10轮竞速排名</td><td>37节点积分里程碑</td></tr>
+      <tr><td>参与人数</td><td>3,761</td><td>2,201</td><td>2,614</td></tr>
+      <tr><td>通关率</td><td>5.7%</td><td><strong>12.3%</strong></td><td>3.8%</td></tr>
+      <tr><td>通关人数</td><td>213</td><td>270</td><td>99</td></tr>
+      <tr><td>通关付费率</td><td>39.4%/74.3%</td><td>32.2%</td><td><strong>44.5%</strong></td></tr>
+      <tr><td>通关日均体力</td><td>1,135/1,830</td><td>1,271</td><td><strong>1,371</strong></td></tr>
+      <tr><td>通关日均宝石</td><td>98/432</td><td>187</td><td><strong>208</strong></td></tr>
+      <tr><td>通关ARPU</td><td>$7.09/$29.96</td><td>$8.84</td><td><strong>$13.39</strong></td></tr>
+      <tr><td>通关ARPPU</td><td>$17.98/$40.32</td><td>$27.44</td><td>$30.09</td></tr>
+      <tr><td>对照组付费率</td><td>1.6%</td><td>1.5%</td><td>2.0%</td></tr>
+      <tr><td>对照组日均体力</td><td>290</td><td>340</td><td>373</td></tr>
+      <tr><td>人均事件/天</td><td>2-3</td><td>2-4</td><td><strong>23-29</strong></td></tr>
+    </tbody>
+  </table>
+  <div class="insight">
+    <strong>💡 横向对比发现：</strong><br>
+    ① <strong>通关难度排序</strong>：开车探险(3.8%) > 金币募集(5.7%) > 小车竞速(12.3%)。37个节点的路径最长，通关率最低。<br>
+    ② <strong>付费驱动</strong>：开车探险通关付费率(44.5%)最高，因为长路径给了更多付费刺激窗口。<br>
+    ③ <strong>互动频次</strong>：开车探险人均事件23-29次/天，是其他两款活动的<strong>8-10倍</strong>，节点密集带来持续参与感。<br>
+    ④ <strong>资源消耗</strong>：三款活动通关玩家的体力消耗都达到1,200-1,400(vs对照组300-370)，促活效果均显著。<br>
+    ⑤ <strong>建议</strong>：开车探险的长路径+高互动模式值得保留，但可适当降低最后一段(1000积分)的门槛，将通关率拉升至5%+。
+  </div>
+</div>
+
+<!-- 8. 总结 -->
+<div class="section">
+  <h2>📋 8. 分析总结与建议</h2>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+    <div>
+      <h3 style="color:#3fb950; margin-bottom:12px;">✅ 正向结论</h3>
+      <ul style="list-style:none; font-size:13px; line-height:2;">
+        <li>🔹 参与率高(2,614人)，逐日增长，<strong>活动吸引力强</strong></li>
+        <li>🔹 难度曲线平滑，无断崖式流失，<strong>活动设计合理</strong></li>
+        <li>🔹 37节点带来人均23-29次/天的<strong>超高互动频次</strong></li>
+        <li>🔹 通关付费率44.5%、ARPPU $30.09，<strong>付费转化优秀</strong></li>
+        <li>🔹 通关玩家日均体力1,371(3.7x)，<strong>促活效果极显著</strong></li>
+        <li>🔹 D1留存增益+13.6pp，<strong>在所有活动中排第2</strong></li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="color:#d29922; margin-bottom:12px;">⚠️ 关注点与建议</h3>
+      <ul style="list-style:none; font-size:13px; line-height:2;">
+        <li>🔸 通关率仅3.8%（三款同类活动最低），<strong>最后一段积分要求过高</strong>(1000)</li>
+        <li>🔸 节点23段间积分从150跳至250(+67%)，<strong>建议平滑过渡</strong></li>
+        <li>🔸 前2段(节点1-7)体力与对照组持平，说明<strong>浅层参与者促活效果有限</strong></li>
+        <li>🔸 宝石消耗"拐点"在第8段(39)，前7段几乎无额外宝石消耗，<strong>中前段缺乏宝石消耗驱动</strong></li>
+        <li>🔸 建议将最后一段积分从1000降至600-700，并在中段增加宝石激励机制</li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  数据来源: ThinkingData (HWTA) | 项目ID: 36 | 时区: UTC-4 | 生成时间: 2026-06-30
+</div>
+
+<script>
+const darkTheme = {
+  backgroundColor:'transparent', textStyle:{color:'#c9d1d9'},
+  legend:{textStyle:{color:'#8b949e'}},
+  xAxis:{axisLine:{lineStyle:{color:'#30363d'}},axisLabel:{color:'#8b949e'},splitLine:{lineStyle:{color:'#21262d'}}},
+  yAxis:{axisLine:{lineStyle:{color:'#30363d'}},axisLabel:{color:'#8b949e'},splitLine:{lineStyle:{color:'#21262d'}}}
+};
+const tt = {trigger:'axis',backgroundColor:'#21262d',borderColor:'#30363d',textStyle:{color:'#c9d1d9'}};
+
+const stages = ['1段','2段','3段','4段','5段','6段','7段','8段','9段','10段','11段'];
+const stageLabels = ['1-3','4-7','8-10','11-13','14-16','17-19','20-23','24-26','27-29','30-33','34-37'];
+const milestones = ['节点3','节点7','节点10','节点13','节点16','节点19','节点23','节点26','节点29','节点33','节点37'];
+const reachRate = [98.2,93.2,86.5,77.2,64.8,52.1,38.8,28.8,19.8,10.9,3.8];
+const stagePct = [3.0,5.3,7.5,10.7,12.8,12.6,11.7,10.2,9.0,7.7,9.4];
+const energy = [377,351,441,439,497,567,605,657,730,869,1371];
+const gems = [20,21,19,22,23,25,28,39,45,69,208];
+const payrate = [3.8,0.7,2.6,3.2,3.9,5.2,5.5,9.7,14.5,15.9,44.5];
+const arpu = [0.25,0.14,0.16,0.37,0.37,0.39,0.54,1.20,1.61,2.16,13.39];
+const arppu = [6.66,19.96,6.19,11.43,9.52,7.52,9.81,12.37,11.07,13.57,30.09];
+
+// 1. 到达率漏斗
+const c1 = echarts.init(document.getElementById('chart_funnel'));
+c1.setOption({
+  ...darkTheme, tooltip:tt,
+  grid:{left:80,right:40,top:30,bottom:30},
+  xAxis:{type:'value',max:100,axisLabel:{formatter:'{value}%',...darkTheme.xAxis.axisLabel},...darkTheme.xAxis},
+  yAxis:{type:'category',data:milestones.slice().reverse(),inverse:false,...darkTheme.yAxis,axisLabel:{color:'#c9d1d9',fontSize:12}},
+  series:[{
+    type:'bar', data:reachRate.slice().reverse(),
+    itemStyle:{color:function(p){
+      const v=p.value; return v>80?'#3fb950':v>50?'#58a6ff':v>20?'#d29922':'#f85149';
+    }},
+    label:{show:true,position:'right',formatter:'{c}%',color:'#c9d1d9',fontSize:12}
+  }]
+});
+
+// 2. 各段停留占比
+const c2 = echarts.init(document.getElementById('chart_stage_pct'));
+c2.setOption({
+  ...darkTheme, tooltip:tt,
+  grid:{left:50,right:20,top:30,bottom:40},
+  xAxis:{type:'category',data:stages,...darkTheme.xAxis},
+  yAxis:{type:'value',axisLabel:{formatter:'{value}%',...darkTheme.yAxis.axisLabel},...darkTheme.yAxis},
+  series:[{type:'bar',data:stagePct,
+    itemStyle:{color:function(p){return p.dataIndex===4?'#f85149':p.dataIndex===10?'#3fb950':'#58a6ff';}},
+    label:{show:true,position:'top',formatter:'{c}%',color:'#8b949e',fontSize:10}
+  }]
+});
+
+// 3. 付费率
+const c3 = echarts.init(document.getElementById('chart_pay_rate'));
+c3.setOption({
+  ...darkTheme, tooltip:{...tt,formatter:function(p){return p.map(i=>i.seriesName+': '+i.value+'%').join('<br>')}},
+  legend:{data:['付费率','对照组'],...darkTheme.legend,top:5},
+  grid:{left:50,right:20,top:40,bottom:40},
+  xAxis:{type:'category',data:stages,...darkTheme.xAxis},
+  yAxis:{type:'value',axisLabel:{formatter:'{value}%',...darkTheme.yAxis.axisLabel},...darkTheme.yAxis},
+  series:[
+    {name:'付费率',type:'line',data:payrate,itemStyle:{color:'#3fb950'},lineStyle:{width:2.5},symbol:'circle',symbolSize:7,
+     areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(63,185,80,0.2)'},{offset:1,color:'rgba(63,185,80,0)'}]}}},
+    {name:'对照组',type:'line',data:Array(11).fill(2.0),lineStyle:{type:'dashed',color:'rgba(248,81,73,0.5)',width:2},symbol:'none',itemStyle:{color:'#f85149'}}
+  ]
+});
+
+// 4. 体力
+const c4 = echarts.init(document.getElementById('chart_energy'));
+c4.setOption({
+  ...darkTheme, tooltip:tt,
+  legend:{data:['日均体力','对照组'],...darkTheme.legend,top:5},
+  grid:{left:60,right:20,top:40,bottom:40},
+  xAxis:{type:'category',data:stages,...darkTheme.xAxis},
+  yAxis:{type:'value',name:'日均体力',nameTextStyle:{color:'#8b949e'},...darkTheme.yAxis},
+  series:[
+    {name:'日均体力',type:'bar',data:energy,itemStyle:{color:'#58a6ff'},label:{show:true,position:'top',color:'#8b949e',fontSize:10}},
+    {name:'对照组',type:'line',data:Array(11).fill(373),lineStyle:{type:'dashed',color:'rgba(248,81,73,0.6)',width:2},symbol:'none',itemStyle:{color:'#f85149'}}
+  ]
+});
+
+// 5. 宝石
+const c5 = echarts.init(document.getElementById('chart_gems'));
+c5.setOption({
+  ...darkTheme, tooltip:tt,
+  legend:{data:['日均宝石','对照组'],...darkTheme.legend,top:5},
+  grid:{left:60,right:20,top:40,bottom:40},
+  xAxis:{type:'category',data:stages,...darkTheme.xAxis},
+  yAxis:{type:'value',name:'日均宝石',nameTextStyle:{color:'#8b949e'},...darkTheme.yAxis},
+  series:[
+    {name:'日均宝石',type:'bar',data:gems,itemStyle:{color:'#bc8cff'},label:{show:true,position:'top',color:'#8b949e',fontSize:10}},
+    {name:'对照组',type:'line',data:Array(11).fill(19),lineStyle:{type:'dashed',color:'rgba(248,81,73,0.6)',width:2},symbol:'none',itemStyle:{color:'#f85149'}}
+  ]
+});
+
+// 6. 付费率曲线
+const c6 = echarts.init(document.getElementById('chart_payrate_line'));
+c6.setOption({
+  ...darkTheme, tooltip:{...tt,formatter:function(p){return p.map(i=>i.seriesName+': '+i.value+'%').join('<br>')}},
+  legend:{data:['付费率','对照组'],...darkTheme.legend,top:5},
+  grid:{left:50,right:20,top:40,bottom:40},
+  xAxis:{type:'category',data:stages,...darkTheme.xAxis},
+  yAxis:{type:'value',axisLabel:{formatter:'{value}%',...darkTheme.yAxis.axisLabel},...darkTheme.yAxis},
+  series:[
+    {name:'付费率',type:'line',data:payrate,itemStyle:{color:'#d29922'},lineStyle:{width:2.5},symbol:'circle',symbolSize:7,
+     areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(210,153,34,0.2)'},{offset:1,color:'rgba(210,153,34,0)'}]}}},
+    {name:'对照组',type:'line',data:Array(11).fill(2.0),lineStyle:{type:'dashed',color:'rgba(248,81,73,0.5)',width:2},symbol:'none',itemStyle:{color:'#f85149'}}
+  ]
+});
+
+// 7. ARPU vs ARPPU
+const c7 = echarts.init(document.getElementById('chart_arpu'));
+c7.setOption({
+  ...darkTheme, tooltip:{...tt,formatter:function(p){return p.map(i=>i.seriesName+': $'+i.value).join('<br>')}},
+  legend:{data:['ARPU','ARPPU'],...darkTheme.legend,top:5},
+  grid:{left:50,right:20,top:40,bottom:40},
+  xAxis:{type:'category',data:stages,...darkTheme.xAxis},
+  yAxis:{type:'value',axisLabel:{formatter:'${value}',...darkTheme.yAxis.axisLabel},...darkTheme.yAxis},
+  series:[
+    {name:'ARPU',type:'bar',data:arpu,itemStyle:{color:'#58a6ff'}},
+    {name:'ARPPU',type:'line',data:arppu,itemStyle:{color:'#d29922'},lineStyle:{width:2},symbol:'circle',symbolSize:6,yAxisIndex:0}
+  ]
+});
+
+// 8. 每日趋势
+const c8 = echarts.init(document.getElementById('chart_daily'));
+c8.setOption({
+  ...darkTheme, tooltip:tt,
+  legend:{data:['参与人数','事件数'],...darkTheme.legend,top:5},
+  grid:{left:60,right:60,top:40,bottom:30},
+  xAxis:{type:'category',data:['6/19(开启)','6/20','6/21(峰值)','6/22(结束)'],...darkTheme.xAxis},
+  yAxis:[
+    {type:'value',name:'参与人数',nameTextStyle:{color:'#8b949e'},...darkTheme.yAxis},
+    {type:'value',name:'事件数',nameTextStyle:{color:'#8b949e'},...darkTheme.yAxis,splitLine:{show:false}}
+  ],
+  series:[
+    {name:'参与人数',type:'bar',data:[1516,1678,1928,1085],itemStyle:{color:'#58a6ff'},label:{show:true,position:'top',color:'#8b949e'}},
+    {name:'事件数',type:'line',yAxisIndex:1,data:[44336,43040,45284,4994],itemStyle:{color:'#d29922'},lineStyle:{width:2},symbol:'circle',symbolSize:6}
+  ]
+});
+
+window.addEventListener('resize',()=>{[c1,c2,c3,c4,c5,c6,c7,c8].forEach(c=>c.resize());});
+</script>
+</body>
+</html>

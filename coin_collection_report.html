@@ -1,0 +1,392 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>杰西卡金币募集活动分析 — 两期对比</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0d1117; color:#c9d1d9; font-family:'Segoe UI','Microsoft YaHei',sans-serif; padding:20px; }
+.header { text-align:center; margin-bottom:30px; }
+.header h1 { font-size:24px; color:#58a6ff; margin-bottom:8px; }
+.header .subtitle { color:#8b949e; font-size:14px; }
+.summary-cards { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; margin-bottom:30px; }
+.card { background:#161b22; border:1px solid #30363d; border-radius:8px; padding:16px; text-align:center; }
+.card .label { font-size:12px; color:#8b949e; margin-bottom:6px; }
+.card .value { font-size:24px; font-weight:700; }
+.card .value.blue { color:#58a6ff; }
+.card .value.green { color:#3fb950; }
+.card .value.orange { color:#d29922; }
+.card .value.red { color:#f85149; }
+.card .sub { font-size:11px; color:#8b949e; margin-top:4px; }
+.section { background:#161b22; border:1px solid #30363d; border-radius:8px; padding:20px; margin-bottom:24px; }
+.section h2 { font-size:16px; color:#58a6ff; margin-bottom:16px; border-bottom:1px solid #30363d; padding-bottom:8px; }
+.chart-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:24px; }
+.chart-box { background:#0d1117; border:1px solid #30363d; border-radius:6px; padding:12px; }
+.chart-box h3 { font-size:13px; color:#8b949e; margin-bottom:8px; text-align:center; }
+.chart { width:100%; height:360px; }
+.chart-full { width:100%; height:400px; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th { background:#21262d; color:#8b949e; padding:8px 12px; text-align:right; border-bottom:2px solid #30363d; }
+th:first-child { text-align:left; }
+td { padding:8px 12px; text-align:right; border-bottom:1px solid #30363d; }
+td:first-child { text-align:left; color:#c9d1d9; font-weight:600; }
+tr:hover { background:#1c2128; }
+.highlight { background:#1c3a5f !important; }
+.tag { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; }
+.tag-p1 { background:rgba(88,166,255,0.15); color:#58a6ff; }
+.tag-p2 { background:rgba(63,185,80,0.15); color:#3fb950; }
+.tag-ref { background:rgba(139,148,158,0.15); color:#8b949e; }
+.insight { background:#1c2128; border-left:3px solid #d29922; padding:12px 16px; margin-top:16px; border-radius:0 6px 6px 0; font-size:13px; line-height:1.6; }
+.insight strong { color:#d29922; }
+.compare-grid { display:grid; grid-template-columns:1fr 1fr; gap:0; }
+.compare-grid .col { padding:0 12px; }
+.compare-grid .col:first-child { border-right:1px solid #30363d; }
+.footer { text-align:center; color:#484f58; font-size:12px; margin-top:30px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🪙 杰西卡金币募集活动分析 — 两期对比</h1>
+  <div class="subtitle">
+    <span class="tag tag-p1">第一期 6.5-6.8</span> vs
+    <span class="tag tag-p2">第二期 6.26-6.29</span>
+    &nbsp;|&nbsp; 活动类型: CoinCollection &nbsp;|&nbsp; 10层普通奖 + 1层隐藏大奖
+  </div>
+</div>
+
+<!-- 概览卡片 -->
+<div class="summary-cards">
+  <div class="card">
+    <div class="label">第一期参与人数</div>
+    <div class="value blue">788</div>
+    <div class="sub">活跃未参与: 2,572人</div>
+  </div>
+  <div class="card">
+    <div class="label">第二期参与人数</div>
+    <div class="value green">3,761</div>
+    <div class="sub">活跃未参与: 3,187人 | ↑377%</div>
+  </div>
+  <div class="card">
+    <div class="label">第一期通关率(≥10关)</div>
+    <div class="value orange">2.5%</div>
+    <div class="sub">通关20人 | 隐藏5人</div>
+  </div>
+  <div class="card">
+    <div class="label">第二期通关率(≥10关)</div>
+    <div class="value green">5.7%</div>
+    <div class="sub">通关104人 | 隐藏109人 | ↑128%</div>
+  </div>
+</div>
+
+<!-- 1. 关卡停留分布 -->
+<div class="section">
+  <h2>📊 1. 最终停留关卡分布对比</h2>
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>停留关卡人数占比对比</h3>
+      <div id="chart_step_pct" class="chart"></div>
+    </div>
+    <div class="chart-box">
+      <h3>累计通过率（达到该关及以上）</h3>
+      <div id="chart_cumulative" class="chart"></div>
+    </div>
+  </div>
+  <table>
+    <thead>
+      <tr>
+        <th>关卡</th>
+        <th colspan="2">第一期 人数/占比</th>
+        <th colspan="2">第二期 人数/占比</th>
+        <th>金币要求(累计)</th>
+        <th>备注</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr><td>第1关</td><td>48</td><td>6.1%</td><td>349</td><td>9.3%</td><td>90</td><td>入门门槛</td></tr>
+      <tr><td>第2关</td><td>128</td><td>16.2%</td><td>654</td><td>17.4%</td><td>270</td><td>最多人停留</td></tr>
+      <tr><td>第3关</td><td>92</td><td>11.7%</td><td>391</td><td>10.4%</td><td>570</td><td></td></tr>
+      <tr class="highlight"><td>第4关</td><td>175</td><td>22.2%</td><td>511</td><td>13.6%</td><td>790</td><td>⚠️ 一期最大堵点</td></tr>
+      <tr><td>第5关</td><td>80</td><td>10.2%</td><td>517</td><td>13.7%</td><td>1,140</td><td>二期最大堵点</td></tr>
+      <tr><td>第6关</td><td>78</td><td>9.9%</td><td>325</td><td>8.6%</td><td>1,640</td><td></td></tr>
+      <tr><td>第7关</td><td>77</td><td>9.8%</td><td>326</td><td>8.7%</td><td>2,040</td><td></td></tr>
+      <tr><td>第8关</td><td>66</td><td>8.4%</td><td>287</td><td>7.6%</td><td>2,640</td><td></td></tr>
+      <tr><td>第9关</td><td>24</td><td>3.0%</td><td>188</td><td>5.0%</td><td>3,440</td><td></td></tr>
+      <tr><td>第10关(通关)</td><td>15</td><td>1.9%</td><td>104</td><td>2.8%</td><td>4,440</td><td>普通全通关</td></tr>
+      <tr style="background:#1a3020;"><td>第11关(隐藏大奖)</td><td>5</td><td>0.6%</td><td>109</td><td>2.9%</td><td>+1,000</td><td>🏆 重新计数</td></tr>
+    </tbody>
+  </table>
+  <div class="insight">
+    <strong>💡 关键发现：</strong>
+    第二期参与人数为第一期的 <strong>4.8倍</strong>，通关率从2.5%提升到5.7%。
+    第一期最大堵点在第4关(22.2%)，第二期分散到第2关(17.4%)和第4-5关(13.6%/13.7%)。
+    前4关累计停留占比：一期56.2% → 二期50.7%，说明第二期玩家整体推进更深。
+    第二期隐藏大奖完成人数从5人暴增到109人(21.8倍)，说明二期核心玩家参与度显著提升。
+  </div>
+</div>
+
+<!-- 2. 日均体力消耗 -->
+<div class="section">
+  <h2>⚡ 2. 不同停留关卡的日均体力消耗</h2>
+  <div class="chart-box" style="margin-bottom:16px;">
+    <div id="chart_energy" class="chart-full"></div>
+  </div>
+  <table>
+    <thead>
+      <tr><th>关卡</th><th>一期 日均体力</th><th>二期 日均体力</th><th>差异</th><th>对照组(未参与)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>第1关</td><td>747</td><td>347</td><td style="color:#f85149">-53.6%</td><td rowspan="11" style="vertical-align:middle; text-align:center; color:#8b949e;">一期: 362<br>二期: 290</td></tr>
+      <tr><td>第2关</td><td>870</td><td>436</td><td style="color:#f85149">-49.9%</td></tr>
+      <tr><td>第3关</td><td>965</td><td>474</td><td style="color:#f85149">-50.9%</td></tr>
+      <tr><td>第4关</td><td>963</td><td>486</td><td style="color:#f85149">-49.5%</td></tr>
+      <tr><td>第5关</td><td>1,022</td><td>490</td><td style="color:#f85149">-52.1%</td></tr>
+      <tr><td>第6关</td><td>1,184</td><td>561</td><td style="color:#f85149">-52.6%</td></tr>
+      <tr><td>第7关</td><td>1,170</td><td>598</td><td style="color:#f85149">-48.9%</td></tr>
+      <tr><td>第8关</td><td>1,263</td><td>718</td><td style="color:#f85149">-43.2%</td></tr>
+      <tr><td>第9关</td><td>1,489</td><td>885</td><td style="color:#f85149">-40.6%</td></tr>
+      <tr><td>第10关</td><td>1,788</td><td>1,135</td><td style="color:#f85149">-36.5%</td></tr>
+      <tr><td>第11关</td><td>1,704</td><td>1,830</td><td style="color:#3fb950">+7.4%</td></tr>
+    </tbody>
+  </table>
+  <div class="insight">
+    <strong>💡 关键发现：</strong>
+    两期数据都呈现 <strong>停留关卡越高 → 日均体力消耗越大</strong> 的正相关趋势。
+    第二期各关卡的日均体力普遍低于第一期约40-53%，原因可能是：二期新增大量低活跃度玩家参与。
+    所有参与玩家的体力消耗都 <strong>远高于</strong> 未参与者(一期362/二期290)，说明活动有效促进了体力消耗。
+    第11关(隐藏大奖)的二期体力反超一期(1830>1704)，核心玩家投入更深。
+  </div>
+</div>
+
+<!-- 3. 日均宝石消耗 -->
+<div class="section">
+  <h2>💎 3. 不同停留关卡的日均宝石消耗</h2>
+  <div class="chart-box" style="margin-bottom:16px;">
+    <div id="chart_gems" class="chart-full"></div>
+  </div>
+  <table>
+    <thead>
+      <tr><th>关卡</th><th>一期 日均宝石</th><th>二期 日均宝石</th><th>差异</th><th>对照组(未参与)</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>第1关</td><td>39</td><td>17</td><td style="color:#f85149">-56.4%</td><td rowspan="11" style="vertical-align:middle; text-align:center; color:#8b949e;">一期: 13<br>二期: 14</td></tr>
+      <tr><td>第2关</td><td>43</td><td>21</td><td style="color:#f85149">-51.2%</td></tr>
+      <tr><td>第3关</td><td>62</td><td>23</td><td style="color:#f85149">-62.9%</td></tr>
+      <tr><td>第4关</td><td>54</td><td>24</td><td style="color:#f85149">-55.6%</td></tr>
+      <tr><td>第5关</td><td>57</td><td>21</td><td style="color:#f85149">-63.2%</td></tr>
+      <tr><td>第6关</td><td>66</td><td>31</td><td style="color:#f85149">-53.0%</td></tr>
+      <tr><td>第7关</td><td>61</td><td>28</td><td style="color:#f85149">-54.1%</td></tr>
+      <tr><td>第8关</td><td>66</td><td>41</td><td style="color:#f85149">-37.9%</td></tr>
+      <tr><td>第9关</td><td>74</td><td>65</td><td style="color:#f85149">-12.2%</td></tr>
+      <tr><td>第10关</td><td>207</td><td>98</td><td style="color:#f85149">-52.7%</td></tr>
+      <tr style="background:#1a3020;"><td>第11关</td><td>170</td><td>432</td><td style="color:#3fb950">+154.1%</td></tr>
+    </tbody>
+  </table>
+  <div class="insight">
+    <strong>💡 关键发现：</strong>
+    宝石消耗同样与关卡深度正相关，但在第10关和第11关出现 <strong>跳跃式增长</strong>。
+    第二期第11关(隐藏大奖)日均宝石消耗达 <strong>432</strong>，是第一期(170)的2.5倍，说明高端玩家为冲隐藏关大量消耗宝石。
+    所有参与者的宝石消耗都大幅高于未参与者(13-14)，活动对宝石消耗的拉动效果显著。
+  </div>
+</div>
+
+<!-- 4. 付费分析 -->
+<div class="section">
+  <h2>💰 4. 不同停留关卡的付费行为</h2>
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>付费率对比</h3>
+      <div id="chart_pay_rate" class="chart"></div>
+    </div>
+    <div class="chart-box">
+      <h3>人均付费金额对比 (ARPU)</h3>
+      <div id="chart_arpu" class="chart"></div>
+    </div>
+  </div>
+  <table>
+    <thead>
+      <tr><th>关卡</th><th>一期付费率</th><th>二期付费率</th><th>一期ARPU$</th><th>二期ARPU$</th><th>一期ARPPU$</th><th>二期ARPPU$</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>第1关</td><td>0.0%</td><td>2.0%</td><td>$0.00</td><td>$0.28</td><td>-</td><td>$13.98</td></tr>
+      <tr><td>第2关</td><td>1.6%</td><td>2.0%</td><td>$0.46</td><td>$0.16</td><td>$29.47</td><td>$8.14</td></tr>
+      <tr><td>第3关</td><td>4.3%</td><td>2.6%</td><td>$0.59</td><td>$0.33</td><td>$13.48</td><td>$12.78</td></tr>
+      <tr><td>第4关</td><td>5.7%</td><td>4.9%</td><td>$1.16</td><td>$0.40</td><td>$20.37</td><td>$8.11</td></tr>
+      <tr><td>第5关</td><td>7.5%</td><td>4.1%</td><td>$1.46</td><td>$0.30</td><td>$19.47</td><td>$7.42</td></tr>
+      <tr><td>第6关</td><td>5.1%</td><td>7.4%</td><td>$0.40</td><td>$0.73</td><td>$7.73</td><td>$9.86</td></tr>
+      <tr><td>第7关</td><td>13.0%</td><td>8.0%</td><td>$1.00</td><td>$0.75</td><td>$7.69</td><td>$9.41</td></tr>
+      <tr><td>第8关</td><td>7.6%</td><td>16.7%</td><td>$0.97</td><td>$1.70</td><td>$12.78</td><td>$10.19</td></tr>
+      <tr><td>第9关</td><td>12.5%</td><td>24.5%</td><td>$1.75</td><td>$3.84</td><td>$13.98</td><td>$15.70</td></tr>
+      <tr class="highlight"><td>第10关</td><td>60.0%</td><td>39.4%</td><td>$12.58</td><td>$7.09</td><td>$20.97</td><td>$17.98</td></tr>
+      <tr style="background:#1a3020;"><td>第11关</td><td>40.0%</td><td>74.3%</td><td>$5.99</td><td>$29.96</td><td>$14.98</td><td>$40.32</td></tr>
+      <tr style="background:#21262d;"><td><span class="tag tag-ref">对照组</span></td><td>1.1%</td><td>1.6%</td><td>$0.12</td><td>$0.19</td><td>-</td><td>-</td></tr>
+    </tbody>
+  </table>
+  <div class="insight">
+    <strong>💡 关键发现：</strong><br>
+    ① 付费率随关卡深度 <strong>显著递增</strong>：第二期从第1关2.0%到第11关74.3%，呈现极强的"越深越付费"趋势。<br>
+    ② 第二期第11关(隐藏大奖)的ARPU达到 <strong>$29.96</strong>，ARPPU达 <strong>$40.32</strong>，远超第一期，说明隐藏关卡对付费的拉动力非常强。<br>
+    ③ 对比对照组(未参与者1.1%-1.6%付费率)，活动参与者在中高关卡的付费率高出数倍至数十倍，活动效果显著。<br>
+    ④ 第一期由于参与基数小(788人)，个别关卡数据波动大(如第10关60%付费率基于仅15人)。第二期数据更具统计意义。
+  </div>
+</div>
+
+<!-- 5. 总结 -->
+<div class="section">
+  <h2>📋 5. 分析总结与建议</h2>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+    <div>
+      <h3 style="color:#58a6ff; margin-bottom:12px;">✅ 正向结论</h3>
+      <ul style="list-style:none; font-size:13px; line-height:2;">
+        <li>🔹 活动参与者的体力/宝石消耗远超未参与者，<strong>促活效果显著</strong></li>
+        <li>🔹 关卡深度与消费行为强正相关，<strong>活动机制设计合理</strong></li>
+        <li>🔹 第二期参与人数暴增4.8倍，说明<strong>活动认知度/吸引力提升</strong></li>
+        <li>🔹 隐藏大奖对核心玩家的<strong>付费拉动力极强</strong>(ARPPU $40.32)</li>
+        <li>🔹 第二期通关率(5.7%)优于第一期(2.5%)，<strong>玩家体验改善</strong></li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="color:#d29922; margin-bottom:12px;">⚠️ 关注点</h3>
+      <ul style="list-style:none; font-size:13px; line-height:2;">
+        <li>🔸 前4关累计停留50%+，大量玩家在<strong>中前期流失</strong></li>
+        <li>🔸 第二期各关卡日均体力/宝石普遍低于一期，可能是<strong>新增低活跃玩家拉低均值</strong></li>
+        <li>🔸 一期第10关付费率(60%)高于第11关(40%)，样本量小但可能暗示<strong>隐藏关门槛感知问题</strong></li>
+        <li>🔸 建议考虑在<strong>第4-5关增加引导或奖励</strong>刺激，缓解堵点</li>
+        <li>🔸 第二期数据更可靠，建议以二期数据作为后续优化的<strong>基准线</strong></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  数据来源: ThinkingData (HWTA) | 项目ID: 36 | 时区: UTC-4 | 生成时间: 2026-06-30
+</div>
+
+<script>
+// 暗色主题配置
+const darkTheme = {
+  backgroundColor: 'transparent',
+  textStyle: { color: '#c9d1d9' },
+  legend: { textStyle: { color: '#8b949e' } },
+  xAxis: { axisLine: { lineStyle: { color: '#30363d' } }, axisLabel: { color: '#8b949e' }, splitLine: { lineStyle: { color: '#21262d' } } },
+  yAxis: { axisLine: { lineStyle: { color: '#30363d' } }, axisLabel: { color: '#8b949e' }, splitLine: { lineStyle: { color: '#21262d' } } }
+};
+
+const steps = ['1关','2关','3关','4关','5关','6关','7关','8关','9关','10关','11关'];
+
+// 数据
+const p1_pct = [6.1, 16.2, 11.7, 22.2, 10.2, 9.9, 9.8, 8.4, 3.0, 1.9, 0.6];
+const p2_pct = [9.3, 17.4, 10.4, 13.6, 13.7, 8.6, 8.7, 7.6, 5.0, 2.8, 2.9];
+const p1_energy = [747,870,965,963,1022,1184,1170,1263,1489,1788,1704];
+const p2_energy = [347,436,474,486,490,561,598,718,885,1135,1830];
+const p1_gems = [39,43,62,54,57,66,61,66,74,207,170];
+const p2_gems = [17,21,23,24,21,31,28,41,65,98,432];
+const p1_payrate = [0,1.6,4.3,5.7,7.5,5.1,13.0,7.6,12.5,60.0,40.0];
+const p2_payrate = [2.0,2.0,2.6,4.9,4.1,7.4,8.0,16.7,24.5,39.4,74.3];
+const p1_arpu = [0,0.46,0.59,1.16,1.46,0.40,1.00,0.97,1.75,12.58,5.99];
+const p2_arpu = [0.28,0.16,0.33,0.40,0.30,0.73,0.75,1.70,3.84,7.09,29.96];
+
+// 1. 关卡停留占比柱状图
+const c1 = echarts.init(document.getElementById('chart_step_pct'));
+c1.setOption({
+  ...darkTheme,
+  tooltip: { trigger:'axis', backgroundColor:'#21262d', borderColor:'#30363d', textStyle:{color:'#c9d1d9'} },
+  legend: { data:['第一期','第二期'], ...darkTheme.legend, top:5 },
+  grid: { left:50, right:20, top:40, bottom:30 },
+  xAxis: { type:'category', data:steps, ...darkTheme.xAxis },
+  yAxis: { type:'value', axisLabel:{formatter:'{value}%',...darkTheme.yAxis.axisLabel}, ...darkTheme.yAxis },
+  series: [
+    { name:'第一期', type:'bar', data:p1_pct, itemStyle:{color:'#58a6ff'}, barGap:'20%' },
+    { name:'第二期', type:'bar', data:p2_pct, itemStyle:{color:'#3fb950'} }
+  ]
+});
+
+// 2. 累计通过率
+const p1_cum = [], p2_cum = [];
+let s1=100, s2=100;
+for(let i=0;i<11;i++){ p1_cum.push(Math.round(s1*10)/10); p2_cum.push(Math.round(s2*10)/10); s1-=p1_pct[i]; s2-=p2_pct[i]; }
+const c2 = echarts.init(document.getElementById('chart_cumulative'));
+c2.setOption({
+  ...darkTheme,
+  tooltip: { trigger:'axis', backgroundColor:'#21262d', borderColor:'#30363d', textStyle:{color:'#c9d1d9'} },
+  legend: { data:['第一期','第二期'], ...darkTheme.legend, top:5 },
+  grid: { left:50, right:20, top:40, bottom:30 },
+  xAxis: { type:'category', data:steps, ...darkTheme.xAxis },
+  yAxis: { type:'value', axisLabel:{formatter:'{value}%',...darkTheme.yAxis.axisLabel}, ...darkTheme.yAxis },
+  series: [
+    { name:'第一期', type:'line', data:p1_cum, itemStyle:{color:'#58a6ff'}, lineStyle:{width:2}, smooth:true, areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(88,166,255,0.3)'},{offset:1,color:'rgba(88,166,255,0)'}]}} },
+    { name:'第二期', type:'line', data:p2_cum, itemStyle:{color:'#3fb950'}, lineStyle:{width:2}, smooth:true, areaStyle:{color:{type:'linear',x:0,y:0,x2:0,y2:1,colorStops:[{offset:0,color:'rgba(63,185,80,0.3)'},{offset:1,color:'rgba(63,185,80,0)'}]}} }
+  ]
+});
+
+// 3. 日均体力消耗
+const c3 = echarts.init(document.getElementById('chart_energy'));
+c3.setOption({
+  ...darkTheme,
+  tooltip: { trigger:'axis', backgroundColor:'#21262d', borderColor:'#30363d', textStyle:{color:'#c9d1d9'} },
+  legend: { data:['第一期','第二期','一期对照组','二期对照组'], ...darkTheme.legend, top:5 },
+  grid: { left:60, right:20, top:40, bottom:30 },
+  xAxis: { type:'category', data:steps, ...darkTheme.xAxis },
+  yAxis: { type:'value', name:'日均体力', nameTextStyle:{color:'#8b949e'}, ...darkTheme.yAxis },
+  series: [
+    { name:'第一期', type:'bar', data:p1_energy, itemStyle:{color:'#58a6ff'}, barGap:'20%' },
+    { name:'第二期', type:'bar', data:p2_energy, itemStyle:{color:'#3fb950'} },
+    { name:'一期对照组', type:'line', data:Array(11).fill(362), lineStyle:{type:'dashed',color:'rgba(88,166,255,0.5)',width:2}, symbol:'none', itemStyle:{color:'#58a6ff'} },
+    { name:'二期对照组', type:'line', data:Array(11).fill(290), lineStyle:{type:'dashed',color:'rgba(63,185,80,0.5)',width:2}, symbol:'none', itemStyle:{color:'#3fb950'} }
+  ]
+});
+
+// 4. 日均宝石消耗
+const c4 = echarts.init(document.getElementById('chart_gems'));
+c4.setOption({
+  ...darkTheme,
+  tooltip: { trigger:'axis', backgroundColor:'#21262d', borderColor:'#30363d', textStyle:{color:'#c9d1d9'} },
+  legend: { data:['第一期','第二期','一期对照组','二期对照组'], ...darkTheme.legend, top:5 },
+  grid: { left:60, right:20, top:40, bottom:30 },
+  xAxis: { type:'category', data:steps, ...darkTheme.xAxis },
+  yAxis: { type:'value', name:'日均宝石', nameTextStyle:{color:'#8b949e'}, ...darkTheme.yAxis },
+  series: [
+    { name:'第一期', type:'bar', data:p1_gems, itemStyle:{color:'#58a6ff'}, barGap:'20%' },
+    { name:'第二期', type:'bar', data:p2_gems, itemStyle:{color:'#3fb950'} },
+    { name:'一期对照组', type:'line', data:Array(11).fill(13), lineStyle:{type:'dashed',color:'rgba(88,166,255,0.5)',width:2}, symbol:'none', itemStyle:{color:'#58a6ff'} },
+    { name:'二期对照组', type:'line', data:Array(11).fill(14), lineStyle:{type:'dashed',color:'rgba(63,185,80,0.5)',width:2}, symbol:'none', itemStyle:{color:'#3fb950'} }
+  ]
+});
+
+// 5. 付费率
+const c5 = echarts.init(document.getElementById('chart_pay_rate'));
+c5.setOption({
+  ...darkTheme,
+  tooltip: { trigger:'axis', backgroundColor:'#21262d', borderColor:'#30363d', textStyle:{color:'#c9d1d9'}, formatter:function(p){return p.map(i=>i.seriesName+': '+i.value+'%').join('<br>')} },
+  legend: { data:['第一期','第二期','对照组'], ...darkTheme.legend, top:5 },
+  grid: { left:50, right:20, top:40, bottom:30 },
+  xAxis: { type:'category', data:steps, ...darkTheme.xAxis },
+  yAxis: { type:'value', axisLabel:{formatter:'{value}%',...darkTheme.yAxis.axisLabel}, ...darkTheme.yAxis },
+  series: [
+    { name:'第一期', type:'line', data:p1_payrate, itemStyle:{color:'#58a6ff'}, lineStyle:{width:2}, symbol:'circle', symbolSize:6 },
+    { name:'第二期', type:'line', data:p2_payrate, itemStyle:{color:'#3fb950'}, lineStyle:{width:2}, symbol:'circle', symbolSize:6 },
+    { name:'对照组', type:'line', data:Array(11).fill(1.4), lineStyle:{type:'dashed',color:'rgba(139,148,158,0.5)',width:2}, symbol:'none', itemStyle:{color:'#8b949e'} }
+  ]
+});
+
+// 6. ARPU
+const c6 = echarts.init(document.getElementById('chart_arpu'));
+c6.setOption({
+  ...darkTheme,
+  tooltip: { trigger:'axis', backgroundColor:'#21262d', borderColor:'#30363d', textStyle:{color:'#c9d1d9'}, formatter:function(p){return p.map(i=>i.seriesName+': $'+i.value).join('<br>')} },
+  legend: { data:['第一期','第二期'], ...darkTheme.legend, top:5 },
+  grid: { left:50, right:20, top:40, bottom:30 },
+  xAxis: { type:'category', data:steps, ...darkTheme.xAxis },
+  yAxis: { type:'value', axisLabel:{formatter:'${value}',...darkTheme.yAxis.axisLabel}, ...darkTheme.yAxis },
+  series: [
+    { name:'第一期', type:'bar', data:p1_arpu, itemStyle:{color:'#58a6ff'}, barGap:'20%' },
+    { name:'第二期', type:'bar', data:p2_arpu, itemStyle:{color:'#3fb950'} }
+  ]
+});
+
+// 自适应
+window.addEventListener('resize',()=>{ [c1,c2,c3,c4,c5,c6].forEach(c=>c.resize()); });
+</script>
+</body>
+</html>
