@@ -235,22 +235,22 @@ tr:hover { background:#1c2128; }
   <div class="summary-cards-4">
     <div class="card">
       <div class="label">总付费玩家</div>
-      <div class="value blue">1,087</div>
+      <div class="value blue">1,090</div>
       <div class="sub">BP期间所有付费用户</div>
     </div>
     <div class="card">
       <div class="label">BP买家</div>
-      <div class="value green">558人</div>
-      <div class="sub">占付费玩家 51.3%</div>
+      <div class="value green">561人</div>
+      <div class="sub">占付费玩家 51.5%</div>
     </div>
     <div class="card">
       <div class="label">非BP付费玩家</div>
       <div class="value red">529人</div>
-      <div class="sub">占付费玩家 48.7%</div>
+      <div class="sub">占付费玩家 48.5%</div>
     </div>
     <div class="card">
       <div class="label">参与BP但未买</div>
-      <div class="value orange">228人</div>
+      <div class="value orange">493人</div>
       <div class="sub">转化潜力最大群体</div>
     </div>
   </div>
@@ -275,7 +275,47 @@ tr:hover { background:#1c2128; }
     </div>
   </div>
   <div class="insight">
-    <strong>💡 洞察：</strong>将近一半（48.7%）的付费玩家没有购买BP。其中228人实际参与了BP活动（推进到10-30级），但最终未转化。这些人已经证明了付费意愿（其他品类人均花$15.29）和BP活跃度，是定向转化ROI最高的群体。建议在BP等级达到10/15/20时触发「购买Pass立即领取所有付费奖励」的弹窗提醒。
+    <strong>💡 洞察：</strong>将近一半（48.5%）的付费玩家没有购买BP。其中<b>493人</b>实际参与了BP活动，是最具转化潜力的群体——他们已证明了付费意愿（人均$13.86）和BP活跃度。仅<b>36人</b>完全未参与BP，且全部是只玩了1-2天就流失的超浅度新手（平均等级5.1级，人均$8.68），属于自然流失而非BP触达失败。建议对493人中BP等级达10/15/20时触发「购买Pass立即领取所有付费奖励」的弹窗。
+  </div>
+
+  <!-- 36人"完全未参与BP"画像 -->
+  <div style="margin-top:16px; padding:14px 16px; background:#1c2128; border-radius:6px; border:1px solid #30363d;">
+    <h3 style="font-size:14px; color:#bc8cff; margin-bottom:12px;">👤 36个"完全未参与BP"的付费玩家画像</h3>
+    <div class="summary-cards-4" style="margin-bottom:12px;">
+      <div class="card" style="padding:10px;">
+        <div class="label">人数</div>
+        <div class="value purple" style="font-size:18px;">36人</div>
+        <div class="sub">占非BP付费6.8%</div>
+      </div>
+      <div class="card" style="padding:10px;">
+        <div class="label">平均等级</div>
+        <div class="value orange" style="font-size:18px;">5.1级</div>
+        <div class="sub">新手期未毕业</div>
+      </div>
+      <div class="card" style="padding:10px;">
+        <div class="label">人均消费</div>
+        <div class="value green" style="font-size:18px;">$8.68</div>
+        <div class="sub">总收入$312.54</div>
+      </div>
+      <div class="card" style="padding:10px;">
+        <div class="label">活跃天数</div>
+        <div class="value red" style="font-size:18px;">1-2天</div>
+        <div class="sub">89%仅玩1天</div>
+      </div>
+    </div>
+    <div class="chart-row">
+      <div class="chart-box">
+        <h3>玩家等级分布（36人）</h3>
+        <div id="chartNeverLevel" class="chart"></div>
+      </div>
+      <div class="chart-box">
+        <h3>活跃天数分布（36人）</h3>
+        <div id="chartNeverDays" class="chart"></div>
+      </div>
+    </div>
+    <div class="insight" style="margin-top:8px;">
+      <strong>💡 结论：</strong>这36人本质是<b>超早期流失的新手付费玩家</b>——89%只玩了1天就走了，等级普遍在5级以下，买的都是Shop小件或体力包。他们在接触BP活动之前就已流失，不是"看到BP不感兴趣"，而是"根本没到BP的触达范围"。对这类玩家的干预应在新手引导阶段而非BP层面。
+    </div>
   </div>
 </div>
 
@@ -286,7 +326,7 @@ tr:hover { background:#1c2128; }
     <div class="card">
       <div class="label">BP买家次日留存</div>
       <div class="value green">36.6%</div>
-      <div class="sub">558人 · D1</div>
+      <div class="sub">561人 · D1</div>
     </div>
     <div class="card">
       <div class="label">非BP付费次日留存</div>
@@ -341,7 +381,7 @@ tr:hover { background:#1c2128; }
     <strong style="color:#58a6ff;">6. Pass留存拉力：</strong>BP买家次日留存36.6%是非BP付费的1.7倍（+15.3pp），7日留存2.2倍（+12pp），Pass是强力留存锚。
   </div>
   <div class="insight" style="margin-top:10px; border-left-color:#f85149;">
-    <strong style="color:#f85149;">7. 高潜转化群体：</strong>228个付费玩家玩了BP到10-30级却没买Pass（人均花$15），定向推送转化ROI最高。
+    <strong style="color:#f85149;">7. 高潜转化群体：</strong>493个付费玩家参与了BP却没买Pass（人均花$13.86），定向推送转化ROI最高。仅36人完全未参与BP，均为只玩1-2天的超浅度新手。
   </div>
   <div class="insight" style="margin-top:10px; border-left-color:#d29922;">
     <strong style="color:#d29922;">8. 转化时机建议：</strong>BP等级10/15/20时弹窗「购买Pass立即领取N项付费奖励」；活动最后3天加推限时折扣。
@@ -703,10 +743,10 @@ const CFREE = '#58a6ff';
     xAxis: Object.assign({ type: 'category', data: ['人数','总收入($)','人均消费($)'] }, axisStyle),
     yAxis: Object.assign({ type: 'value' }, axisStyle),
     series: [
-      { name: 'BP买家', type: 'bar', data: [558, 20743, 37.17], barGap:'20%', barWidth:'30%',
+      { name: 'BP买家', type: 'bar', data: [561, 20765, 37.01], barGap:'20%', barWidth:'30%',
         itemStyle: { color: C499 },
         label: { show:true, position:'top', fontSize:10, color:'#8b949e',
-          formatter: function(p){ return p.dataIndex===0?'558人':p.dataIndex===1?'$20,743':'$37.17'; }
+          formatter: function(p){ return p.dataIndex===0?'561人':p.dataIndex===1?'$20,765':'$37.01'; }
         }
       },
       { name: '非BP付费', type: 'bar', data: [529, 7148, 13.51], barWidth:'30%',
@@ -762,9 +802,9 @@ const CFREE = '#58a6ff';
       type: 'pie', radius: ['40%','70%'], center: ['50%','55%'],
       label: { color:'#c9d1d9', fontSize:12, formatter:'{b}\n{c}人 ({d}%)' },
       data: [
-        { value:558, name:'BP买家', itemStyle:{color:C499} },
-        { value:228, name:'参与BP未买', itemStyle:{color:C699} },
-        { value:301, name:'完全未参与BP', itemStyle:{color:'#484f58'} }
+        { value:561, name:'BP买家', itemStyle:{color:C499} },
+        { value:493, name:'参与BP未买', itemStyle:{color:C699} },
+        { value:36, name:'完全未参与BP', itemStyle:{color:'#484f58'} }
       ]
     }]
   });
@@ -777,7 +817,7 @@ const CFREE = '#58a6ff';
 (function(){
   var chart = echarts.init(document.getElementById('chartNonBuyerLevel'));
   var lvls=[]; var counts=[];
-  var dist = {1:10,2:1,3:1,4:1,8:3,9:7,10:17,11:8,12:10,13:12,14:7,15:11,16:10,17:14,18:5,19:4,20:15,21:9,22:8,23:9,24:8,25:10,26:9,27:4,28:11,29:5,30:3,31:3,32:5,33:1,34:4,35:1,38:1,39:1};
+  var dist = {1:31,2:2,3:2,4:8,5:2,6:6,7:4,8:12,9:11,10:32,11:22,12:19,13:27,14:27,15:21,16:22,17:24,18:20,19:26,20:21,21:21,22:14,23:16,24:12,25:18,26:13,27:17,28:5,29:6,30:6,31:9,32:3,33:5,34:5,35:1,36:1,37:1,40:1};
   for(var i=1;i<=40;i++){ lvls.push('Lv'+i); counts.push(dist[i]||0); }
   chart.setOption({
     tooltip: Object.assign({ trigger:'axis', axisPointer:{type:'shadow'} }, tooltipStyle),
@@ -1100,6 +1140,48 @@ const CFREE = '#58a6ff';
         itemStyle: { color: '#58a6ff' }
       }
     ]
+  });
+  window.addEventListener('resize', function(){ chart.resize(); });
+})();
+
+// ===========================
+// Chart: 36人"完全未参与BP"等级分布
+// ===========================
+(function(){
+  var chart = echarts.init(document.getElementById('chartNeverLevel'));
+  var lvls = ['1','2','3','4','5','6','7','8','9','11','15'];
+  var counts = [5,2,1,9,5,4,5,2,1,1,1];
+  chart.setOption({
+    tooltip: Object.assign({ trigger:'axis', axisPointer:{type:'shadow'} }, tooltipStyle),
+    grid: { left:40, right:10, top:10, bottom:30 },
+    xAxis: Object.assign({ type:'category', data:lvls.map(function(l){return 'Lv'+l;}), axisLabel:{color:'#8b949e',fontSize:10} }, {axisLine:axisStyle.axisLine,axisTick:axisStyle.axisTick}),
+    yAxis: Object.assign({ type:'value' }, axisStyle),
+    series: [{
+      type:'bar', data:counts, barWidth:'55%',
+      itemStyle: { color: function(p){
+        return p.value >= 5 ? '#bc8cff' : 'rgba(188,140,255,0.5)';
+      }},
+      label: { show:true, position:'top', fontSize:10, color:'#8b949e' }
+    }]
+  });
+  window.addEventListener('resize', function(){ chart.resize(); });
+})();
+
+// ===========================
+// Chart: 36人活跃天数分布
+// ===========================
+(function(){
+  var chart = echarts.init(document.getElementById('chartNeverDays'));
+  chart.setOption({
+    tooltip: Object.assign({ trigger:'item', formatter:'{b}: {c}人 ({d}%)' }, tooltipStyle),
+    series: [{
+      type: 'pie', radius: ['40%','70%'], center: ['50%','55%'],
+      label: { color:'#c9d1d9', fontSize:13, formatter:'{b}\n{c}人 ({d}%)' },
+      data: [
+        { value:32, name:'仅玩1天', itemStyle:{color:'#f85149'} },
+        { value:4, name:'玩了2天', itemStyle:{color:'#d29922'} }
+      ]
+    }]
   });
   window.addEventListener('resize', function(){ chart.resize(); });
 })();
