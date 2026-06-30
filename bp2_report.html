@@ -530,7 +530,73 @@ tr:hover { background:#1c2128; }
   </div>
 </div>
 
-<!-- Section 10: 总结与建议 -->
+<!-- Section 10: 钻石买体力档位分析 -->
+<div class="section">
+  <h2>💎 钻石买体力档位分析（按付费分段 × 商品类型）</h2>
+  <details class="def-box">
+    <summary>📐 指标说明 & 数据口径</summary>
+    <div style="margin-top:8px;">
+      <span class="filter-tag">事件: GEM_CHANGE_USE</span> <span class="filter-tag">筛选: reason=buy_energy</span> <span class="filter-tag">时间: 6.6-6.30</span><br>
+      <dl>
+        <dt>钻石买体力：</dt><dd>GEM_CHANGE_USE 事件中 reason=buy_energy 的记录，每次花钻石购买100体力</dd>
+        <dt>档位规则：</dt><dd>每日首次10钻→第2次20钻→第3次40钻→第4次80钻→第5次及之后160钻（reason_prop字段=购买第几次）</dd>
+        <dt>num字段：</dt><dd>该次购买实际消耗的钻石数量（10/20/40/80/160）</dd>
+        <dt>付费分段：</dt><dd>按USER_PAY事件中的pay_amount总和分段：$0=未付费、$0.01-$4.99、$5-$9.99、$10-$19.99、$20-$49.99、$50+</dd>
+        <dt>商品分组：</dt><dd>按USER_PAY中的pay_type字段，统计购买过该商品的用户的体力购买行为</dd>
+      </dl>
+    </div>
+  </details>
+  <div class="summary-cards-4">
+    <div class="card">
+      <div class="label">体力购买总次数</div>
+      <div class="value blue">77,557次</div>
+      <div class="sub">剔除0钻免费领取</div>
+    </div>
+    <div class="card">
+      <div class="label">购买体力的用户</div>
+      <div class="value green">13,048人</div>
+      <div class="sub">付费1,066 + 未付费11,982</div>
+    </div>
+    <div class="card">
+      <div class="label">付费玩家买体力率</div>
+      <div class="value orange">97.8%</div>
+      <div class="sub">1,066 / 1,090付费用户</div>
+    </div>
+    <div class="card">
+      <div class="label">$50+玩家人均次数</div>
+      <div class="value red">41.1次</div>
+      <div class="sub">vs 未付费仅5.0次</div>
+    </div>
+  </div>
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>按付费金额分段 — 体力购买档位分布</h3>
+      <div id="chartEnergyBySpend" class="chart-tall"></div>
+    </div>
+    <div class="chart-box">
+      <h3>按付费商品类型 — 体力购买档位分布</h3>
+      <div id="chartEnergyByProduct" class="chart-tall"></div>
+    </div>
+  </div>
+  <table>
+    <thead>
+      <tr><th style="text-align:left;">付费分段</th><th>人数</th><th>买体力人数</th><th>买体力率</th><th>人均次数</th><th>10钻</th><th>20钻</th><th>40钻</th><th>80钻</th><th>160钻</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>$0(未付费)</td><td>11,982</td><td>11,982</td><td>100%</td><td>5.0</td><td>50.4%</td><td>21.6%</td><td>4.5%</td><td>0.1%</td><td>0.3%</td></tr>
+      <tr><td>$0.01-$4.99</td><td>296</td><td>286</td><td>96.6%</td><td>10.5</td><td>47.9%</td><td>27.2%</td><td>11.0%</td><td>2.7%</td><td>0.5%</td></tr>
+      <tr><td>$5-$9.99</td><td>271</td><td>265</td><td>97.8%</td><td>11.8</td><td>46.1%</td><td>28.1%</td><td>11.8%</td><td>3.2%</td><td>1.4%</td></tr>
+      <tr><td>$10-$19.99</td><td>199</td><td>194</td><td>97.5%</td><td>13.1</td><td>44.5%</td><td>27.8%</td><td>12.6%</td><td>4.8%</td><td>2.7%</td></tr>
+      <tr style="background:#1c2128;"><td style="color:#d29922;">$20-$49.99</td><td>181</td><td>178</td><td>98.3%</td><td style="color:#d29922;">19.6</td><td>38.3%</td><td>27.0%</td><td>15.8%</td><td>7.6%</td><td style="color:#d29922;">5.8%</td></tr>
+      <tr style="background:#1c2128;"><td style="color:#f85149;">$50+</td><td>143</td><td>143</td><td>100%</td><td style="color:#f85149;">41.1</td><td>24.7%</td><td>19.8%</td><td>14.9%</td><td>9.7%</td><td style="color:#f85149;">28.3%</td></tr>
+    </tbody>
+  </table>
+  <div class="insight">
+    <strong>💡 洞察：</strong>钻石买体力档位与付费深度高度正相关：<b>未付费玩家</b>几乎只买第1-2次（50.4%+21.6%=72%），极少到第3次以上——钻石稀缺导致谨慎消费。<b>$50+玩家</b>则截然不同：28.3%的体力购买是160钻（第5次+），人均41.1次 vs 未付费5.0次（<b>8.2倍</b>）。高付费=高消耗循环：付费→钻石充裕→敢买高档体力→更快推关→更需要体力→更多付费。按商品看，<b>DailyPack/EnergyPack</b>买家160钻占比最高（22%），说明这些商品的用户本身就是高体力需求型玩家。BP买家160钻占13.9%，但因为人群基数大（561人）是最大的高档体力消费群体。
+  </div>
+</div>
+
+<!-- Section 11: 总结与建议 -->
 <div class="section">
   <h2>📋 总结与建议</h2>
   <div class="insight" style="border-left-color:#58a6ff;">
@@ -1353,6 +1419,80 @@ const CFREE = '#58a6ff';
         { value:4, name:'玩了2天', itemStyle:{color:'#d29922'} }
       ]
     }]
+  });
+  window.addEventListener('resize', function(){ chart.resize(); });
+})();
+
+// ===========================
+// Chart: 按付费金额分段 体力购买档位
+// ===========================
+(function(){
+  var chart = echarts.init(document.getElementById('chartEnergyBySpend'));
+  var segments = ['$0\n未付费','$0.01\n-$4.99','$5\n-$9.99','$10\n-$19.99','$20\n-$49.99','$50+'];
+  chart.setOption({
+    tooltip: Object.assign({ trigger:'axis', axisPointer:{type:'shadow'},
+      formatter: function(p){
+        var s = p[0].name.replace(/\n/g,' ')+'<br/>';
+        p.forEach(function(item){ s += item.marker+' '+item.seriesName+': <b>'+item.value+'%</b><br/>'; });
+        return s;
+      }
+    }, tooltipStyle),
+    legend: Object.assign({ data:['10钻','20钻','40钻','80钻','160钻'], top:0 }, legendStyle),
+    grid: { left:45, right:10, top:35, bottom:50 },
+    xAxis: Object.assign({ type:'category', data:segments, axisLabel:{fontSize:10,color:'#8b949e',interval:0} }, {axisLine:axisStyle.axisLine,axisTick:axisStyle.axisTick}),
+    yAxis: Object.assign({ type:'value', max:100, axisLabel:{formatter:'{value}%'} }, axisStyle),
+    series: [
+      { name:'10钻', type:'bar', stack:'total', data:[50.4,47.9,46.1,44.5,38.3,24.7], barWidth:'50%', itemStyle:{color:'#3fb950'} },
+      { name:'20钻', type:'bar', stack:'total', data:[21.6,27.2,28.1,27.8,27.0,19.8], itemStyle:{color:'#58a6ff'} },
+      { name:'40钻', type:'bar', stack:'total', data:[4.5,11.0,11.8,12.6,15.8,14.9], itemStyle:{color:'#d29922'} },
+      { name:'80钻', type:'bar', stack:'total', data:[0.1,2.7,3.2,4.8,7.6,9.7], itemStyle:{color:'#f85149'} },
+      { name:'160钻', type:'bar', stack:'total', data:[0.3,0.5,1.4,2.7,5.8,28.3], itemStyle:{color:'#bc8cff'},
+        label:{ show:true, position:'top', fontSize:9, color:'#bc8cff',
+          formatter:function(p){ return p.value>=5?p.value+'%':''; }
+        }
+      }
+    ]
+  });
+  window.addEventListener('resize', function(){ chart.resize(); });
+})();
+
+// ===========================
+// Chart: 按商品类型 体力购买档位
+// ===========================
+(function(){
+  var chart = echarts.init(document.getElementById('chartEnergyByProduct'));
+  var products = ['BP','Shop','LevelPack','DailyPack','MiniBoard\nDoor','EnergyPack','GiftOn\nAddOne','IceBreak','Chain\nPack','3in1Pack'];
+  // 160钻占比
+  var pct160 = [13.9,16.0,16.9,22.1,15.6,21.6,23.7,25.2,24.3,25.4];
+  // 人均次数
+  var avgBuys = [19.6,19.5,25.9,30.8,27.6,27.7,30.6,16.6,33.9,36.6];
+  chart.setOption({
+    tooltip: Object.assign({ trigger:'axis', axisPointer:{type:'cross'},
+      formatter: function(p){
+        var s = p[0].name.replace(/\n/g,'')+'<br/>';
+        p.forEach(function(item){ s += item.marker+' '+item.seriesName+': <b>'+item.value+(item.seriesName==='160钻占比'?'%':'次')+'</b><br/>'; });
+        return s;
+      }
+    }, tooltipStyle),
+    legend: Object.assign({ data:['160钻占比','人均买体力次数'] }, legendStyle),
+    grid: { left:45, right:45, top:35, bottom:50 },
+    xAxis: Object.assign({ type:'category', data:products, axisLabel:{fontSize:9,color:'#8b949e',interval:0} }, {axisLine:axisStyle.axisLine,axisTick:axisStyle.axisTick}),
+    yAxis: [
+      Object.assign({ type:'value', name:'160钻%', nameTextStyle:{color:'#8b949e'}, max:40, axisLabel:{formatter:'{value}%'} }, axisStyle),
+      Object.assign({ type:'value', name:'人均次数', nameTextStyle:{color:'#8b949e'}, position:'right' }, axisStyle)
+    ],
+    series: [
+      { name:'160钻占比', type:'bar', data:pct160, barWidth:'45%',
+        itemStyle:{color:function(p){ return p.value>=20?'#bc8cff':'rgba(188,140,255,0.5)'; }},
+        label:{ show:true, position:'top', fontSize:9, color:'#bc8cff',
+          formatter:function(p){ return p.value>=15?p.value+'%':''; }
+        }
+      },
+      { name:'人均买体力次数', type:'line', yAxisIndex:1, data:avgBuys,
+        smooth:true, symbol:'circle', symbolSize:5,
+        lineStyle:{width:2.5,color:'#d29922'}, itemStyle:{color:'#d29922'}
+      }
+    ]
   });
   window.addEventListener('resize', function(){ chart.resize(); });
 })();
