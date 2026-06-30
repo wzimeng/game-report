@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BattlePass Season 2 活动分析 - Merge Hope</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0d1117; color:#c9d1d9; font-family:'Segoe UI','Microsoft YaHei',sans-serif; padding:20px; }
+.header { text-align:center; margin-bottom:30px; }
+.header h1 { font-size:24px; color:#58a6ff; margin-bottom:8px; }
+.header .subtitle { color:#8b949e; font-size:14px; line-height:1.8; }
+.summary-cards { display:grid; grid-template-columns:repeat(6,1fr); gap:14px; margin-bottom:30px; }
+.card { background:#161b22; border:1px solid #30363d; border-radius:8px; padding:16px; text-align:center; }
+.card .label { font-size:12px; color:#8b949e; margin-bottom:6px; }
+.card .value { font-size:22px; font-weight:700; }
+.card .value.blue { color:#58a6ff; }
+.card .value.green { color:#3fb950; }
+.card .value.orange { color:#d29922; }
+.card .value.red { color:#f85149; }
+.card .value.purple { color:#bc8cff; }
+.card .sub { font-size:11px; color:#8b949e; margin-top:4px; }
+.section { background:#161b22; border:1px solid #30363d; border-radius:8px; padding:20px; margin-bottom:24px; }
+.section h2 { font-size:16px; color:#58a6ff; margin-bottom:16px; border-bottom:1px solid #30363d; padding-bottom:8px; }
+.chart-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:24px; }
+.chart-box { background:#0d1117; border:1px solid #30363d; border-radius:6px; padding:12px; }
+.chart-box h3 { font-size:13px; color:#8b949e; margin-bottom:8px; text-align:center; }
+.chart { width:100%; height:360px; }
+.chart-full { width:100%; height:400px; }
+.chart-tall { width:100%; height:450px; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th { background:#21262d; color:#8b949e; padding:8px 12px; text-align:right; border-bottom:2px solid #30363d; }
+th:first-child { text-align:left; }
+td { padding:8px 12px; text-align:right; border-bottom:1px solid #30363d; }
+td:first-child { text-align:left; color:#c9d1d9; font-weight:600; }
+tr:hover { background:#1c2128; }
+.insight { background:#1c2128; border-left:3px solid #d29922; padding:12px 16px; margin-top:16px; border-radius:0 6px 6px 0; font-size:13px; line-height:1.6; }
+.insight strong { color:#d29922; }
+.footer { text-align:center; color:#484f58; font-size:12px; margin-top:30px; }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="header">
+  <h1>⚔️ BattlePass Season 2 活动分析</h1>
+  <div class="subtitle">活动时间 6.6-6.30 | 25天活动 · 40级等级线 · VIP/SUPER PASS双档 | 完成每日任务获经验 → 升级解锁奖励 · 含付费Pass专属奖励线</div>
+</div>
+
+<!-- Overview Cards -->
+<div class="summary-cards">
+  <div class="card">
+    <div class="label">参与总人数</div>
+    <div class="value blue">17,683</div>
+  </div>
+  <div class="card">
+    <div class="label">购买者</div>
+    <div class="value green">557</div>
+    <div class="sub">购买率 3.1%</div>
+  </div>
+  <div class="card">
+    <div class="label">总收入</div>
+    <div class="value orange">$4,784</div>
+  </div>
+  <div class="card">
+    <div class="label">ARPPU</div>
+    <div class="value purple">$8.59</div>
+  </div>
+  <div class="card">
+    <div class="label">$4.99买家</div>
+    <div class="value blue">173人</div>
+    <div class="sub">VIP PASS</div>
+  </div>
+  <div class="card">
+    <div class="label">$9.99买家</div>
+    <div class="value red">359人</div>
+    <div class="sub">SUPER PASS · 含28人双档</div>
+  </div>
+</div>
+
+<!-- Section 1: 每日购买趋势 -->
+<div class="section">
+  <h2>📈 每日购买趋势</h2>
+  <div id="chartDailyPurchase" class="chart-full"></div>
+  <div class="insight">
+    <strong>💡 洞察：</strong>首日（$9.99仅4笔）到第二天就飙升到17笔，说明玩家在体验一天后对SUPER PASS价值感认可。6/19和6/25出现购买高峰（37笔/32笔），可能与活动节奏或推送有关。$6.99升级包占比极低（约4%），说明$4.99→$9.99直接升级路径不够吸引。
+  </div>
+</div>
+
+<!-- Section 2: BP等级分布（全体玩家） -->
+<div class="section">
+  <h2>📊 BP等级分布（全体玩家）</h2>
+  <div id="chartLevelDist" class="chart-full"></div>
+  <div class="insight">
+    <strong>💡 洞察：</strong>8,072人（45.6%）停在1级——这些是"看一眼就走"的玩家。真正参与的约9,611人中，等级分布呈现两个特征：(1) 8-10级形成小高峰（2,287人），对应约第8-10天的自然推进节奏；(2) 30级后急剧衰减，仅22人到达40级满级。中位推进等级约在10-11级。
+  </div>
+</div>
+
+<!-- Section 3: 付费档位 × BP等级 -->
+<div class="section">
+  <h2>💎 付费档位 × BP等级</h2>
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>免费玩家等级分布</h3>
+      <div id="chartTierFree" class="chart"></div>
+    </div>
+    <div class="chart-box">
+      <h3>付费玩家等级分布（$4.99 / $9.99 / Both）</h3>
+      <div id="chartTierPaid" class="chart"></div>
+    </div>
+  </div>
+  <div class="insight">
+    <strong>💡 洞察：</strong>$9.99买家等级中位数约在21-22级，显著高于$4.99买家的17-18级。$9.99组有13人到达40级满级（占3.6%），而$4.99仅1人到39级。双档购买者（both）6人达到40级（占21.4%），说明Pass叠加奖励对推进有显著加速效果。
+  </div>
+</div>
+
+<!-- Section 4: 任务完成情况 -->
+<div class="section">
+  <h2>✅ 任务完成情况</h2>
+  <div id="chartTask" class="chart-tall"></div>
+  <div class="insight">
+    <strong>💡 洞察：</strong>每日随机任务从第1个（16,735次）到第18个（5,404次）衰减67.7%，但参与人数仅从6,868降到3,650（46.9%），说明核心玩家会反复完成。追加任务131参与最广（8,522人），自动领取301覆盖9,758人（55.2%的参与者），是最高参与度的任务类型。
+  </div>
+</div>
+
+<!-- Section 5: 购买决策时机 -->
+<div class="section">
+  <h2>🎯 购买决策时机（购买时BP等级）</h2>
+  <div id="chartBuyLevel" class="chart-full"></div>
+  <div class="insight">
+    <strong>💡 洞察：</strong>$9.99的92人在1级就购买（占25.6%），是典型的"冲动购买"行为——对Pass价值的预期驱动。$4.99则有33人在1级购买（19.1%），但更多分散在9-17级区间，说明VIP PASS购买更多是"体验后决策"。两档都在8-12级区间有第二个购买高峰，这是玩家感受到免费通道奖励变少的节点。
+  </div>
+</div>
+
+<!-- Section 6: 购买者留存分析 -->
+<div class="section">
+  <h2>📌 购买者留存分析</h2>
+  <div id="chartRetention" class="chart-full"></div>
+  <div class="insight">
+    <strong>💡 洞察：</strong>早期购买者（6/6-6/9）留存率仅15-30%，而后期购买者（6/22-6/30）留存率达65-100%。这并非因为后期购买者更忠诚，而是因为"留到后期的玩家本身就更活跃"——存活偏差效应。真正值得关注的是中期购买者（6/13-6/19）约46-54%的留存率，这代表了Pass的真实留存拉力。
+  </div>
+</div>
+
+<!-- Section 7: 购买者画像 -->
+<div class="section">
+  <h2>👤 购买者画像（玩家等级分布）</h2>
+  <div id="chartProfile" class="chart-full"></div>
+  <div class="insight">
+    <strong>💡 洞察：</strong>$9.99买家高度集中在玩家等级6（133人，占37%），这对应新手期刚过的节点——系统推送Pass的最佳时机。$4.99买家同样以等级6-9为主（97人，占56%），但分布更平均。高等级（20+）的购买者极少，说明Pass对老玩家吸引力有限。
+  </div>
+</div>
+
+<!-- Section 8: 总结与建议 -->
+<div class="section">
+  <h2>📋 总结与建议</h2>
+  <div class="insight" style="border-left-color:#58a6ff;">
+    <strong style="color:#58a6ff;">1. 购买率偏低：</strong>购买率3.1%在同类游戏中偏低（行业基准5-8%），提升空间大。
+  </div>
+  <div class="insight" style="margin-top:10px; border-left-color:#f85149;">
+    <strong style="color:#f85149;">2. 高档偏好明显：</strong>$9.99占比64.5%，说明玩家更偏好一步到位的高档Pass。
+  </div>
+  <div class="insight" style="margin-top:10px; border-left-color:#d29922;">
+    <strong style="color:#d29922;">3. 升级包失效：</strong>$6.99升级包仅28人使用，可考虑调整升级差价或增加升级独有奖励。
+  </div>
+  <div class="insight" style="margin-top:10px; border-left-color:#3fb950;">
+    <strong style="color:#3fb950;">4. 初始吸引力不足：</strong>45.6%停在1级说明BP初始吸引力不足，考虑强化前5级奖励预览。
+  </div>
+  <div class="insight" style="margin-top:10px; border-left-color:#bc8cff;">
+    <strong style="color:#bc8cff;">5. 首次展示关键：</strong>$9.99买家25.6%在1级冲动购买，说明首次展示的视觉/价值感很关键。
+  </div>
+  <div class="insight" style="margin-top:10px; border-left-color:#58a6ff;">
+    <strong style="color:#58a6ff;">6. Pass留存拉力：</strong>中期购买者留存约50%，Pass确实有留存拉力效果。
+  </div>
+</div>
+
+<!-- Footer -->
+<div class="footer">Merge Hope Analytics · BattlePass S2 · Data by ShuShu · Powered by ECharts</div>
+
+<script>
+// === Common ECharts theme config ===
+const axisStyle = {
+  axisLine: { lineStyle: { color: '#30363d' } },
+  axisTick: { lineStyle: { color: '#30363d' } },
+  axisLabel: { color: '#8b949e', fontSize: 11 },
+  splitLine: { lineStyle: { color: '#30363d', type: 'dashed' } }
+};
+const tooltipStyle = {
+  backgroundColor: '#1c2128',
+  borderColor: '#30363d',
+  textStyle: { color: '#c9d1d9', fontSize: 12 }
+};
+const legendStyle = { textStyle: { color: '#8b949e', fontSize: 11 }, top: 0 };
+
+// Color constants
+const C499 = '#3fb950';
+const C699 = '#d29922';
+const C999 = '#f85149';
+const CBOTH = '#bc8cff';
+const CFREE = '#58a6ff';
+
+// ===========================
+// Chart 1: 每日购买趋势
+// ===========================
+(function(){
+  var chart = echarts.init(document.getElementById('chartDailyPurchase'));
+  var dates = ['6/6','6/7','6/8','6/9','6/10','6/11','6/12','6/13','6/14','6/15','6/16','6/17','6/18','6/19','6/20','6/21','6/22','6/23','6/24','6/25','6/26','6/27','6/28','6/29','6/30'];
+  var d499 = [4,3,4,3,6,2,10,13,10,10,7,3,9,15,6,7,9,14,9,8,12,11,14,7,3];
+  var d699 = [1,0,0,1,1,0,1,5,2,0,1,2,0,1,0,1,3,3,0,1,1,0,0,1,0];
+  var d999 = [4,17,9,7,19,12,12,19,8,14,8,15,19,21,16,20,15,16,20,23,11,20,22,12,3];
+  chart.setOption({
+    tooltip: Object.assign({ trigger: 'axis', axisPointer: { type: 'shadow' } }, tooltipStyle),
+    legend: Object.assign({ data: ['$4.99','$6.99','$9.99'] }, legendStyle),
+    grid: { left: 50, right: 20, top: 40, bottom: 30 },
+    xAxis: Object.assign({ type: 'category', data: dates }, axisStyle),
+    yAxis: Object.assign({ type: 'value', name: '购买笔数', nameTextStyle: { color: '#8b949e' } }, axisStyle),
+    series: [
+      { name: '$4.99', type: 'bar', stack: 'total', data: d499, itemStyle: { color: C499 }, barWidth: '60%' },
+      { name: '$6.99', type: 'bar', stack: 'total', data: d699, itemStyle: { color: C699 } },
+      { name: '$9.99', type: 'bar', stack: 'total', data: d999, itemStyle: { color: C999 } }
+    ]
+  });
+  window.addEventListener('resize', function(){ chart.resize(); });
+})();
+
+// ===========================
+// Chart 2: BP等级分布（全体）
+// ===========================
+(function(){
+  var chart = echarts.init(document.getElementById('chartLevelDist'));
+  var levels = [];
+  for(var i=1;i<=40;i++) levels.push('Lv'+i);
+  var counts = [8072,154,253,376,248,293,300,692,785,810,679,581,578,453,336,301,334,264,251,275,275,211,208,168,132,106,100,70,60,57,53,35,45,35,23,15,15,9,9,22];
+  chart.setOption({
+    tooltip: Object.assign({ trigger: 'axis', axisPointer: { type: 'shadow' },
+      formatter: function(p) {
+        var d = p[0];
+        return d.name + '<br/>' + d.marker + ' 玩家数: <b>' + d.value.toLocaleString() + '</b>';
+      }
+    }, tooltipStyle),
+    grid: { left: 60, right: 20, top: 20, bottom: 40 },
+    xAxis: Object.assign({ type: 'category', data: levels, axisLabel: { color: '#8b949e', fontSize: 10, rotate: 45 } }, { axisLine: axisStyle.axisLine, axisTick: axisStyle.axisTick }),
+    yAxis: Object.assign({ type: 'value', name: '玩家数', nameTextStyle: { color: '#8b949e' } }, axisStyle),
+    series: [{
+      type: 'bar', data: counts, barWidth: '70%',
+      itemStyle: {
+        color: function(p) {
+          if (p.dataIndex === 0) return '#f85149';
+          if (p.dataIndex >= 7 && p.dataIndex <= 9) return '#d29922';
+          if (p.dataIndex === 39) return '#bc8cff';
+          return '#58a6ff';
+        }
+      },
+      label: {
+        show: true, position: 'top', fontSize: 9, color: '#8b949e',
+        formatter: function(p) { return p.value > 500 ? p.value.toLocaleString() : ''; }
+      }
+    }]
+  });
+  window.addEventListener('resize', function(){ chart.resize(); });
+})();
+
+// ===========================
+// Chart 3a: 免费玩家等级分布
+// ===========================
+(function(){
+  var chart = echarts.init(document.getElementById('chartTierFree'));
+  // Free = total - paid at each level
+  var totalByLv = [8072,154,253,376,248,293,300,692,785,810,679,581,578,453,336,301,334,264,251,275,275,211,208,168,132,106,100,70,60,57,53,35,45,35,23,15,15,9,9,22];
+  var p499 = {1:2,5:1,8:1,9:4,10:7,11:4,12:4,13:8,14:9,15:9,16:6,17:9,18:10,19:7,20:4,21:9,22:14,23:2,24:7,25:8,26:8,27:4,28:4,29:2,30:3,31:8,32:3,33:5,34:3,35:2,37:2,38:2,39:1};
+  var p999 = {9:2,10:2,11:3,12:8,13:9,14:12,15:12,16:17,17:18,18:14,19:2,20:16,21:21,22:21,23:17,24:15,25:14,26:13,27:16,28:11,29:11,30:7,31:15,32:8,33:13,34:11,35:12,36:8,37:7,38:2,39:7,40:13};
+  var pboth = {8:1,10:1,17:1,18:1,19:2,23:1,24:2,25:1,26:1,28:1,29:3,31:1,33:1,34:1,37:2,38:2,40:6};
+  var levels = []; var freeCounts = [];
+  for(var i=1;i<=40;i++){
+    levels.push('Lv'+i);
+    var paid = (p499[i]||0) + (p999[i]||0) + (pboth[i]||0);
+    freeCounts.push(totalByLv[i-1] - paid);
+  }
+  chart.setOption({
+    tooltip: Object.assign({ trigger: 'axis', axisPointer: { type: 'shadow' } }, tooltipStyle),
+    grid: { left: 55, right: 10, top: 10, bottom: 35 },
+    xAxis: Object.assign({ type: 'category', data: levels, axisLabel: { color: '#8b949e', fontSize: 9, rotate: 45 } }, { axisLine: axisStyle.axisLine, axisTick: axisStyle.axisTick }),
+    yAxis: Object.assign({ type: 'value' }, axisStyle),
+    series: [{
+      type: 'bar', data: freeCounts, barWidth: '70%',
+      itemStyle: { color: CFREE }
+    }]
+  });
+  window.addEventListener('resize', function(){ chart.resize(); });
+})();
+
+// ===========================
+// Chart 3b: 付费玩家等级分布
+// ===========================
+(function(){
+  var chart = echarts.init(document.getElementById('chartTierPaid'));
+  var levels = [];
+  for(var i=1;i<=40;i++) levels.push('Lv'+i);
+  var p499map = {1:2,5:1,8:1,9:4,10:7,11:4,12:4,13:8,14:9,15:9,16:6,17:9,18:10,19:7,20:4,21:9,22:14,23:2,24:7,25:8,26:8,27:4,28:4,29:2,30:3,31:8,32:3,33:5,34:3,35:2,37:2,38:2,39:1};
+  var p999map = {9:2,10:2,11:3,12:8,13:9,14:12,15:12,16:17,17:18,18:14,19:2,20:16,21:21,22:21,23:17,24:15,25:14,26:13,27:16,28:11,29:11,30:7,31:15,32:8,33:13,34:11,35:12,36:8,37:7,38:2,39:7,40:13};
+  var pbothmap = {8:1,10:1,17:1,18:1,19:2,23:1,24:2,25:1,26:1,28:1,29:3,31:1,33:1,34:1,37:2,38:2,40:6};
+  var d499=[], d999=[], dboth=[];
+  for(var i=1;i<=40;i++){
+    d499.push(p499map[i]||0);
+    d999.push(p999map[i]||0);
+    dboth.push(pbothmap[i]||0);
+  }
+  chart.setOption({
+    tooltip: Object.assign({ trigger: 'axis', axisPointer: { type: 'shadow' } }, tooltipStyle),
+    legend: Object.assign({ data: ['$4.99','$9.99','Both'], right: 10, top: 0 }, legendStyle),
+    grid: { left: 40, right: 10, top: 30, bottom: 35 },
+    xAxis: Object.assign({ type: 'category', data: levels, axisLabel: { color: '#8b949e', fontSize: 9, rotate: 45 } }, { axisLine: axisStyle.axisLine, axisTick: axisStyle.axisTick }),
+    yAxis: Object.assign({ type: 'value' }, axisStyle),
+    series: [
+      { name: '$4.99', type: 'line', data: d499, smooth: true, symbol: 'circle', symbolSize: 4, lineStyle: { width: 2 }, itemStyle: { color: C499 }, areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(63,185,80,0.25)'},{offset:1,color:'rgba(63,185,80,0)'}]) } },
+      { name: '$9.99', type: 'line', data: d999, smooth: true, symbol: 'circle', symbolSize: 4, lineStyle: { width: 2 }, itemStyle: { color: C999 }, areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(248,81,73,0.25)'},{offset:1,color:'rgba(248,81,73,0)'}]) } },
+      { name: 'Both', type: 'line', data: dboth, smooth: true, symbol: 'diamond', symbolSize: 5, lineStyle: { width: 2, type: 'dashed' }, itemStyle: { color: CBOTH }, areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(188,140,255,0.2)'},{offset:1,color:'rgba(188,140,255,0)'}]) } }
+    ]
+  });
+  window.addEventListener('resize', function(){ chart.resize(); });
+})();
+
+// ===========================
+// Chart 4: 任务完成情况
+// ===========================
+(function(){
+  var chart = echarts.init(document.getElementById('chartTask'));
+  var taskIds = ['101','102','103','104','105','106','107','108','109','110','111','112','113','114','115','116','117','118','','131','132','133','','201','202','','301'];
+  var taskLabels = ['T101','T102','T103','T104','T105','T106','T107','T108','T109','T110','T111','T112','T113','T114','T115','T116','T117','T118','','T131','T132','T133','','T201','T202','','T301'];
+  var completions = [16735,16378,15908,15536,14855,14211,12886,12360,11441,10319,9466,9058,7973,7501,7055,6283,5822,5404,0,34254,21948,11125,0,7535,5437,0,212291];
+  var players     = [6868,6773,6631,6547,6505,6311,6057,5927,5658,5379,5111,5022,4646,4575,4362,4030,3851,3650,0,8522,7691,5672,0,4569,3531,0,9758];
+
+  // Filter out separator rows
+  var cats = [], comps = [], plrs = [], colors1 = [], colors2 = [];
+  for(var i=0;i<taskLabels.length;i++){
+    if(taskLabels[i] === '') continue;
+    cats.push(taskLabels[i]);
+    comps.push(completions[i]);
+    plrs.push(players[i]);
+    var c1, c2;
+    if(taskLabels[i].match(/T1[0-1]/)) { c1 = '#58a6ff'; c2 = 'rgba(88,166,255,0.4)'; }
+    else if(taskLabels[i].match(/T13/)) { c1 = '#d29922'; c2 = 'rgba(210,153,34,0.4)'; }
+    else if(taskLabels[i].match(/T20/)) { c1 = '#3fb950'; c2 = 'rgba(63,185,80,0.4)'; }
+    else { c1 = '#bc8cff'; c2 = 'rgba(188,140,255,0.4)'; }
+    colors1.push(c1);
+    colors2.push(c2);
+  }
+
+  chart.setOption({
+    tooltip: Object.assign({ trigger: 'axis', axisPointer: { type: 'shadow' } }, tooltipStyle),
+    legend: Object.assign({ data: ['完成次数','参与人数'] }, legendStyle),
+    grid: { left: 55, right: 80, top: 40, bottom: 40 },
+    xAxis: Object.assign({ type: 'category', data: cats, axisLabel: { color: '#8b949e', fontSize: 10, rotate: 30 } }, { axisLine: axisStyle.axisLine, axisTick: axisStyle.axisTick }),
+    yAxis: [
+      Object.assign({ type: 'value', name: '完成次数', nameTextStyle: { color: '#8b949e' }, position: 'left' }, axisStyle),
+      Object.assign({ type: 'value', name: '参与人数', nameTextStyle: { color: '#8b949e' }, position: 'right' }, axisStyle)
+    ],
+    series: [
+      {
+        name: '完成次数', type: 'bar', data: comps, barWidth: '45%',
+        itemStyle: { color: function(p){ return colors1[p.dataIndex]; } }
+      },
+      {
+        name: '参与人数', type: 'line', yAxisIndex: 1, data: plrs,
+        symbol: 'circle', symbolSize: 5, lineStyle: { width: 2, color: '#c9d1d9' },
+        itemStyle: { color: '#c9d1d9' }
+      }
+    ]
+  });
+  window.addEventListener('resize', function(){ chart.resize(); });
+})();
+
+// ===========================
+// Chart 5: 购买决策时机
+// ===========================
+(function(){
+  var chart = echarts.init(document.getElementById('chartBuyLevel'));
+  var levels = [];
+  for(var i=0;i<=40;i++) levels.push(i===0?'Lv0':'Lv'+i);
+  var buy499map = {1:33,2:2,3:4,4:3,5:3,6:2,7:4,8:8,9:16,10:13,11:15,12:11,13:7,14:12,15:9,16:8,17:10,18:3,19:4,20:6,21:3,22:2,23:3,24:5,25:3,26:4,27:1,28:1,29:2,30:1,32:1};
+  var buy999map = {0:1,1:92,2:3,3:10,4:17,5:13,6:10,7:7,8:20,9:17,10:14,11:19,12:20,13:15,14:12,15:15,16:10,17:11,18:8,19:9,20:9,21:5,22:5,23:7,24:2,25:2,26:3,27:1,28:1,30:1,31:2,40:1};
+  var d499=[], d999=[];
+  for(var i=0;i<=40;i++){
+    d499.push(buy499map[i]||0);
+    d999.push(buy999map[i]||0);
+  }
+  chart.setOption({
+    tooltip: Object.assign({ trigger: 'axis', axisPointer: { type: 'shadow' } }, tooltipStyle),
+    legend: Object.assign({ data: ['$4.99 VIP','$9.99 SUPER'] }, legendStyle),
+    grid: { left: 50, right: 20, top: 40, bottom: 35 },
+    xAxis: Object.assign({ type: 'category', data: levels, axisLabel: { color: '#8b949e', fontSize: 10, rotate: 45 } }, { axisLine: axisStyle.axisLine, axisTick: axisStyle.axisTick }),
+    yAxis: Object.assign({ type: 'value', name: '购买人数', nameTextStyle: { color: '#8b949e' } }, axisStyle),
+    series: [
+      {
+        name: '$4.99 VIP', type: 'bar', data: d499, barGap: '10%', barWidth: '35%',
+        itemStyle: { color: C499 }
+      },
+      {
+        name: '$9.99 SUPER', type: 'bar', data: d999, barWidth: '35%',
+        itemStyle: { color: C999 },
+        markPoint: {
+          data: [{ name: '冲动购买', coord: ['Lv1', 92], symbol: 'pin', symbolSize: 40,
+            itemStyle: { color: '#f85149' },
+            label: { show: true, formatter: '92人', color: '#fff', fontSize: 10 }
+          }]
+        }
+      }
+    ]
+  });
+  window.addEventListener('resize', function(){ chart.resize(); });
+})();
+
+// ===========================
+// Chart 6: 购买者留存分析
+// ===========================
+(function(){
+  var chart = echarts.init(document.getElementById('chartRetention'));
+  var dates = ['6/6','6/7','6/8','6/9','6/10','6/11','6/12','6/13','6/14','6/15','6/16','6/17','6/18','6/19','6/20','6/21','6/22','6/23','6/24','6/25','6/26','6/27','6/28','6/29','6/30'];
+  var buyers = [7,20,13,10,24,14,22,32,18,24,15,17,28,35,22,27,24,30,29,31,23,31,36,19,6];
+  var active = [2,3,6,3,9,9,8,15,8,14,11,10,13,19,11,18,18,22,19,22,15,23,36,19,6];
+  var rate = [28.6,15.0,46.2,30.0,37.5,64.3,36.4,46.9,44.4,58.3,73.3,58.8,46.4,54.3,50.0,66.7,75.0,73.3,65.5,71.0,65.2,74.2,100.0,100.0,100.0];
+  chart.setOption({
+    tooltip: Object.assign({
+      trigger: 'axis',
+      axisPointer: { type: 'cross' },
+      formatter: function(p) {
+        var s = p[0].name + '<br/>';
+        p.forEach(function(item){
+          s += item.marker + ' ' + item.seriesName + ': <b>' + (item.seriesName === '留存率' ? item.value+'%' : item.value) + '</b><br/>';
+        });
+        return s;
+      }
+    }, tooltipStyle),
+    legend: Object.assign({ data: ['购买人数','活跃留存','留存率'] }, legendStyle),
+    grid: { left: 50, right: 55, top: 40, bottom: 30 },
+    xAxis: Object.assign({ type: 'category', data: dates }, axisStyle),
+    yAxis: [
+      Object.assign({ type: 'value', name: '人数', nameTextStyle: { color: '#8b949e' }, position: 'left' }, axisStyle),
+      Object.assign({ type: 'value', name: '留存率%', nameTextStyle: { color: '#8b949e' }, position: 'right', min: 0, max: 100, axisLabel: { formatter: '{value}%', color: '#8b949e' } }, axisStyle)
+    ],
+    series: [
+      {
+        name: '购买人数', type: 'bar', data: buyers, barWidth: '40%',
+        itemStyle: { color: 'rgba(88,166,255,0.6)' }
+      },
+      {
+        name: '活跃留存', type: 'bar', data: active, barWidth: '40%',
+        itemStyle: { color: 'rgba(63,185,80,0.6)' }
+      },
+      {
+        name: '留存率', type: 'line', yAxisIndex: 1, data: rate,
+        smooth: true, symbol: 'circle', symbolSize: 5,
+        lineStyle: { width: 2.5, color: '#d29922' },
+        itemStyle: { color: '#d29922' },
+        areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(210,153,34,0.2)'},{offset:1,color:'rgba(210,153,34,0)'}]) }
+      }
+    ]
+  });
+  window.addEventListener('resize', function(){ chart.resize(); });
+})();
+
+// ===========================
+// Chart 7: 购买者画像
+// ===========================
+(function(){
+  var chart = echarts.init(document.getElementById('chartProfile'));
+  // Player levels from 6 to 30 (main range)
+  var pLevels = [];
+  for(var i=6;i<=30;i++) pLevels.push('Lv'+i);
+
+  var p499map = {6:42,7:13,8:15,9:27,10:16,11:7,12:15,13:11,14:8,15:8,16:6,17:7,18:3,19:5,21:5,22:2,23:3,24:1,25:2,27:1,28:1,30:1};
+  var p999map = {6:133,7:27,8:20,9:37,10:18,11:19,12:19,13:13,14:12,15:13,16:11,17:9,18:10,19:6,20:4,21:3,22:2,23:3,24:2,25:1,26:1,27:1,28:1};
+
+  var d499=[], d999=[];
+  for(var i=6;i<=30;i++){
+    d499.push(p499map[i]||0);
+    d999.push(p999map[i]||0);
+  }
+
+  chart.setOption({
+    tooltip: Object.assign({ trigger: 'axis', axisPointer: { type: 'shadow' } }, tooltipStyle),
+    legend: Object.assign({ data: ['$4.99 VIP','$9.99 SUPER'] }, legendStyle),
+    grid: { left: 50, right: 20, top: 40, bottom: 30 },
+    xAxis: Object.assign({ type: 'category', data: pLevels, name: '玩家等级', nameTextStyle: { color: '#8b949e' } }, axisStyle),
+    yAxis: Object.assign({ type: 'value', name: '购买人数', nameTextStyle: { color: '#8b949e' } }, axisStyle),
+    series: [
+      {
+        name: '$4.99 VIP', type: 'bar', data: d499, barGap: '10%', barWidth: '35%',
+        itemStyle: { color: C499 },
+        label: { show: true, position: 'top', fontSize: 9, color: '#8b949e',
+          formatter: function(p){ return p.value > 10 ? p.value : ''; }
+        }
+      },
+      {
+        name: '$9.99 SUPER', type: 'bar', data: d999, barWidth: '35%',
+        itemStyle: { color: C999 },
+        markPoint: {
+          data: [{ name: 'Lv6峰值', coord: ['Lv6', 133], symbol: 'pin', symbolSize: 45,
+            itemStyle: { color: '#f85149' },
+            label: { show: true, formatter: '133人', color: '#fff', fontSize: 10 }
+          }]
+        },
+        label: { show: true, position: 'top', fontSize: 9, color: '#8b949e',
+          formatter: function(p){ return p.value > 15 ? p.value : ''; }
+        }
+      }
+    ]
+  });
+  window.addEventListener('resize', function(){ chart.resize(); });
+})();
+</script>
+</body>
+</html>
