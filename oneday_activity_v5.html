@@ -216,6 +216,63 @@
   }
   .badge-red { background: rgba(248,113,113,0.15); color: var(--red); }
   .badge-green { background: rgba(52,211,153,0.15); color: var(--green); }
+  /* === Gantt Chart (pure CSS) === */
+  .gantt-scroll { overflow-x: auto; margin-top: 8px; }
+  .gantt-canvas {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto var(--chart-height, 500px);
+    min-width: 900px;
+  }
+  .gantt-days {
+    display: grid;
+    grid-template-columns: repeat(var(--day-count, 30), minmax(28px, 1fr));
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px; margin-bottom: 4px;
+  }
+  .gantt-days span {
+    text-align: center; font-size: 11px; color: var(--text2);
+    padding: 2px 0;
+  }
+  .gantt-track {
+    position: relative;
+    width: 100%;
+    height: var(--chart-height, 500px);
+  }
+  .gantt-bar {
+    position: absolute;
+    height: 28px;
+    border-radius: 5px;
+    display: flex; align-items: center;
+    padding: 0 8px;
+    font-size: 11px; font-weight: 600;
+    color: #fff;
+    background: var(--type-color, #6c7bff);
+    opacity: 0.88;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: default;
+    transition: opacity .15s;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .gantt-bar:hover { opacity: 1; z-index: 10; }
+  .gantt-bar strong { font-weight: 600; font-size: 11px; pointer-events: none; }
+  .gantt-bar.is-micro { min-width: 4px; font-size: 0; padding: 0 2px; }
+  .gantt-bar.is-micro strong { font-size: 0; }
+  .gantt-bar.is-clipped-end {
+    border-top-right-radius: 0; border-bottom-right-radius: 0;
+    border-right: 2px dashed rgba(255,255,255,0.3);
+  }
+  .gantt-legend {
+    display: flex; flex-wrap: wrap; gap: 14px;
+    margin-top: 12px; font-size: 12px; color: var(--text2);
+  }
+  .gantt-legend span { display: flex; align-items: center; gap: 5px; }
+  .gantt-legend b {
+    display: inline-block; width: 14px; height: 14px;
+    border-radius: 3px;
+  }
 </style>
 </head>
 <body>
@@ -254,17 +311,24 @@
   <div class="chapter-title"><span class="chapter-num">第一章</span> 活动排期总览</div>
 
   <div class="card">
-    <div class="card-title">甘特图 · 6/1 – 7/3 活动排期 <span class="tag" style="background:rgba(108,123,255,0.15);color:#6c7bff;">38条活动</span></div>
-    <div id="ganttChart" class="chart-box tall"></div>
-    <div class="legend-row">
-      <div class="legend-item"><div class="legend-dot" style="background:#6c7bff"></div> 长期活动(整月)</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#a78bfa"></div> 中长期活动</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#22d3ee"></div> 棋盘/ER</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#34d399"></div> 3-4天活动</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#fbbf24"></div> WO(单日)</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#f87171"></div> LO(单日)</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#ff6b9d"></div> CPF(单日)</div>
-      <div class="legend-item"><div class="legend-dot" style="background:#8b8fa3"></div> 3in1(单日)</div>
+    <div class="card-title">甘特图 · 6/1 – 6/30 活动排期 <span class="tag" style="background:rgba(108,123,255,0.15);color:#6c7bff;">38条活动</span></div>
+    <div class="gantt-scroll">
+      <div class="gantt-canvas" id="ganttCanvas" style="--chart-height:520px;--day-count:30">
+        <div class="gantt-days" style="grid-template-columns:repeat(30,minmax(28px,1fr))">
+          <span>01</span><span>02</span><span>03</span><span>04</span><span>05</span><span>06</span><span>07</span><span>08</span><span>09</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span><span>27</span><span>28</span><span>29</span><span>30</span>
+        </div>
+        <div class="gantt-track" id="ganttTrack"></div>
+      </div>
+    </div>
+    <div class="gantt-legend">
+      <span><b style="background:#6C757D"></b>战令</span>
+      <span><b style="background:#D1495B"></b>组合/主题</span>
+      <span><b style="background:#7B61FF"></b>卡册</span>
+      <span><b style="background:#4D908E"></b>主题装修</span>
+      <span><b style="background:#D45087"></b>棋盘</span>
+      <span><b style="background:#2A9D8F"></b>小游戏</span>
+      <span><b style="background:#277DA1"></b>单日活动</span>
+      <span><b style="background:#F07C2E"></b>礼包</span>
     </div>
   </div>
 
@@ -443,6 +507,31 @@
   </div>
 
   <div class="card">
+    <div class="card-title">全服总流水近邻对比 <span class="tag" style="background:rgba(251,191,36,0.15);color:#fbbf24;">绝对值</span></div>
+    <table class="data-table">
+      <thead>
+        <tr><th>活动实例</th><th class="num">活动日流水</th><th class="num">活动日ARPDAU</th><th>近邻无活动日</th><th class="num">流水</th><th class="num">增量</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>6/7 WO+Gift</td><td class="num">$580</td><td class="num">$0.30</td><td>6/8 无 $408</td><td class="num">$0.23</td><td class="num highlight">+42%</td></tr>
+        <tr><td>6/10 LO_only</td><td class="num">$938</td><td class="num">$0.50</td><td>6/11 无 $551</td><td class="num">$0.29</td><td class="num highlight">+70%</td></tr>
+        <tr><td>6/12 CPF+3in1</td><td class="num">$966</td><td class="num">$0.45</td><td>6/11 无 $551</td><td class="num">$0.29</td><td class="num highlight">+75%</td></tr>
+        <tr><td>6/14 WO+Gift</td><td class="num">$1,107</td><td class="num">$0.43</td><td>6/15 无 $882</td><td class="num">$0.35</td><td class="num highlight">+26%</td></tr>
+        <tr><td>6/17 LO+Gift</td><td class="num">$1,584</td><td class="num">$0.60</td><td>6/18 无 $1,259</td><td class="num">$0.45</td><td class="num highlight">+26%</td></tr>
+        <tr><td>6/19 CPF_only</td><td class="num">$1,415</td><td class="num">$0.50</td><td>6/18 无 $1,259</td><td class="num">$0.45</td><td class="num highlight">+12%</td></tr>
+        <tr><td>6/20 ER</td><td class="num">$1,350</td><td class="num">$0.47</td><td>6/18 无 $1,259</td><td class="num">$0.45</td><td class="num highlight">+7%</td></tr>
+        <tr><td>6/21 WO_only</td><td class="num">$1,487</td><td class="num">$0.46</td><td>6/23 无 $1,371</td><td class="num">$0.40</td><td class="num highlight">+8%</td></tr>
+        <tr><td>6/22 LadO+3in1</td><td class="num">$1,534</td><td class="num">$0.45</td><td>6/23 无 $1,371</td><td class="num">$0.40</td><td class="num highlight">+12%</td></tr>
+        <tr><td>6/24 LO+Gift</td><td class="num">$1,746</td><td class="num">$0.50</td><td>6/25 无 $1,313</td><td class="num">$0.39</td><td class="num highlight">+33%</td></tr>
+      </tbody>
+    </table>
+    <div class="insight-box">
+      <div class="insight-title">💡 洞察</div>
+      <strong>LO是流水增量绝对值最大的活动</strong>，每次实例带来$300-430增量。6/10首开增量最惊人（+70%）。WO+Gift的增量比WO_only更强（6/7 +42%、6/14 +26% vs 6/21仅+8%）——GiftOnAddOne配套是WO付费增量的关键放大器。CPF+3in1增量远大于CPF_only（+75% vs +12%），ThreeInOnePack是CPF的核心付费驱动。
+    </div>
+  </div>
+
+  <div class="card">
     <div class="card-title">图4-4 · 首付 vs 复付流水堆叠面积图</div>
     <div id="firstRepeatChart" class="chart-box"></div>
     <div class="insight-box">
@@ -538,7 +627,7 @@
     <div id="retentionChart" class="chart-box"></div>
     <div class="insight-box">
       <div class="insight-title">💡 洞察</div>
-      次日回访率从6/7的46.3%稳步提升至6/24的65.1%，整体提升<strong>+18.8个百分点</strong>。活动日回访率普遍高于前后无活动日，尤其LO+Gift（6/17: 60.4%→次日60.7%）和LO+Gift（6/24: 65.1%）表现突出。回访率提升主要受DAU结构优化驱动——随着低活玩家自然流失，留存池质量持续提升。
+      次日回访率从6/7的46.3%稳步提升至6/24的63.7%，整体提升<strong>+17.4个百分点</strong>。留存率的整体上升趋势（46%→65%）主要是因为玩家群体逐渐成熟，与单日活动类型关系不大。
     </div>
   </div>
 
@@ -549,18 +638,19 @@
         <tr><th>对比组</th><th>日期</th><th class="num">次日回访率</th><th>对照日</th><th class="num">次日回访率</th><th class="num">差值</th></tr>
       </thead>
       <tbody>
-        <tr><td>WO+Gift</td><td>6/7</td><td class="num">46.3%</td><td>6/8</td><td class="num">54.1%</td><td class="num neg">-7.8pp</td></tr>
-        <tr><td>LO①</td><td>6/10</td><td class="num">60.3%</td><td>6/9</td><td class="num">54.7%</td><td class="num highlight">+5.6pp</td></tr>
-        <tr><td>WO②+Gift</td><td>6/14</td><td class="num">58.7%</td><td>6/13</td><td class="num">58.7%</td><td class="num">0.0pp</td></tr>
-        <tr><td>LO②+Gift</td><td>6/17</td><td class="num">60.4%</td><td>6/18</td><td class="num">60.7%</td><td class="num neg">-0.3pp</td></tr>
-        <tr><td>ER①</td><td>6/20</td><td class="num">62.6%</td><td>6/18</td><td class="num">60.7%</td><td class="num highlight">+1.9pp</td></tr>
-        <tr><td>LadO+3in1</td><td>6/22</td><td class="num">63.0%</td><td>6/23</td><td class="num">65.1%</td><td class="num neg">-2.1pp</td></tr>
-        <tr><td>LO③+Gift</td><td>6/24</td><td class="num">63.7%</td><td>6/25 (推算)</td><td class="num">~63%</td><td class="num highlight">+0.7pp</td></tr>
+        <tr><td>LO①</td><td>6/10</td><td class="num">60.3%</td><td>6/11 无</td><td class="num">58.7%</td><td class="num highlight">+1.6pp</td></tr>
+        <tr><td>CPF①</td><td>6/12</td><td class="num">56.8%</td><td>6/13 无</td><td class="num">58.7%</td><td class="num neg">-1.9pp</td></tr>
+        <tr><td>WO②+Gift</td><td>6/14</td><td class="num">58.1%</td><td>6/15 无</td><td class="num">60.4%</td><td class="num neg">-2.3pp</td></tr>
+        <tr><td>LO②+Gift</td><td>6/17</td><td class="num">61.0%</td><td>6/18 无</td><td class="num">59.0%</td><td class="num highlight">+2.0pp</td></tr>
+        <tr><td>CPF②</td><td>6/19</td><td class="num">60.5%</td><td>6/18 无</td><td class="num">59.0%</td><td class="num highlight">+1.5pp</td></tr>
+        <tr><td>ER</td><td>6/20</td><td class="num">62.9%</td><td>6/23 无</td><td class="num">65.1%</td><td class="num neg">-2.2pp</td></tr>
+        <tr><td>LadO+3in1</td><td>6/22</td><td class="num">63.0%</td><td>6/23 无</td><td class="num">65.1%</td><td class="num neg">-2.1pp</td></tr>
+        <tr><td>LO③+Gift</td><td>6/24</td><td class="num">63.7%</td><td>—</td><td class="num">—</td><td class="num">—</td></tr>
       </tbody>
     </table>
     <div class="insight-box">
       <div class="insight-title">💡 洞察</div>
-      活动日与近邻无活动日的回访率差异较小（±2pp以内为主），表明<strong>单日活动对次日留存的直接影响有限</strong>，回访率主要受整体DAU成熟度和生命周期阶段驱动。但6/10 LO表现出+5.6pp的正向影响，可能因为早期DAU波动较大。
+      <strong>LO对次日留存有轻微正向影响</strong>（+1.6~2.0pp），可能因为LO是限时24小时，玩家次日回来检查结果。CPF效果不一致（6/12 -1.9pp、6/19 +1.5pp）。WO对留存有轻微负影响（-2.3pp），可能因为WO较简单，当天做完就走。整体来看活动对留存的影响很小（±2pp以内），留存主要由整体DAU增长趋势驱动。
     </div>
   </div>
 </section>
@@ -578,6 +668,25 @@
       <li><strong>Finding 4 — 难度调整扩大参与但未提升通过率：</strong>6/20调整后LO参与者从690增至1078（+56%），但通过率从17.7%降至14.0%。绝对通过人数增加（122→151），表明调整方向正确——更多玩家有机会接触和尝试活动。</li>
       <li><strong>Finding 5 — 复付驱动收入增长：</strong>复付流水从6/7的$91增至6/24的$1,212（13倍增长），占比从16%攀升至69%。活动对复付激活的效果远强于首付转化，说明活动的核心价值在于"激活已付费用户复购"而非"转化新付费用户"。</li>
     </ol>
+  </div>
+
+  <div class="card">
+    <div class="card-title">三类活动的差异化价值</div>
+    <table class="data-table">
+      <thead>
+        <tr><th>类型</th><th>代表</th><th class="num">对做单的拉动</th><th class="num">对付费的刺激</th><th class="num">参与者ARPDAU增量</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>第一类：正常订单额外奖励</td><td>WO, CPF</td><td class="num">WO≈无影响，CPF+27%</td><td class="num">WO+23%，CPF+54%</td><td class="num highlight">WO+50%，CPF+65%</td></tr>
+        <tr><td>第二类：额外高难度订单</td><td>LO, LadO</td><td class="num">LO≈无影响，LadO+16%</td><td class="num">LO+35%，LadO+62%</td><td class="num highlight">LO+31%，LadO+129%</td></tr>
+        <tr><td>第三类：单独活动窗口</td><td>ER</td><td class="num">+22%</td><td class="num">+58%</td><td class="num highlight">+62%</td></tr>
+      </tbody>
+    </table>
+    <div class="insight-box">
+      <div class="insight-title">💡 洞察</div>
+      第一类WO的"拉做单"效应在level≥12后消失（WO日人均13.7单≈无活动日13.5单），但WO参与者群体（189人）本身就是高付费鲸鱼。CPF同为第一类但做单拉动明显——可能因为解锁等级低（Lv.7），更多中等级玩家能参与。<br/>
+      <strong>第二类LadO的付费刺激最强</strong>——参与者ARPDAU在LadO日比无活动日高129%，尽管通关率只有3.6%。第三类ER在做单和付费上都有正向效果。
+    </div>
   </div>
 
   <div class="card">
@@ -637,112 +746,105 @@ function makeChart(dom) {
 window.addEventListener('resize', () => charts.forEach(c => c.resize()));
 
 // ============================================================
-// 第一章 甘特图
+// 第一章 甘特图 (纯CSS)
 // ============================================================
 (function(){
   const activities = [
-    {name:"战令2", start:"2026-06-01", end:"2026-07-01", color:"#6c7bff"},
-    {name:"组合活动", start:"2026-06-01", end:"2026-07-01", color:"#6c7bff"},
-    {name:"卡册", start:"2026-06-01", end:"2026-07-16", color:"#6c7bff"},
-    {name:"气球嘉年华", start:"2026-06-06", end:"2026-06-27", color:"#a78bfa"},
-    {name:"滚动棋盘", start:"2026-06-06", end:"2026-06-15", color:"#22d3ee"},
-    {name:"多层棋盘", start:"2026-06-20", end:"2026-06-29", color:"#22d3ee"},
-    {name:"基金募集①", start:"2026-06-05", end:"2026-06-08", color:"#34d399"},
-    {name:"基金募集②", start:"2026-06-26", end:"2026-06-29", color:"#34d399"},
-    {name:"拼图①", start:"2026-06-08", end:"2026-06-12", color:"#34d399"},
-    {name:"拼图②", start:"2026-06-29", end:"2026-07-03", color:"#34d399"},
-    {name:"礼包链①", start:"2026-06-08", end:"2026-06-11", color:"#34d399"},
-    {name:"礼包链②", start:"2026-06-19", end:"2026-06-22", color:"#34d399"},
-    {name:"竞速", start:"2026-06-12", end:"2026-06-15", color:"#34d399"},
-    {name:"钓鱼", start:"2026-06-15", end:"2026-06-19", color:"#34d399"},
-    {name:"探险", start:"2026-06-19", end:"2026-06-22", color:"#34d399"},
-    {name:"食品券", start:"2026-06-22", end:"2026-06-26", color:"#34d399"},
-    {name:"WO①+Gift", start:"2026-06-07", end:"2026-06-08", color:"#fbbf24"},
-    {name:"WO②+Gift", start:"2026-06-14", end:"2026-06-15", color:"#fbbf24"},
-    {name:"WO③", start:"2026-06-21", end:"2026-06-22", color:"#fbbf24"},
-    {name:"WO④+Gift", start:"2026-06-28", end:"2026-06-29", color:"#fbbf24"},
-    {name:"LO①", start:"2026-06-10", end:"2026-06-11", color:"#f87171"},
-    {name:"LO②+Gift", start:"2026-06-17", end:"2026-06-18", color:"#f87171"},
-    {name:"LO③+Gift", start:"2026-06-24", end:"2026-06-25", color:"#f87171"},
-    {name:"CPF①+3in1", start:"2026-06-12", end:"2026-06-13", color:"#ff6b9d"},
-    {name:"CPF②", start:"2026-06-19", end:"2026-06-20", color:"#ff6b9d"},
-    {name:"CPF③+3in1", start:"2026-06-26", end:"2026-06-27", color:"#ff6b9d"},
-    {name:"ER①", start:"2026-06-20", end:"2026-06-21", color:"#22d3ee"},
-    {name:"ER②", start:"2026-06-27", end:"2026-06-28", color:"#22d3ee"},
-    {name:"LadO+3in1", start:"2026-06-22", end:"2026-06-23", color:"#a78bfa"},
-    {name:"3in1(6/16)", start:"2026-06-16", end:"2026-06-17", color:"#8b8fa3"},
+    {name:"战令2（儿童节）",start:"06-01 16:00",end:"07-01 16:00",color:"#6C757D"},
+    {name:"【主题】组合活动",start:"06-01 16:00",end:"07-01 16:00",color:"#D1495B"},
+    {name:"卡册",start:"06-01 16:00",end:"07-16 16:00",color:"#7B61FF"},
+    {name:"主题装修：气球嘉年华",start:"06-06 16:00",end:"06-30 16:00",color:"#4D908E"},
+    {name:"区域锁定滚动棋盘",start:"06-06 16:00",end:"06-15 16:00",color:"#D45087"},
+    {name:"多层棋盘",start:"06-20 16:00",end:"06-29 16:00",color:"#D45087"},
+    {name:"杰西卡基金募集",start:"06-05 16:00",end:"06-08 16:00",color:"#2A9D8F"},
+    {name:"露娜的玩具拼图",start:"06-08 16:00",end:"06-12 16:00",color:"#2A9D8F"},
+    {name:"礼包链",start:"06-08 16:00",end:"06-11 16:00",color:"#F07C2E"},
+    {name:"水滴订单",start:"06-07 16:00",end:"06-08 16:00",color:"#277DA1"},
+    {name:"1+2 礼包",start:"06-07 16:00",end:"06-08 16:00",color:"#F07C2E"},
+    {name:"限时订单",start:"06-10 16:00",end:"06-11 16:00",color:"#277DA1"},
+    {name:"卡册狂热",start:"06-12 16:00",end:"06-13 16:00",color:"#277DA1"},
+    {name:"三合一礼包",start:"06-12 16:00",end:"06-13 16:00",color:"#F07C2E"},
+    {name:"艾瑞克小车竞速",start:"06-12 16:00",end:"06-15 16:00",color:"#2A9D8F"},
+    {name:"水滴订单",start:"06-14 16:00",end:"06-15 16:00",color:"#277DA1"},
+    {name:"1+2 礼包",start:"06-14 16:00",end:"06-15 16:00",color:"#F07C2E"},
+    {name:"塞缪尔池塘钓鱼",start:"06-15 16:00",end:"06-19 16:00",color:"#2A9D8F"},
+    {name:"三合一礼包",start:"06-16 16:00",end:"06-17 16:00",color:"#F07C2E"},
+    {name:"限时订单",start:"06-17 16:00",end:"06-18 16:00",color:"#277DA1"},
+    {name:"1+2 礼包",start:"06-17 16:00",end:"06-18 16:00",color:"#F07C2E"},
+    {name:"卡册狂热",start:"06-19 16:00",end:"06-20 16:00",color:"#277DA1"},
+    {name:"礼包链",start:"06-19 16:00",end:"06-22 16:00",color:"#F07C2E"},
+    {name:"杰西卡开车探险",start:"06-19 16:00",end:"06-22 16:00",color:"#2A9D8F"},
+    {name:"无尽奖励",start:"06-20 16:00",end:"06-21 16:00",color:"#277DA1"},
+    {name:"水滴订单",start:"06-21 16:00",end:"06-22 16:00",color:"#277DA1"},
+    {name:"限时订单链（剪羊毛）",start:"06-22 16:00",end:"06-23 16:00",color:"#277DA1"},
+    {name:"三合一礼包",start:"06-22 16:00",end:"06-23 16:00",color:"#F07C2E"},
+    {name:"凯的食品券兑换",start:"06-22 16:00",end:"06-26 16:00",color:"#2A9D8F"},
+    {name:"限时订单",start:"06-24 16:00",end:"06-25 16:00",color:"#277DA1"},
+    {name:"1+2 礼包",start:"06-24 16:00",end:"06-25 16:00",color:"#F07C2E"},
+    {name:"卡册狂热",start:"06-26 16:00",end:"06-27 16:00",color:"#277DA1"},
+    {name:"三合一礼包",start:"06-26 16:00",end:"06-27 16:00",color:"#F07C2E"},
+    {name:"杰西卡基金募集",start:"06-26 16:00",end:"06-29 16:00",color:"#2A9D8F"},
+    {name:"无尽奖励",start:"06-27 16:00",end:"06-28 16:00",color:"#277DA1"},
+    {name:"水滴订单",start:"06-28 16:00",end:"06-29 16:00",color:"#277DA1"},
+    {name:"1+2 礼包",start:"06-28 16:00",end:"06-29 16:00",color:"#F07C2E"},
+    {name:"露娜的玩具拼图",start:"06-29 16:00",end:"07-03 16:00",color:"#2A9D8F"},
   ];
 
-  // Sort by duration descending
-  const sorted = activities.slice().sort((a,b) => {
-    const dA = new Date(a.end) - new Date(a.start);
-    const dB = new Date(b.end) - new Date(b.start);
+  // Parse date relative to June 1 00:00
+  function parseDay(s) {
+    // s = "06-DD HH:MM" or "07-DD HH:MM"
+    const [md, hm] = s.split(' ');
+    const [m, d] = md.split('-').map(Number);
+    const [h] = hm.split(':').map(Number);
+    // day 1 = June 1 00:00 => offset 0
+    if (m === 6) return (d - 1) + h / 24;
+    if (m === 7) return 30 + (d - 1) + h / 24;
+    return 0;
+  }
+
+  // Sort by duration descending (long at top, single-day at bottom)
+  const sorted = activities.slice().sort((a, b) => {
+    const dA = parseDay(a.end) - parseDay(a.start);
+    const dB = parseDay(b.end) - parseDay(b.start);
     return dB - dA;
   });
 
-  const categories = sorted.map(a => a.name);
-  const baseTime = new Date('2026-06-01').getTime();
-  const data = sorted.map((a, i) => ({
-    value: [i, new Date(a.start).getTime(), new Date(a.end).getTime()],
-    itemStyle: { color: a.color }
-  }));
+  const TOTAL_DAYS = 30;
+  const BAR_H = 28;
+  const GAP = 4;
+  const track = document.getElementById('ganttTrack');
 
-  const chart = makeChart(document.getElementById('ganttChart'));
-  chart.setOption({
-    ...baseOption({ grid: { left: 120, right: 30, top: 30, bottom: 50 } }),
-    tooltip: {
-      formatter: function(p) {
-        const d = p.data.value;
-        const s = new Date(d[1]), e = new Date(d[2]);
-        const days = Math.round((e - s) / 86400000);
-        return `<b>${categories[d[0]]}</b><br/>${s.getMonth()+1}/${s.getDate()} – ${e.getMonth()+1}/${e.getDate()}<br/>持续 ${days} 天`;
-      }
-    },
-    xAxis: {
-      type: 'time',
-      min: new Date('2026-06-01').getTime(),
-      max: new Date('2026-07-04').getTime(),
-      ...axisCommon(),
-      axisLabel: {
-        color: THEME.textColor2, fontSize: 11,
-        formatter: function(v) { const d = new Date(v); return (d.getMonth()+1)+'/'+d.getDate(); }
-      },
-      splitLine: { show: true, lineStyle: { color: THEME.splitLine, type: 'dashed' } },
-    },
-    yAxis: {
-      type: 'category',
-      data: categories,
-      inverse: true,
-      ...axisCommon(),
-      axisLabel: { color: THEME.textColor2, fontSize: 11 },
-      splitLine: { show: false },
-    },
-    series: [{
-      type: 'custom',
-      renderItem: function(params, api) {
-        const catIdx = api.value(0);
-        const startTime = api.value(1);
-        const endTime = api.value(2);
-        const start = api.coord([startTime, catIdx]);
-        const end = api.coord([endTime, catIdx]);
-        const height = api.size([0, 1])[1] * 0.6;
-        return {
-          type: 'rect',
-          shape: {
-            x: start[0], y: start[1] - height / 2,
-            width: Math.max(end[0] - start[0], 4), height: height
-          },
-          style: api.style({ fill: api.visual('color') }),
-          styleEmphasis: api.style({ fill: api.visual('color'), opacity: 0.8 })
-        };
-      },
-      encode: { x: [1, 2], y: 0 },
-      data: data,
-      clip: true,
-    }],
-    // Mark the analysis period
-    dataZoom: [{ type: 'inside', xAxisIndex: 0 }],
+  // Lane allocation: greedy algorithm to avoid overlap
+  const lanes = []; // lanes[i] = end-day of last bar in that lane
+  sorted.forEach(act => {
+    const s = parseDay(act.start);
+    const e = parseDay(act.end);
+    const leftPct = (s / TOTAL_DAYS * 100);
+    const widthPct = ((e - s) / TOTAL_DAYS * 100);
+    const clipped = e > TOTAL_DAYS;
+    const durDays = e - s;
+
+    // Find first lane where this bar fits
+    let lane = -1;
+    for (let i = 0; i < lanes.length; i++) {
+      if (lanes[i] <= s + 0.01) { lane = i; break; }
+    }
+    if (lane === -1) { lane = lanes.length; }
+    lanes[lane] = e;
+
+    const top = lane * (BAR_H + GAP);
+    const bar = document.createElement('div');
+    bar.className = 'gantt-bar' + (durDays <= 1.1 ? ' is-micro' : '') + (clipped ? ' is-clipped-end' : '');
+    bar.style.cssText = `left:${leftPct.toFixed(2)}%;width:${Math.min(widthPct, 100 - leftPct).toFixed(2)}%;top:${top}px;--type-color:${act.color};`;
+    bar.title = `${act.name} · ${act.start} - ${act.end}`;
+    bar.innerHTML = `<strong>${act.name}</strong>`;
+    track.appendChild(bar);
   });
+
+  // Adjust track height
+  const totalH = lanes.length * (BAR_H + GAP);
+  track.style.height = totalH + 'px';
+  document.getElementById('ganttCanvas').style.setProperty('--chart-height', totalH + 'px');
 })();
 
 // ============================================================
