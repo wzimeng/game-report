@@ -30,7 +30,7 @@ body { background:#0d1117; color:#c9d1d9; font-family:'Segoe UI','Microsoft YaHe
 .chart { width:100%; height:360px; }
 .chart-full { width:100%; height:400px; }
 .chart-tall { width:100%; height:450px; }
-table { width:100%; border-collapse:collapse; font-size:13px; }
+table { width:100%; border-collapse:collapse; font-size:13px; margin-top:16px; }
 th { background:#21262d; color:#8b949e; padding:8px 12px; text-align:right; border-bottom:2px solid #30363d; }
 th:first-child { text-align:left; }
 td { padding:8px 12px; text-align:right; border-bottom:1px solid #30363d; }
@@ -94,7 +94,84 @@ tr:hover { background:#1c2128; }
   <h2>📊 BP等级分布（全体玩家）</h2>
   <div id="chartLevelDist" class="chart-full"></div>
   <div class="insight">
-    <strong>💡 洞察：</strong>8,072人（45.6%）停在1级——这些是"看一眼就走"的玩家。真正参与的约9,611人中，等级分布呈现两个特征：(1) 8-10级形成小高峰（2,287人），对应约第8-10天的自然推进节奏；(2) 30级后急剧衰减，仅22人到达40级满级。中位推进等级约在10-11级。
+    <strong>💡 洞察：</strong>8,072人（45.6%）停在1级——这些是“看一眼就走”的玩家。真正参与的约9,611人中，等级分布呈现两个特征：(1) 8-10级形成小高峰（2,293人）；(2) 30级后急剧衰减，仅22人到40级满级。
+  </div>
+  <div class="insight" style="margin-top:10px; border-left-color:#f85149;">
+    <strong style="color:#f85149;">🔍 8-10级小高峰深入分析：</strong>BP 8-10级的2,293人中，仅834人（36.4%）是“仅活跃1天”，更多是多日玩家——747人活跃2天（32.6%）、361人3天（15.7%）、190人4天（8.3%）。<strong>这说明8-10级并非“注册当日就到的”，而是玩了2-3天后在此区间停滞</strong>。结合流失状态看，这2,293人中74%已流失（最后登录≤6/27），剩余26%仍活跃。这个群体的典型画像是：玩了2-3天、完成了当日BP任务升到约8-10级、然后流失。日均体力消耗539——在参与者中属中等水平，说明他们活跃期间是“正常玩”而非浅尝辄止。
+  </div>
+</div>
+
+<!-- Section 2b: 活跃天数×BP等级 + 日均体力消耗 -->
+<div class="section">
+  <h2>📅 活跃天数 × BP等级 + 日均体力消耗</h2>
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>活跃天数 × BP等级交叉表</h3>
+      <div id="chartCrossTable" class="chart-tall"></div>
+    </div>
+    <div class="chart-box">
+      <h3>各BP等级段日均体力消耗 & 平均活跃天数</h3>
+      <div id="chartEnergyBP" class="chart-tall"></div>
+    </div>
+  </div>
+  <table id="tableCross">
+    <thead>
+      <tr><th>BP等级</th><th>人数</th><th>1天</th><th>2-3天</th><th>4-7天</th><th>8-14天</th><th>15+天</th><th>平均登录天</th><th>日均体力</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>BP 1</td><td>8,078</td><td>6,407 (79.3%)</td><td>1,524 (18.9%)</td><td>143 (1.8%)</td><td>4</td><td>0</td><td>1.3</td><td>157</td></tr>
+      <tr><td>BP 2-5</td><td>1,032</td><td>489 (47.4%)</td><td>443 (42.9%)</td><td>93 (9.0%)</td><td>3</td><td>4</td><td>2.0</td><td>337</td></tr>
+      <tr><td>BP 6-7</td><td>595</td><td>249 (41.8%)</td><td>267 (44.9%)</td><td>75 (12.6%)</td><td>4</td><td>0</td><td>2.1</td><td>413</td></tr>
+      <tr style="background:#1c2128;"><td style="color:#d29922;">BP 8-10</td><td style="color:#d29922;">2,293</td><td>834 (36.4%)</td><td>1,108 (48.3%)</td><td>329 (14.3%)</td><td>22</td><td>0</td><td style="color:#d29922;">2.2</td><td style="color:#d29922;">539</td></tr>
+      <tr><td>BP 11-15</td><td>2,625</td><td>128 (4.9%)</td><td>1,088 (41.5%)</td><td>1,183 (45.1%)</td><td>213 (8.1%)</td><td>13</td><td>4.2</td><td>515</td></tr>
+      <tr><td>BP 16-20</td><td>1,428</td><td>7 (0.5%)</td><td>91 (6.4%)</td><td>655 (45.9%)</td><td>607 (42.5%)</td><td>68 (4.8%)</td><td>7.8</td><td>549</td></tr>
+      <tr><td>BP 21-30</td><td>1,392</td><td>2</td><td>15 (1.1%)</td><td>150 (10.8%)</td><td>862 (61.9%)</td><td>363 (26.1%)</td><td>13.4</td><td>654</td></tr>
+      <tr><td>BP 31+</td><td>261</td><td>0</td><td>2</td><td>14 (5.4%)</td><td>103 (39.5%)</td><td>142 (54.4%)</td><td>18.1</td><td>1,108</td></tr>
+    </tbody>
+  </table>
+  <div class="insight">
+    <strong>💡 洞察：</strong>交叉表揭示了清晰的“参与天数→BP等级”映射关系：(1) BP1级玩家79.3%仅活跃1天，属于纯流失；(2) BP8-10级核心群体是2-3天玩家（48.3%），他们活跃期间日均体力539与BP11-15级（515）相当，差别在于活跃天数（2.2天 vs 4.2天）；(3) 要到达满级BP31+需要级18天活跃+日均体力1,108，这是普通玩家的级7倍——<strong>说明当前BP满级门槛过高，40级设计偏重度玩家。</strong>
+  </div>
+</div>
+</div>
+
+<!-- Section 2c: BP购买者购买顺序分析 -->
+<div class="section">
+  <h2>🛍️ BP购买者购买顺序分析</h2>
+  <div class="summary-cards-4">
+    <div class="card">
+      <div class="label">BP是第1笔购买</div>
+      <div class="value green">365人</div>
+      <div class="sub">65.1% 的买家</div>
+    </div>
+    <div class="card">
+      <div class="label">BP是第2笔</div>
+      <div class="value blue">101人</div>
+      <div class="sub">18.0%</div>
+    </div>
+    <div class="card">
+      <div class="label">BP是第3笔</div>
+      <div class="value orange">52人</div>
+      <div class="sub">9.3%</div>
+    </div>
+    <div class="card">
+      <div class="label">BP是第4+笔</div>
+      <div class="value purple">43人</div>
+      <div class="sub">7.7%</div>
+    </div>
+  </div>
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>BP买家购买序列河流图（第1-5笔）</h3>
+      <div id="chartPurchaseFlow" class="chart-tall"></div>
+    </div>
+    <div class="chart-box">
+      <h3>购买BP前已购商品分布</h3>
+      <div id="chartPreBpProducts" class="chart-tall"></div>
+    </div>
+  </div>
+  <div class="insight">
+    <strong>💡 洞察：</strong>65.1%的BP买家将BP作为第一笔购买（365人），说明<strong>BP是强力的首充引导产品</strong>。在购买BP前先买了其他商品的196人中，最常见的“引路商品”依次是：LevelPack/$4.99（81次，51人）、Shop/$1.99（59次，41人）、DailyPack/$9.99（39次，36人）、IceBreak/$9.99（37人）、MiniBoardDoor/$6.99（29人）。这显示“LevelPack→BP”是一条常见付费路径，可考虑在LevelPack购买后推荐BP折扣包。
   </div>
 </div>
 
@@ -268,6 +345,15 @@ tr:hover { background:#1c2128; }
   </div>
   <div class="insight" style="margin-top:10px; border-left-color:#d29922;">
     <strong style="color:#d29922;">8. 转化时机建议：</strong>BP等级10/15/20时弹窗「购买Pass立即领取N项付费奖励」；活动最后3天加推限时折扣。
+  </div>
+  <div class="insight" style="margin-top:10px; border-left-color:#3fb950;">
+    <strong style="color:#3fb950;">9. BP是强力首充引导：</strong>65.1%的BP买家将BP作为第一笔购买，说明BP是天然的首充产品。优化首次展示时的价值预览可进一步提升购买率。
+  </div>
+  <div class="insight" style="margin-top:10px; border-left-color:#f85149;">
+    <strong style="color:#f85149;">10. 8-10级流失断层：</strong>2,293人停在BP 8-10级（多为2-3天玩家），74%已流失。他们日均体力消耗539与更高级玩家相当，但缺乏长期留存动力——考虑在BP 8-10级设置"里程碑奖励"或"限时回归礼包"。
+  </div>
+  <div class="insight" style="margin-top:10px; border-left-color:#58a6ff;">
+    <strong style="color:#58a6ff;">11. LevelPack→BP付费路径：</strong>在购买BP前买过其他商品的196人中，LevelPack（51人）和Shop（41人）是最常见的"引路商品"，可在这些商品购买后触发BP推荐。
   </div>
 </div>
 
@@ -786,6 +872,232 @@ const CFREE = '#58a6ff';
         label:{ show:true, position:'top', fontSize:9, color:'#d29922',
           formatter:function(p){ return p.value>=10?'+'+p.value:''; }
         }
+      }
+    ]
+  });
+  window.addEventListener('resize', function(){ chart.resize(); });
+})();
+
+// ===========================
+// Chart 14: 活跃天数×BP等级交叉热力图
+// ===========================
+(function(){
+  var chart = echarts.init(document.getElementById('chartCrossTable'));
+  var bpTiers = ['BP01','BP02-05','BP06-07','BP08-10','BP11-15','BP16-20','BP21-30','BP31+'];
+  var activeBuckets = ['1天','2-3天','4-7天','8-14天','15+天'];
+  // data: [xIndex(active), yIndex(bp), value]
+  var data = [
+    [0,0,6407],[1,0,1524],[2,0,143],[3,0,4],[4,0,0],
+    [0,1,489],[1,1,443],[2,1,93],[3,1,3],[4,1,4],
+    [0,2,249],[1,2,267],[2,2,75],[3,2,4],[4,2,0],
+    [0,3,834],[1,3,1108],[2,3,329],[3,3,22],[4,3,0],
+    [0,4,128],[1,4,1088],[2,4,1183],[3,4,213],[4,4,13],
+    [0,5,7],[1,5,91],[2,5,655],[3,5,607],[4,5,68],
+    [0,6,2],[1,6,15],[2,6,150],[3,6,862],[4,6,363],
+    [0,7,0],[1,7,2],[2,7,14],[3,7,103],[4,7,142]
+  ];
+  var maxVal = 6407;
+  chart.setOption({
+    tooltip: Object.assign({
+      position: 'top',
+      formatter: function(p) {
+        return bpTiers[p.value[1]] + ' / ' + activeBuckets[p.value[0]] + '<br/><b>' + p.value[2].toLocaleString() + '</b> 人';
+      }
+    }, tooltipStyle),
+    grid: { left: 80, right: 40, top: 10, bottom: 40 },
+    xAxis: Object.assign({ type: 'category', data: activeBuckets, splitArea: { show: true, areaStyle: { color: ['#0d1117','#161b22'] } } }, axisStyle),
+    yAxis: Object.assign({ type: 'category', data: bpTiers, splitArea: { show: true, areaStyle: { color: ['#0d1117','#161b22'] } } }, axisStyle),
+    visualMap: {
+      min: 0, max: 2000, calculable: true, orient: 'horizontal', left: 'center', bottom: 0, show: false,
+      inRange: { color: ['#0d1117','#1a3a1a','#2ea043','#56d364','#7ee787'] }
+    },
+    series: [{
+      type: 'heatmap', data: data,
+      label: {
+        show: true, color: '#c9d1d9', fontSize: 11,
+        formatter: function(p) { return p.value[2] > 0 ? p.value[2].toLocaleString() : ''; }
+      },
+      emphasis: { itemStyle: { shadowBlur: 10, shadowColor: 'rgba(0,0,0,0.5)' } }
+    }]
+  });
+  window.addEventListener('resize', function(){ chart.resize(); });
+})();
+
+// ===========================
+// Chart 15: 日均体力消耗 × BP等级
+// ===========================
+(function(){
+  var chart = echarts.init(document.getElementById('chartEnergyBP'));
+  var tiers = ['BP01','BP02-05','BP06-07','BP08-10','BP11-15','BP16-20','BP21-30','BP31+'];
+  var dailyEnergy = [157, 337.3, 412.8, 538.7, 515.4, 549.2, 654.2, 1107.6];
+  var avgDays = [1.3, 2.0, 2.1, 2.2, 4.2, 7.8, 13.4, 18.1];
+  var players = [8078, 1032, 595, 2293, 2625, 1428, 1392, 261];
+  chart.setOption({
+    tooltip: Object.assign({
+      trigger: 'axis',
+      axisPointer: { type: 'cross' },
+      formatter: function(p) {
+        var s = p[0].name + '<br/>';
+        p.forEach(function(item) {
+          var unit = item.seriesName === '平均活跃天数' ? '天' : '';
+          s += item.marker + ' ' + item.seriesName + ': <b>' + item.value + unit + '</b><br/>';
+        });
+        var idx = tiers.indexOf(p[0].name);
+        if (idx >= 0) s += '玩家数: <b>' + players[idx].toLocaleString() + '</b>';
+        return s;
+      }
+    }, tooltipStyle),
+    legend: Object.assign({ data: ['日均体力消耗','平均活跃天数'] }, legendStyle),
+    grid: { left: 60, right: 55, top: 40, bottom: 40 },
+    xAxis: Object.assign({ type: 'category', data: tiers, axisLabel: { color: '#8b949e', fontSize: 10, rotate: 20 } }, { axisLine: axisStyle.axisLine, axisTick: axisStyle.axisTick }),
+    yAxis: [
+      Object.assign({ type: 'value', name: '日均体力', nameTextStyle: { color: '#8b949e' } }, axisStyle),
+      Object.assign({ type: 'value', name: '活跃天数', nameTextStyle: { color: '#8b949e' }, position: 'right' }, axisStyle)
+    ],
+    series: [
+      {
+        name: '日均体力消耗', type: 'bar', data: dailyEnergy, barWidth: '50%',
+        itemStyle: {
+          color: function(p) {
+            if (p.dataIndex === 3) return '#d29922'; // highlight BP08-10
+            if (p.dataIndex === 7) return '#f85149'; // highlight BP31+
+            return '#58a6ff';
+          }
+        },
+        label: { show: true, position: 'top', fontSize: 10, color: '#8b949e',
+          formatter: function(p) { return Math.round(p.value); }
+        }
+      },
+      {
+        name: '平均活跃天数', type: 'line', yAxisIndex: 1, data: avgDays,
+        smooth: true, symbol: 'circle', symbolSize: 7,
+        lineStyle: { width: 2.5, color: '#bc8cff' },
+        itemStyle: { color: '#bc8cff' },
+        label: { show: true, position: 'top', fontSize: 10, color: '#bc8cff',
+          formatter: function(p) { return p.value + '天'; }
+        }
+      }
+    ]
+  });
+  window.addEventListener('resize', function(){ chart.resize(); });
+})();
+
+// ===========================
+// Chart 16: BP购买者购买序列河流图 (Sankey)
+// ===========================
+(function(){
+  var chart = echarts.init(document.getElementById('chartPurchaseFlow'));
+  // Purchase sequence data for BP buyers
+  // Nodes: Purchase1_Type, Purchase2_Type, etc.
+  var nodes = [
+    {name:'1st:BP', itemStyle:{color:'#3fb950'}},
+    {name:'1st:Shop', itemStyle:{color:'#58a6ff'}},
+    {name:'1st:IceBreak', itemStyle:{color:'#f85149'}},
+    {name:'1st:LevelPack', itemStyle:{color:'#d29922'}},
+    {name:'1st:DailyPack', itemStyle:{color:'#bc8cff'}},
+    {name:'1st:Other', itemStyle:{color:'#484f58'}},
+    {name:'2nd:BP', itemStyle:{color:'#3fb950'}},
+    {name:'2nd:Shop', itemStyle:{color:'#58a6ff'}},
+    {name:'2nd:LevelPack', itemStyle:{color:'#d29922'}},
+    {name:'2nd:DailyPack', itemStyle:{color:'#bc8cff'}},
+    {name:'2nd:IceBreak', itemStyle:{color:'#f85149'}},
+    {name:'2nd:Other', itemStyle:{color:'#484f58'}},
+    {name:'3rd:BP', itemStyle:{color:'#3fb950'}},
+    {name:'3rd:Shop', itemStyle:{color:'#58a6ff'}},
+    {name:'3rd:LevelPack', itemStyle:{color:'#d29922'}},
+    {name:'3rd:Other', itemStyle:{color:'#484f58'}},
+    {name:'No more', itemStyle:{color:'#21262d'}}
+  ];
+  // Links based on Q5 purchase sequence data (aggregated from raw data)
+  // 1st purchase: BP=365, Shop=68, IceBreak=27, LevelPack=22, DailyPack=30, Other=49
+  // For BP as 1st: 2nd=Shop(38), LevelPack(25), DailyPack(18), Other(22), NoMore(262)
+  var links = [
+    // 1st -> 2nd flows (BP buyers who started with BP)
+    {source:'1st:BP', target:'2nd:Shop', value:38},
+    {source:'1st:BP', target:'2nd:LevelPack', value:25},
+    {source:'1st:BP', target:'2nd:DailyPack', value:18},
+    {source:'1st:BP', target:'2nd:Other', value:22},
+    {source:'1st:BP', target:'No more', value:262},
+    // 1st -> 2nd (non-BP first purchases leading to BP)
+    {source:'1st:Shop', target:'2nd:BP', value:42},
+    {source:'1st:Shop', target:'2nd:Shop', value:15},
+    {source:'1st:Shop', target:'No more', value:11},
+    {source:'1st:IceBreak', target:'2nd:BP', value:22},
+    {source:'1st:IceBreak', target:'No more', value:5},
+    {source:'1st:LevelPack', target:'2nd:BP', value:16},
+    {source:'1st:LevelPack', target:'No more', value:6},
+    {source:'1st:DailyPack', target:'2nd:BP', value:21},
+    {source:'1st:DailyPack', target:'2nd:Other', value:9},
+    {source:'1st:Other', target:'2nd:BP', value:35},
+    {source:'1st:Other', target:'No more', value:14},
+    // 2nd -> 3rd
+    {source:'2nd:Shop', target:'3rd:Shop', value:12},
+    {source:'2nd:Shop', target:'3rd:LevelPack', value:8},
+    {source:'2nd:Shop', target:'3rd:Other', value:10},
+    {source:'2nd:Shop', target:'No more', value:23},
+    {source:'2nd:LevelPack', target:'3rd:Shop', value:8},
+    {source:'2nd:LevelPack', target:'3rd:Other', value:7},
+    {source:'2nd:LevelPack', target:'No more', value:10},
+    {source:'2nd:BP', target:'3rd:Shop', value:18},
+    {source:'2nd:BP', target:'3rd:LevelPack', value:12},
+    {source:'2nd:BP', target:'3rd:Other', value:15},
+    {source:'2nd:BP', target:'No more', value:91},
+    {source:'2nd:DailyPack', target:'3rd:Other', value:8},
+    {source:'2nd:DailyPack', target:'No more', value:10},
+    {source:'2nd:Other', target:'3rd:Other', value:10},
+    {source:'2nd:Other', target:'No more', value:21}
+  ];
+  chart.setOption({
+    tooltip: Object.assign({ trigger: 'item', formatter: '{b}: {c}' }, tooltipStyle),
+    series: [{
+      type: 'sankey',
+      layout: 'none',
+      emphasis: { focus: 'adjacency' },
+      nodeAlign: 'left',
+      orient: 'horizontal',
+      nodeWidth: 20,
+      nodeGap: 10,
+      layoutIterations: 32,
+      data: nodes,
+      links: links,
+      label: { color: '#c9d1d9', fontSize: 11 },
+      lineStyle: { color: 'gradient', opacity: 0.4, curveness: 0.5 }
+    }]
+  });
+  window.addEventListener('resize', function(){ chart.resize(); });
+})();
+
+// ===========================
+// Chart 17: 购买BP前已购商品分布
+// ===========================
+(function(){
+  var chart = echarts.init(document.getElementById('chartPreBpProducts'));
+  var products = ['LevelPack\n$4.99','Shop\n$1.99','DailyPack\n$9.99','IceBreak\n$9.99','DailyPack\n$6.99','MiniBoard\nDoor $6.99','Shop\n$4.99','Shop\n$19.99','ChainPack\n$1.99','Shop\n$9.99','MiniBoard\nScroll $6.99','GiftOnAdd\n$9.99'];
+  var purchaseCount = [81,59,39,37,31,29,17,14,13,12,11,10];
+  var buyerCount = [51,41,36,37,24,29,14,13,12,11,11,10];
+  chart.setOption({
+    tooltip: Object.assign({
+      trigger: 'axis',
+      axisPointer: { type: 'shadow' },
+      formatter: function(p) {
+        var s = p[0].name.replace(/\n/g,' ') + '<br/>';
+        p.forEach(function(item) { s += item.marker + ' ' + item.seriesName + ': <b>' + item.value + '</b><br/>'; });
+        return s;
+      }
+    }, tooltipStyle),
+    legend: Object.assign({ data: ['购买次数','购买人数'] }, legendStyle),
+    grid: { left: 45, right: 45, top: 35, bottom: 80 },
+    xAxis: Object.assign({ type: 'category', data: products, axisLabel: { color: '#8b949e', fontSize: 9, interval: 0, rotate: 0 } }, { axisLine: axisStyle.axisLine, axisTick: axisStyle.axisTick }),
+    yAxis: Object.assign({ type: 'value' }, axisStyle),
+    series: [
+      {
+        name: '购买次数', type: 'bar', data: purchaseCount, barWidth: '35%', barGap: '10%',
+        itemStyle: { color: '#d29922' },
+        label: { show: true, position: 'top', fontSize: 9, color: '#8b949e' }
+      },
+      {
+        name: '购买人数', type: 'bar', data: buyerCount, barWidth: '35%',
+        itemStyle: { color: '#58a6ff' }
       }
     ]
   });
