@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>4日活动横向对比分析</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0d1117; color:#c9d1d9; font-family:'Segoe UI','Microsoft YaHei',sans-serif; padding:20px; }
+.header { text-align:center; margin-bottom:30px; }
+.header h1 { font-size:24px; color:#58a6ff; margin-bottom:8px; }
+.header .subtitle { color:#8b949e; font-size:14px; line-height:1.8; }
+.summary-cards { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:30px; }
+.card { background:#161b22; border:1px solid #30363d; border-radius:8px; padding:16px; text-align:center; }
+.card .label { font-size:12px; color:#8b949e; margin-bottom:6px; }
+.card .value { font-size:22px; font-weight:700; }
+.card .value.blue { color:#58a6ff; }
+.card .value.green { color:#3fb950; }
+.card .value.orange { color:#d29922; }
+.card .value.red { color:#f85149; }
+.card .value.purple { color:#bc8cff; }
+.card .sub { font-size:11px; color:#8b949e; margin-top:4px; }
+.section { background:#161b22; border:1px solid #30363d; border-radius:8px; padding:20px; margin-bottom:24px; }
+.section h2 { font-size:16px; color:#58a6ff; margin-bottom:16px; border-bottom:1px solid #30363d; padding-bottom:8px; }
+.chart-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:24px; }
+.chart-box { background:#0d1117; border:1px solid #30363d; border-radius:6px; padding:12px; }
+.chart-box h3 { font-size:13px; color:#8b949e; margin-bottom:8px; text-align:center; }
+.chart { width:100%; height:360px; }
+.chart-full { width:100%; height:400px; }
+.chart-tall { width:100%; height:480px; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th { background:#21262d; color:#8b949e; padding:8px 12px; text-align:right; border-bottom:2px solid #30363d; }
+th:first-child { text-align:left; }
+td { padding:8px 12px; text-align:right; border-bottom:1px solid #30363d; }
+td:first-child { text-align:left; color:#c9d1d9; font-weight:600; }
+tr:hover { background:#1c2128; }
+.highlight { background:#1c3a5f !important; }
+.tag { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; }
+.tag-puzzle { background:rgba(88,166,255,0.15); color:#58a6ff; }
+.tag-treasure { background:rgba(63,185,80,0.15); color:#3fb950; }
+.tag-food { background:rgba(210,153,34,0.15); color:#d29922; }
+.tag-ctrl { background:rgba(139,148,158,0.15); color:#8b949e; }
+.insight { background:#1c2128; border-left:3px solid #d29922; padding:12px 16px; margin-top:16px; border-radius:0 6px 6px 0; font-size:13px; line-height:1.6; }
+.insight strong { color:#d29922; }
+.footer { text-align:center; color:#484f58; font-size:12px; margin-top:30px; }
+.legend-row { display:flex; justify-content:center; gap:20px; margin-bottom:16px; }
+.legend-item { display:flex; align-items:center; gap:6px; font-size:12px; color:#8b949e; }
+.legend-dot { width:10px; height:10px; border-radius:50%; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>📊 4日活动横向对比分析</h1>
+  <div class="subtitle">
+    🧩 PuzzleToy 露娜玩具拼图 (6.8-6.11) &nbsp;|&nbsp; 🎣 TreasureHunt 山姆水塘钓鱼 (6.15-6.18) &nbsp;|&nbsp; 🍔 FoodCollection 凯的食品券兑换 (6.22-6.25)
+  </div>
+</div>
+
+<!-- ============ 概览卡片 ============ -->
+<div class="summary-cards">
+  <div class="card">
+    <div class="label">总参与人数（三活动合计）</div>
+    <div class="value blue">10,492</div>
+    <div class="sub">PuzzleToy 1,781 · TreasureHunt 5,095 · FoodCollection 3,616</div>
+  </div>
+  <div class="card">
+    <div class="label">最高整体付费率</div>
+    <div class="value green">TreasureHunt</div>
+    <div class="sub">深度玩家(15关) 付费率 69.2%</div>
+  </div>
+  <div class="card">
+    <div class="label">最高 ARPPU</div>
+    <div class="value orange">TreasureHunt</div>
+    <div class="sub">循环关(15) $45.24 / 人</div>
+  </div>
+  <div class="card">
+    <div class="label">最高参与渗透</div>
+    <div class="value purple">TreasureHunt</div>
+    <div class="sub">对照组仅85人，几乎全服参与</div>
+  </div>
+</div>
+
+<!-- ============ 1. 参与规模对比 ============ -->
+<div class="section">
+  <h2>📈 1. 参与规模与渗透率对比</h2>
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>参与人数 vs 对照组</h3>
+      <div id="chart_scale" class="chart"></div>
+    </div>
+    <div class="chart-box">
+      <h3>活动渗透率（参与/总活跃）</h3>
+      <div id="chart_penetration" class="chart"></div>
+    </div>
+  </div>
+  <table>
+    <tr><th>指标</th><th><span class="tag tag-puzzle">🧩 PuzzleToy</span></th><th><span class="tag tag-treasure">🎣 TreasureHunt</span></th><th><span class="tag tag-food">🍔 FoodCollection</span></th></tr>
+    <tr><td>活动时间</td><td>6.8 - 6.11</td><td>6.15 - 6.18</td><td>6.22 - 6.25</td></tr>
+    <tr><td>参与人数</td><td>1,781</td><td>5,095</td><td>3,616</td></tr>
+    <tr><td>同期活跃（对照组）</td><td>1,964</td><td>85</td><td>2,659</td></tr>
+    <tr><td>渗透率</td><td>47.6%</td><td>98.4%</td><td>57.6%</td></tr>
+    <tr><td>活动类型</td><td>拼图收集类</td><td>闯关寻宝类</td><td>合成收集类</td></tr>
+    <tr><td>进度层级数</td><td>5 档 (拼图图片)</td><td>15 关 (10普通+5循环)</td><td>13 档 (12固定+循环)</td></tr>
+  </table>
+  <div class="insight">
+    <strong>💡 发现：</strong>TreasureHunt 渗透率 98.4% 远超其他两个活动，说明钓鱼闯关玩法对全服玩家的吸引力最强。PuzzleToy 渗透率最低(47.6%)，可能与拼图玩法门槛或该时期活跃基数有关。
+  </div>
+</div>
+
+<!-- ============ 2. 整体消费行为对比 ============ -->
+<div class="section">
+  <h2>💰 2. 整体消费行为对比</h2>
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>日均体力消耗（按深度分组）</h3>
+      <div id="chart_energy" class="chart-tall"></div>
+    </div>
+    <div class="chart-box">
+      <h3>日均宝石消耗（按深度分组）</h3>
+      <div id="chart_gems" class="chart-tall"></div>
+    </div>
+  </div>
+  <table>
+    <tr>
+      <th>分组</th>
+      <th colspan="3">日均体力</th>
+      <th colspan="3">日均宝石</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th><span class="tag tag-puzzle">PuzzleToy</span></th>
+      <th><span class="tag tag-treasure">TreasureHunt</span></th>
+      <th><span class="tag tag-food">FoodCollection</span></th>
+      <th><span class="tag tag-puzzle">PuzzleToy</span></th>
+      <th><span class="tag tag-treasure">TreasureHunt</span></th>
+      <th><span class="tag tag-food">FoodCollection</span></th>
+    </tr>
+    <tr><td>入门层</td><td>592</td><td>246</td><td>340</td><td>30</td><td>9</td><td>17</td></tr>
+    <tr><td>中间层</td><td>878</td><td>623</td><td>613</td><td>51</td><td>36</td><td>31</td></tr>
+    <tr><td>深度/循环层</td><td>1,313</td><td>1,972</td><td>1,285</td><td>140</td><td>443</td><td>157</td></tr>
+    <tr class="highlight"><td><span class="tag tag-ctrl">对照组</span></td><td>256</td><td>234</td><td>245</td><td>9</td><td>39</td><td>11</td></tr>
+    <tr><td>深度层 vs 对照倍数</td><td>5.1x</td><td>8.4x</td><td>5.2x</td><td>15.6x</td><td>11.4x</td><td>14.3x</td></tr>
+  </table>
+  <div class="insight">
+    <strong>💡 发现：</strong>TreasureHunt 深度玩家日均体力 1,972 和宝石 443 均为三活动最高，体力消耗是对照组的 8.4 倍。但 PuzzleToy 入门层体力消耗(592)反而最高，门槛即已需要较多投入。
+  </div>
+</div>
+
+<!-- ============ 3. 付费行为对比 ============ -->
+<div class="section">
+  <h2>💳 3. 付费行为横向对比</h2>
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>深度玩家付费率对比</h3>
+      <div id="chart_pay_rate" class="chart"></div>
+    </div>
+    <div class="chart-box">
+      <h3>深度玩家 ARPU / ARPPU 对比</h3>
+      <div id="chart_arpu" class="chart"></div>
+    </div>
+  </div>
+  <table>
+    <tr>
+      <th>付费指标</th>
+      <th><span class="tag tag-puzzle">🧩 PuzzleToy</span></th>
+      <th><span class="tag tag-treasure">🎣 TreasureHunt</span></th>
+      <th><span class="tag tag-food">🍔 FoodCollection</span></th>
+    </tr>
+    <tr><td>入门层付费率</td><td>2.5%</td><td>0.9%</td><td>1.8%</td></tr>
+    <tr><td>中间层付费率</td><td>6.4%</td><td>5.0%</td><td>6.9%</td></tr>
+    <tr><td>深度/循环层付费率</td><td>25.5%</td><td>69.2%</td><td>40.4%</td></tr>
+    <tr class="highlight"><td>对照组付费率</td><td>1.2%</td><td>2.4%</td><td>0.9%</td></tr>
+    <tr><td>入门层 ARPU</td><td>$0.18</td><td>$0.09</td><td>$0.14</td></tr>
+    <tr><td>深度层 ARPU</td><td>$6.03</td><td>$31.32</td><td>$9.42</td></tr>
+    <tr><td>深度层 ARPPU</td><td>$23.63</td><td>$45.24</td><td>$23.33</td></tr>
+    <tr><td>对照组 ARPU</td><td>$0.08</td><td>$0.82</td><td>$0.11</td></tr>
+  </table>
+  <div class="insight">
+    <strong>💡 发现：</strong>TreasureHunt 循环关(第15关)付费率高达 69.2%、ARPPU $45.24，变现能力远超其他两个活动。但 FoodCollection 循环档(第13档)表现也不错：付费率 40.4%、ARPPU $23.33，覆盖人数(421人)也最多。PuzzleToy 深度玩家仅243人触及最高阶段。
+  </div>
+</div>
+
+<!-- ============ 4. 深度玩家占比 ============ -->
+<div class="section">
+  <h2>🏆 4. 玩家深度分布对比</h2>
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>各层级占比对比（归一化）</h3>
+      <div id="chart_depth" class="chart-tall"></div>
+    </div>
+    <div class="chart-box">
+      <h3>到达率漏斗（按进度百分位）</h3>
+      <div id="chart_funnel" class="chart-tall"></div>
+    </div>
+  </div>
+  <table>
+    <tr><th>进度</th>
+      <th colspan="2"><span class="tag tag-puzzle">PuzzleToy</span></th>
+      <th colspan="2"><span class="tag tag-treasure">TreasureHunt</span></th>
+      <th colspan="2"><span class="tag tag-food">FoodCollection</span></th>
+    </tr>
+    <tr><th></th><th>人数</th><th>到达率</th><th>人数</th><th>到达率</th><th>人数</th><th>到达率</th></tr>
+    <tr><td>入门（最低阶段）</td><td>322 (18.1%)</td><td>100%</td><td>2,335 (45.8%)</td><td>100%</td><td>169 (4.7%)</td><td>100%</td></tr>
+    <tr><td>1/4 进度</td><td>—</td><td>81.9%</td><td>—</td><td>34.1%</td><td>—</td><td>81.6%</td></tr>
+    <tr><td>半程</td><td>—</td><td>48.5%</td><td>—</td><td>18.8%</td><td>—</td><td>51.7%</td></tr>
+    <tr><td>3/4 进度</td><td>—</td><td>28.2%</td><td>—</td><td>5.4%</td><td>—</td><td>24.5%</td></tr>
+    <tr class="highlight"><td>最深层级/循环</td><td>243 (13.6%)</td><td>13.6%</td><td>65 (1.3%)</td><td>1.3%</td><td>421 (11.6%)</td><td>11.6%</td></tr>
+  </table>
+  <div class="insight">
+    <strong>💡 发现：</strong>TreasureHunt 第1关流失率极高(45.8%停在第1关)，但到达最深循环层的绝对人数(65人)最少。FoodCollection 半程到达率51.7%最健康，且进入循环层的人数(421人)最多，说明积分累计制的推进节奏最舒适。PuzzleToy 入门层停留最少(18.1%)，说明拼图机制引导顺畅。
+  </div>
+</div>
+
+<!-- ============ 5. 每日参与趋势 ============ -->
+<div class="section">
+  <h2>📅 5. 每日参与趋势对比</h2>
+  <div class="chart-box" style="margin-bottom:16px;">
+    <h3>每日参与人数（Day 1 ~ Day 4）</h3>
+    <div id="chart_daily" class="chart"></div>
+  </div>
+  <table>
+    <tr><th>天数</th>
+      <th><span class="tag tag-puzzle">PuzzleToy</span></th>
+      <th><span class="tag tag-treasure">TreasureHunt</span></th>
+      <th><span class="tag tag-food">FoodCollection</span></th>
+    </tr>
+    <tr><td>Day 1</td><td>772</td><td>2,326</td><td>1,936</td></tr>
+    <tr><td>Day 2</td><td>884 (+14.5%)</td><td>2,124 (-8.7%)</td><td>2,106 (+8.8%)</td></tr>
+    <tr><td>Day 3</td><td>980 (+10.9%)</td><td>2,067 (-2.7%)</td><td>2,105 (0%)</td></tr>
+    <tr><td>Day 4</td><td>1,061 (+8.3%)</td><td>2,162 (+4.6%)</td><td>2,171 (+3.1%)</td></tr>
+    <tr class="highlight"><td>Day4 vs Day1</td><td>+37.4%</td><td>-7.0%</td><td>+12.1%</td></tr>
+  </table>
+  <div class="insight">
+    <strong>💡 发现：</strong>PuzzleToy 参与人数逐日递增(+37.4%)，呈现口碑扩散效应。TreasureHunt Day1最高后逐日小幅回落，首日冲击明显但留存略弱。FoodCollection 稳步增长，Day2-4基本持平在2,100+。
+  </div>
+</div>
+
+<!-- ============ 6. 活动收入贡献估算 ============ -->
+<div class="section">
+  <h2>💵 6. 活动收入贡献估算</h2>
+  <div class="chart-box" style="margin-bottom:16px;">
+    <h3>各活动估算总收入 vs 对照基线</h3>
+    <div id="chart_revenue" class="chart"></div>
+  </div>
+  <table>
+    <tr><th>指标</th>
+      <th><span class="tag tag-puzzle">🧩 PuzzleToy</span></th>
+      <th><span class="tag tag-treasure">🎣 TreasureHunt</span></th>
+      <th><span class="tag tag-food">🍔 FoodCollection</span></th>
+    </tr>
+    <tr><td>参与人数</td><td>1,781</td><td>5,095</td><td>3,616</td></tr>
+    <tr><td>付费人数（估算）</td><td>136</td><td>255</td><td>346</td></tr>
+    <tr><td>整体付费率（估算）</td><td>7.6%</td><td>5.0%</td><td>9.6%</td></tr>
+    <tr><td>加权 ARPU</td><td>~$1.05</td><td>~$1.60</td><td>~$1.56</td></tr>
+    <tr class="highlight"><td>估算总收入</td><td>~$1,870</td><td>~$8,150</td><td>~$5,640</td></tr>
+    <tr><td>对照基线（人均 × 人数）</td><td>~$157</td><td>~$70</td><td>~$398</td></tr>
+    <tr><td>活动增量收入</td><td>~$1,713</td><td>~$8,080</td><td>~$5,242</td></tr>
+  </table>
+  <div class="insight">
+    <strong>💡 发现：</strong>TreasureHunt 虽然整体付费率(~5%)不是最高，但凭借庞大参与基数(5,095人)和极高的深度玩家 ARPPU，估算总收入约 $8,150 居首。FoodCollection 以最高整体付费率(~9.6%)位居第二。PuzzleToy 参与基数最小，收入规模也最小。
+  </div>
+</div>
+
+<!-- ============ 7. 综合评分 ============ -->
+<div class="section">
+  <h2>🎯 7. 综合评估与建议</h2>
+  <table>
+    <tr><th>评估维度</th>
+      <th><span class="tag tag-puzzle">🧩 PuzzleToy</span></th>
+      <th><span class="tag tag-treasure">🎣 TreasureHunt</span></th>
+      <th><span class="tag tag-food">🍔 FoodCollection</span></th>
+    </tr>
+    <tr><td>参与吸引力</td><td>⭐⭐ (47.6%渗透)</td><td>⭐⭐⭐⭐⭐ (98.4%)</td><td>⭐⭐⭐ (57.6%)</td></tr>
+    <tr><td>进度推进流畅度</td><td>⭐⭐⭐⭐ (18.1%停在入门)</td><td>⭐⭐ (45.8%停在第1关)</td><td>⭐⭐⭐⭐⭐ (仅4.7%停在第1档)</td></tr>
+    <tr><td>深度玩家变现力</td><td>⭐⭐⭐ ($23.63 ARPPU)</td><td>⭐⭐⭐⭐⭐ ($45.24 ARPPU)</td><td>⭐⭐⭐ ($23.33 ARPPU)</td></tr>
+    <tr><td>循环层覆盖广度</td><td>⭐⭐⭐ (243人/13.6%)</td><td>⭐ (65人/1.3%)</td><td>⭐⭐⭐⭐⭐ (421人/11.6%)</td></tr>
+    <tr><td>参与增长趋势</td><td>⭐⭐⭐⭐⭐ (+37.4%增长)</td><td>⭐⭐ (-7%衰减)</td><td>⭐⭐⭐ (+12.1%增长)</td></tr>
+    <tr class="highlight"><td>估算总收入</td><td>~$1,870</td><td>~$8,150</td><td>~$5,640</td></tr>
+  </table>
+
+  <div class="insight" style="border-left-color:#3fb950;">
+    <strong style="color:#3fb950;">🎣 TreasureHunt 优势：</strong>
+    参与渗透碾压（近全服参与），深度玩家变现能力极强（ARPPU $45），总收入最高。<br>
+    <strong>⚠️ 风险：</strong>第1关流失 45.8% 是严重短板，建议降低前3关Token消耗门槛，让更多玩家进入中段。循环层仅65人过窄。
+  </div>
+  <div class="insight" style="border-left-color:#d29922;">
+    <strong style="color:#d29922;">🍔 FoodCollection 优势：</strong>
+    进度推进最流畅（95.3%到达第2档），循环层覆盖421人最广，整体付费率最高(~9.6%)，是"做大蛋糕"型的均衡活动。<br>
+    <strong>⚠️ 建议：</strong>循环档 ARPPU 仍有提升空间，可增设更高积分段的稀有奖励。
+  </div>
+  <div class="insight" style="border-left-color:#58a6ff;">
+    <strong style="color:#58a6ff;">🧩 PuzzleToy 优势：</strong>
+    参与人数逐日增长 +37.4%，口碑发酵效应最强。入门引导流畅（仅18.1%停在首阶段）。<br>
+    <strong>⚠️ 建议：</strong>总参与基数小(1,781人)、渗透率最低，建议加强首日活动入口曝光和推送，让更多人"看到"活动。
+  </div>
+</div>
+
+<div class="footer">
+  数据来源：ThinkingData · 项目 Merge Hope · 活动期间 2026.6.8 ~ 2026.6.25 · 报告生成于 2026.6.30
+</div>
+
+<script>
+// 颜色定义
+const C = { puzzle:'#58a6ff', treasure:'#3fb950', food:'#d29922', ctrl:'#8b949e' };
+
+// ===== 图1: 参与规模 =====
+echarts.init(document.getElementById('chart_scale')).setOption({
+  tooltip:{ trigger:'axis' },
+  legend:{ data:['参与人数','对照组'], textStyle:{color:'#8b949e'}, top:0 },
+  grid:{ top:40, bottom:30, left:50, right:20 },
+  xAxis:{ type:'category', data:['PuzzleToy','TreasureHunt','FoodCollection'], axisLabel:{color:'#8b949e'}, axisLine:{lineStyle:{color:'#30363d'}} },
+  yAxis:{ type:'value', axisLabel:{color:'#8b949e'}, splitLine:{lineStyle:{color:'#21262d'}} },
+  series:[
+    { name:'参与人数', type:'bar', data:[1781,5095,3616], itemStyle:{color:C.puzzle}, barMaxWidth:40,
+      itemStyle:{ color:function(p){ return [C.puzzle,C.treasure,C.food][p.dataIndex]; } }
+    },
+    { name:'对照组', type:'bar', data:[1964,85,2659], itemStyle:{color:'#484f58'}, barMaxWidth:40 }
+  ]
+});
+
+// ===== 图2: 渗透率 =====
+echarts.init(document.getElementById('chart_penetration')).setOption({
+  tooltip:{ trigger:'axis', formatter:'{b}: {c}%' },
+  grid:{ top:20, bottom:30, left:50, right:30 },
+  xAxis:{ type:'category', data:['PuzzleToy','TreasureHunt','FoodCollection'], axisLabel:{color:'#8b949e'}, axisLine:{lineStyle:{color:'#30363d'}} },
+  yAxis:{ type:'value', max:100, axisLabel:{color:'#8b949e', formatter:'{value}%'}, splitLine:{lineStyle:{color:'#21262d'}} },
+  series:[{
+    type:'bar', data:[
+      {value:47.6, itemStyle:{color:C.puzzle}},
+      {value:98.4, itemStyle:{color:C.treasure}},
+      {value:57.6, itemStyle:{color:C.food}}
+    ], barMaxWidth:50,
+    label:{ show:true, position:'top', formatter:'{c}%', color:'#c9d1d9', fontSize:13, fontWeight:'bold' }
+  }]
+});
+
+// ===== 图3: 日均体力分层 =====
+echarts.init(document.getElementById('chart_energy')).setOption({
+  tooltip:{ trigger:'axis' },
+  legend:{ data:['PuzzleToy','TreasureHunt','FoodCollection','对照组'], textStyle:{color:'#8b949e'}, top:0 },
+  grid:{ top:40, bottom:30, left:60, right:20 },
+  xAxis:{ type:'category', data:['入门层','中间层','深度/循环层'], axisLabel:{color:'#8b949e'}, axisLine:{lineStyle:{color:'#30363d'}} },
+  yAxis:{ type:'value', name:'日均体力', nameTextStyle:{color:'#8b949e'}, axisLabel:{color:'#8b949e'}, splitLine:{lineStyle:{color:'#21262d'}} },
+  series:[
+    { name:'PuzzleToy', type:'bar', data:[592,878,1313], itemStyle:{color:C.puzzle} },
+    { name:'TreasureHunt', type:'bar', data:[246,623,1972], itemStyle:{color:C.treasure} },
+    { name:'FoodCollection', type:'bar', data:[340,613,1285], itemStyle:{color:C.food} },
+    { name:'对照组', type:'line', data:[256,256,256], lineStyle:{type:'dashed',color:C.ctrl}, symbol:'none' }
+  ]
+});
+
+// ===== 图4: 日均宝石分层 =====
+echarts.init(document.getElementById('chart_gems')).setOption({
+  tooltip:{ trigger:'axis' },
+  legend:{ data:['PuzzleToy','TreasureHunt','FoodCollection','对照组(avg)'], textStyle:{color:'#8b949e'}, top:0 },
+  grid:{ top:40, bottom:30, left:60, right:20 },
+  xAxis:{ type:'category', data:['入门层','中间层','深度/循环层'], axisLabel:{color:'#8b949e'}, axisLine:{lineStyle:{color:'#30363d'}} },
+  yAxis:{ type:'value', name:'日均宝石', nameTextStyle:{color:'#8b949e'}, axisLabel:{color:'#8b949e'}, splitLine:{lineStyle:{color:'#21262d'}} },
+  series:[
+    { name:'PuzzleToy', type:'bar', data:[30,51,140], itemStyle:{color:C.puzzle} },
+    { name:'TreasureHunt', type:'bar', data:[9,36,443], itemStyle:{color:C.treasure} },
+    { name:'FoodCollection', type:'bar', data:[17,31,157], itemStyle:{color:C.food} },
+    { name:'对照组(avg)', type:'line', data:[20,20,20], lineStyle:{type:'dashed',color:C.ctrl}, symbol:'none' }
+  ]
+});
+
+// ===== 图5: 深度玩家付费率 =====
+echarts.init(document.getElementById('chart_pay_rate')).setOption({
+  tooltip:{ trigger:'axis', formatter:function(p){ return p.map(s=>s.seriesName+': '+s.value+'%').join('<br>'); } },
+  legend:{ data:['PuzzleToy','TreasureHunt','FoodCollection'], textStyle:{color:'#8b949e'}, top:0 },
+  grid:{ top:40, bottom:30, left:50, right:20 },
+  xAxis:{ type:'category', data:['入门层','中间层','深度/循环层','对照组'], axisLabel:{color:'#8b949e'}, axisLine:{lineStyle:{color:'#30363d'}} },
+  yAxis:{ type:'value', max:80, axisLabel:{color:'#8b949e', formatter:'{value}%'}, splitLine:{lineStyle:{color:'#21262d'}} },
+  series:[
+    { name:'PuzzleToy', type:'line', data:[2.5,6.4,25.5,1.2], itemStyle:{color:C.puzzle}, lineStyle:{width:2}, symbolSize:8 },
+    { name:'TreasureHunt', type:'line', data:[0.9,5.0,69.2,2.4], itemStyle:{color:C.treasure}, lineStyle:{width:2}, symbolSize:8 },
+    { name:'FoodCollection', type:'line', data:[1.8,6.9,40.4,0.9], itemStyle:{color:C.food}, lineStyle:{width:2}, symbolSize:8 }
+  ]
+});
+
+// ===== 图6: ARPU / ARPPU =====
+echarts.init(document.getElementById('chart_arpu')).setOption({
+  tooltip:{ trigger:'axis', formatter:function(p){ return p.map(s=>s.seriesName+': $'+s.value).join('<br>'); } },
+  legend:{ data:['深度层 ARPU','深度层 ARPPU'], textStyle:{color:'#8b949e'}, top:0 },
+  grid:{ top:40, bottom:30, left:50, right:20 },
+  xAxis:{ type:'category', data:['PuzzleToy','TreasureHunt','FoodCollection'], axisLabel:{color:'#8b949e'}, axisLine:{lineStyle:{color:'#30363d'}} },
+  yAxis:{ type:'value', name:'USD', nameTextStyle:{color:'#8b949e'}, axisLabel:{color:'#8b949e', formatter:'${value}'}, splitLine:{lineStyle:{color:'#21262d'}} },
+  series:[
+    { name:'深度层 ARPU', type:'bar', data:[6.03,31.32,9.42],
+      itemStyle:{ color:function(p){ return [C.puzzle,C.treasure,C.food][p.dataIndex]; } }, barMaxWidth:35
+    },
+    { name:'深度层 ARPPU', type:'bar', data:[23.63,45.24,23.33],
+      itemStyle:{ color:function(p){ return [C.puzzle,C.treasure,C.food][p.dataIndex]; }, opacity:0.6 }, barMaxWidth:35
+    }
+  ]
+});
+
+// ===== 图7: 玩家深度分布 =====
+echarts.init(document.getElementById('chart_depth')).setOption({
+  tooltip:{ trigger:'axis' },
+  legend:{ data:['PuzzleToy','TreasureHunt','FoodCollection'], textStyle:{color:'#8b949e'}, top:0 },
+  grid:{ top:40, bottom:30, left:50, right:20 },
+  xAxis:{ type:'category', data:['入门(停留最低)','低段','中段','中高段','深度/循环'], axisLabel:{color:'#8b949e'}, axisLine:{lineStyle:{color:'#30363d'}} },
+  yAxis:{ type:'value', axisLabel:{color:'#8b949e', formatter:'{value}%'}, splitLine:{lineStyle:{color:'#21262d'}} },
+  series:[
+    { name:'PuzzleToy', type:'bar', data:[18.1,33.4,20.3,14.6,13.6], itemStyle:{color:C.puzzle} },
+    { name:'TreasureHunt', type:'bar', data:[45.8,27.9,11.1,3.9,1.3], itemStyle:{color:C.treasure} },
+    { name:'FoodCollection', type:'bar', data:[4.7,25.3,20.6,13.2,11.6], itemStyle:{color:C.food} }
+  ]
+});
+
+// ===== 图8: 到达率漏斗 =====
+echarts.init(document.getElementById('chart_funnel')).setOption({
+  tooltip:{ trigger:'axis', formatter:function(p){ return p[0].axisValue+'<br>'+p.map(s=>s.seriesName+': '+s.value+'%').join('<br>'); } },
+  legend:{ data:['PuzzleToy','TreasureHunt','FoodCollection'], textStyle:{color:'#8b949e'}, top:0 },
+  grid:{ top:40, bottom:30, left:50, right:20 },
+  xAxis:{ type:'category', data:['100%起点','1/4进度','半程','3/4进度','最深层'], axisLabel:{color:'#8b949e'}, axisLine:{lineStyle:{color:'#30363d'}} },
+  yAxis:{ type:'value', max:100, axisLabel:{color:'#8b949e', formatter:'{value}%'}, splitLine:{lineStyle:{color:'#21262d'}} },
+  series:[
+    { name:'PuzzleToy', type:'line', data:[100,81.9,48.5,28.2,13.6], itemStyle:{color:C.puzzle}, lineStyle:{width:3}, symbolSize:8, areaStyle:{opacity:0.05} },
+    { name:'TreasureHunt', type:'line', data:[100,34.1,18.8,5.4,1.3], itemStyle:{color:C.treasure}, lineStyle:{width:3}, symbolSize:8, areaStyle:{opacity:0.05} },
+    { name:'FoodCollection', type:'line', data:[100,81.6,51.7,24.5,11.6], itemStyle:{color:C.food}, lineStyle:{width:3}, symbolSize:8, areaStyle:{opacity:0.05} }
+  ]
+});
+
+// ===== 图9: 每日参与趋势 =====
+echarts.init(document.getElementById('chart_daily')).setOption({
+  tooltip:{ trigger:'axis' },
+  legend:{ data:['PuzzleToy','TreasureHunt','FoodCollection'], textStyle:{color:'#8b949e'}, top:0 },
+  grid:{ top:40, bottom:30, left:50, right:20 },
+  xAxis:{ type:'category', data:['Day 1','Day 2','Day 3','Day 4'], axisLabel:{color:'#8b949e'}, axisLine:{lineStyle:{color:'#30363d'}} },
+  yAxis:{ type:'value', axisLabel:{color:'#8b949e'}, splitLine:{lineStyle:{color:'#21262d'}} },
+  series:[
+    { name:'PuzzleToy', type:'line', data:[772,884,980,1061], itemStyle:{color:C.puzzle}, lineStyle:{width:3}, symbolSize:10 },
+    { name:'TreasureHunt', type:'line', data:[2326,2124,2067,2162], itemStyle:{color:C.treasure}, lineStyle:{width:3}, symbolSize:10 },
+    { name:'FoodCollection', type:'line', data:[1936,2106,2105,2171], itemStyle:{color:C.food}, lineStyle:{width:3}, symbolSize:10 }
+  ]
+});
+
+// ===== 图10: 收入估算 =====
+echarts.init(document.getElementById('chart_revenue')).setOption({
+  tooltip:{ trigger:'axis', formatter:function(p){ return p.map(s=>s.seriesName+': $'+s.value.toLocaleString()).join('<br>'); } },
+  legend:{ data:['活动增量收入','对照基线'], textStyle:{color:'#8b949e'}, top:0 },
+  grid:{ top:40, bottom:30, left:60, right:20 },
+  xAxis:{ type:'category', data:['PuzzleToy','TreasureHunt','FoodCollection'], axisLabel:{color:'#8b949e'}, axisLine:{lineStyle:{color:'#30363d'}} },
+  yAxis:{ type:'value', name:'USD', nameTextStyle:{color:'#8b949e'}, axisLabel:{color:'#8b949e', formatter:'${value}'}, splitLine:{lineStyle:{color:'#21262d'}} },
+  series:[
+    { name:'活动增量收入', type:'bar', data:[
+      {value:1713, itemStyle:{color:C.puzzle}},
+      {value:8080, itemStyle:{color:C.treasure}},
+      {value:5242, itemStyle:{color:C.food}}
+    ], barMaxWidth:50, stack:'total',
+      label:{ show:true, position:'top', formatter:'${c}', color:'#c9d1d9', fontSize:12 }
+    },
+    { name:'对照基线', type:'bar', data:[157,70,398], itemStyle:{color:'#484f58'}, barMaxWidth:50, stack:'total' }
+  ]
+});
+</script>
+</body>
+</html>

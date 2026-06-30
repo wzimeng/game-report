@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>露娜玩具拼图活动分析 — PuzzleToy</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+* { margin:0; padding:0; box-sizing:border-box; }
+body { background:#0d1117; color:#c9d1d9; font-family:'Segoe UI','Microsoft YaHei',sans-serif; padding:20px; }
+.header { text-align:center; margin-bottom:30px; }
+.header h1 { font-size:24px; color:#58a6ff; margin-bottom:8px; }
+.header .subtitle { color:#8b949e; font-size:14px; line-height:1.8; }
+.summary-cards { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; margin-bottom:30px; }
+.card { background:#161b22; border:1px solid #30363d; border-radius:8px; padding:16px; text-align:center; }
+.card .label { font-size:12px; color:#8b949e; margin-bottom:6px; }
+.card .value { font-size:22px; font-weight:700; }
+.card .value.blue { color:#58a6ff; }
+.card .value.green { color:#3fb950; }
+.card .value.orange { color:#d29922; }
+.card .value.red { color:#f85149; }
+.card .value.purple { color:#bc8cff; }
+.card .sub { font-size:11px; color:#8b949e; margin-top:4px; }
+.section { background:#161b22; border:1px solid #30363d; border-radius:8px; padding:20px; margin-bottom:24px; }
+.section h2 { font-size:16px; color:#58a6ff; margin-bottom:16px; border-bottom:1px solid #30363d; padding-bottom:8px; }
+.chart-row { display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-bottom:24px; }
+.chart-box { background:#0d1117; border:1px solid #30363d; border-radius:6px; padding:12px; }
+.chart-box h3 { font-size:13px; color:#8b949e; margin-bottom:8px; text-align:center; }
+.chart { width:100%; height:360px; }
+.chart-full { width:100%; height:400px; }
+.chart-tall { width:100%; height:450px; }
+table { width:100%; border-collapse:collapse; font-size:13px; }
+th { background:#21262d; color:#8b949e; padding:8px 12px; text-align:right; border-bottom:2px solid #30363d; }
+th:first-child { text-align:left; }
+td { padding:8px 12px; text-align:right; border-bottom:1px solid #30363d; }
+td:first-child { text-align:left; color:#c9d1d9; font-weight:600; }
+tr:hover { background:#1c2128; }
+.highlight { background:#1c3a5f !important; }
+.tag { display:inline-block; padding:2px 8px; border-radius:10px; font-size:11px; font-weight:600; }
+.tag-main { background:rgba(88,166,255,0.15); color:#58a6ff; }
+.tag-ref { background:rgba(139,148,158,0.15); color:#8b949e; }
+.tag-milestone { background:rgba(210,153,34,0.15); color:#d29922; }
+.insight { background:#1c2128; border-left:3px solid #d29922; padding:12px 16px; margin-top:16px; border-radius:0 6px 6px 0; font-size:13px; line-height:1.6; }
+.insight strong { color:#d29922; }
+.footer { text-align:center; color:#484f58; font-size:12px; margin-top:30px; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>🧩 露娜的玩具拼图活动分析 — PuzzleToy</h1>
+  <div class="subtitle">
+    <span class="tag tag-main">活动时间 6.8-6.11</span>
+    &nbsp;|&nbsp; 活动类型: PuzzleToy &nbsp;|&nbsp; 4日活动 · 拼图碎片收集<br>
+    完成订单获取拼图碎片 → 拼完一张图领奖(9/16/25块) → 累计碎片进度奖
+  </div>
+</div>
+
+<!-- 概览卡片 -->
+<div class="summary-cards">
+  <div class="card">
+    <div class="label">活动参与人数</div>
+    <div class="value blue">1,781</div>
+    <div class="sub">同期活跃未参与: 1,964人</div>
+  </div>
+  <div class="card">
+    <div class="label">25块拼图到达率</div>
+    <div class="value green">28.2%</div>
+    <div class="sub">503人到达25块拼图阶段</div>
+  </div>
+  <div class="card">
+    <div class="label">25块进阶付费率</div>
+    <div class="value orange">25.5%</div>
+    <div class="sub">vs 对照组1.2%</div>
+  </div>
+  <div class="card">
+    <div class="label">25块进阶日均体力</div>
+    <div class="value purple">1,313</div>
+    <div class="sub">vs 对照组256 (5.1x)</div>
+  </div>
+  <div class="card">
+    <div class="label">拼图完成峰值</div>
+    <div class="value red">16张=32.9%</div>
+    <div class="sub">9张=25.8% | 25张=14.1%</div>
+  </div>
+</div>
+
+<!-- 1. 拼图阶段停留分布 -->
+<div class="section">
+  <h2>🧩 1. 拼图阶段停留分布与消费行为</h2>
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>各阶段停留人数占比</h3>
+      <div id="chart_stage" class="chart"></div>
+    </div>
+    <div class="chart-box">
+      <h3>各阶段付费率 vs 对照组</h3>
+      <div id="chart_payrate" class="chart"></div>
+    </div>
+  </div>
+  <table>
+    <thead>
+      <tr><th>拼图阶段</th><th>拼图类型</th><th>人数</th><th>占比</th><th>日均体力</th><th>日均宝石</th><th>付费率</th><th>ARPU$</th><th>ARPPU$</th><th>平均碎片</th><th>平均拼图数</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>第1阶段</td><td>9块拼图(3×3)</td><td>322</td><td>18.1%</td><td>592</td><td>30</td><td>2.5%</td><td>$0.18</td><td>$7.24</td><td>2.3</td><td>5.4</td></tr>
+      <tr class="highlight"><td>第2阶段</td><td>16块拼图(4×4)</td><td>595</td><td>33.4%</td><td>719</td><td>32</td><td>3.2%</td><td>$0.20</td><td>$6.30</td><td>3.9</td><td>10.1</td></tr>
+      <tr><td>第3阶段</td><td>16块进阶</td><td>361</td><td>20.3%</td><td>878</td><td>51</td><td>6.4%</td><td>$0.66</td><td>$10.29</td><td>5.5</td><td>16.0</td></tr>
+      <tr><td>第4阶段</td><td>25块拼图(5×5)</td><td>260</td><td>14.6%</td><td>888</td><td>62</td><td>9.2%</td><td>$1.05</td><td>$11.40</td><td>6.9</td><td>17.1</td></tr>
+      <tr style="background:#1a3020;"><td>第5阶段</td><td>25块进阶(最高)</td><td>243</td><td>13.6%</td><td>1,313</td><td>140</td><td>25.5%</td><td>$6.03</td><td>$23.63</td><td>8.3</td><td>25.0</td></tr>
+      <tr style="background:#21262d;"><td><span class="tag tag-ref">对照组</span></td><td>-</td><td>1,964</td><td>-</td><td>256</td><td>9</td><td>1.2%</td><td>$0.08</td><td>-</td><td>-</td><td>-</td></tr>
+    </tbody>
+  </table>
+  <div class="insight">
+    <strong>💡 关键发现：</strong>
+    停留分布呈<strong>"头重型"</strong>：第2阶段(16块拼图)停留最多(33.4%)，说明大量玩家在首张16块拼图处止步。
+    第5阶段(25块进阶)虽仅13.6%到达，但付费率达<strong>25.5%</strong>(vs对照组1.2%)，ARPPU$23.63，体力消耗1,313(5.1x)。
+    拼图难度从9块→16块→25块递增，对应体力消耗从592→719→888→1,313，呈加速增长。
+  </div>
+</div>
+
+<!-- 2. 拼图完成数分布 -->
+<div class="section">
+  <h2>📊 2. 拼图完成数分布（里程碑峰值）</h2>
+  <div class="chart-box" style="margin-bottom:16px;">
+    <div id="chart_puzzle_dist" class="chart-tall"></div>
+  </div>
+  <div class="insight">
+    <strong>💡 关键发现：</strong>
+    完成数分布呈现<strong>三个明显峰值</strong>：
+    <strong>9张(25.8%)</strong> — 完成所有9块拼图后停止，
+    <strong>16张(32.9%)</strong> — 完成所有16块拼图后停止，
+    <strong>25张(14.1%)</strong> — 完成所有25块拼图（最高成就）。
+    说明玩家倾向于<strong>"完成一整类拼图后自然退出"</strong>，而非在半途放弃。
+    这三个里程碑合计占<strong>72.8%</strong>的玩家，中间过渡区域分布稀疏。
+  </div>
+</div>
+
+<!-- 3. 体力消耗 -->
+<div class="section">
+  <h2>⚡ 3. 不同阶段的日均体力消耗</h2>
+  <div class="chart-box" style="margin-bottom:16px;">
+    <div id="chart_energy" class="chart-full"></div>
+  </div>
+  <table>
+    <thead>
+      <tr><th>阶段</th><th>日均体力</th><th>vs对照组倍数</th><th>对照组</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>9块拼图</td><td>592</td><td style="color:#3fb950">2.3x</td><td rowspan="5" style="vertical-align:middle; text-align:center; color:#8b949e;">256</td></tr>
+      <tr><td>16块拼图</td><td>719</td><td style="color:#3fb950">2.8x</td></tr>
+      <tr><td>16块进阶</td><td>878</td><td style="color:#3fb950">3.4x</td></tr>
+      <tr><td>25块拼图</td><td>888</td><td style="color:#3fb950">3.5x</td></tr>
+      <tr><td>25块进阶</td><td>1,313</td><td style="color:#3fb950"><strong>5.1x</strong></td></tr>
+    </tbody>
+  </table>
+  <div class="insight">
+    <strong>💡 关键发现：</strong>
+    即使是最低阶段(9块拼图)的玩家，日均体力(592)也是对照组(256)的<strong>2.3倍</strong>。
+    25块进阶玩家日均体力1,313(5.1x)，<strong>促活效果在所有4日活动中最强</strong>。
+    策划预期"提升日常体力消耗约100"——实际最高阶段提升了<strong>+1,057</strong>，远超预期。
+  </div>
+</div>
+
+<!-- 4. 宝石消耗 -->
+<div class="section">
+  <h2>💎 4. 不同阶段的日均宝石消耗</h2>
+  <div class="chart-box" style="margin-bottom:16px;">
+    <div id="chart_gems" class="chart-full"></div>
+  </div>
+  <table>
+    <thead>
+      <tr><th>阶段</th><th>日均宝石</th><th>vs对照组倍数</th><th>对照组</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>9块拼图</td><td>30</td><td style="color:#3fb950">3.3x</td><td rowspan="5" style="vertical-align:middle; text-align:center; color:#8b949e;">9</td></tr>
+      <tr><td>16块拼图</td><td>32</td><td style="color:#3fb950">3.6x</td></tr>
+      <tr><td>16块进阶</td><td>51</td><td style="color:#3fb950">5.7x</td></tr>
+      <tr><td>25块拼图</td><td>62</td><td style="color:#3fb950">6.9x</td></tr>
+      <tr style="background:#1a3020;"><td>25块进阶</td><td><strong>140</strong></td><td style="color:#3fb950"><strong>15.6x</strong></td></tr>
+    </tbody>
+  </table>
+  <div class="insight">
+    <strong>💡 关键发现：</strong>
+    宝石消耗从9块阶段(30)到25块进阶(140)增长<strong>4.7倍</strong>，呈"后段爆发"模式。
+    25块进阶玩家日均宝石140是对照组(9)的<strong>15.6倍</strong>，在所有活动中宝石驱动力极强。
+    前两个阶段(30-32)差异很小，说明16块拼图难度并不显著高于9块。
+  </div>
+</div>
+
+<!-- 5. 付费分析 -->
+<div class="section">
+  <h2>💰 5. 不同阶段的付费行为</h2>
+  <div class="chart-row">
+    <div class="chart-box">
+      <h3>付费率随拼图阶段变化</h3>
+      <div id="chart_payrate_line" class="chart"></div>
+    </div>
+    <div class="chart-box">
+      <h3>ARPU vs ARPPU 对比</h3>
+      <div id="chart_arpu" class="chart"></div>
+    </div>
+  </div>
+  <div class="insight">
+    <strong>💡 关键发现：</strong><br>
+    ① 付费率阶梯式增长：2.5%→3.2%→6.4%→9.2%→<strong>25.5%</strong>，与拼图难度正相关。<br>
+    ② 25块进阶阶段ARPU达<strong>$6.03</strong>，ARPPU达<strong>$23.63</strong>，是对照组($0.08)的<strong>75倍</strong>。<br>
+    ③ 前两个阶段付费率很低(2.5%-3.2%)，与对照组(1.2%)差距不大，浅层参与者付费意愿弱。<br>
+    ④ 付费"拐点"出现在第3阶段(16块进阶, 6.4%)，此后加速。
+  </div>
+</div>
+
+<!-- 6. 每日参与趋势 -->
+<div class="section">
+  <h2>📈 6. 活动期间每日参与趋势</h2>
+  <div class="chart-box">
+    <div id="chart_daily" class="chart"></div>
+  </div>
+  <table style="margin-top:16px;">
+    <thead>
+      <tr><th>日期</th><th>参与人数</th><th>事件数</th><th>人均事件</th><th>备注</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>6月8日</td><td>772</td><td>12,009</td><td>15.6</td><td>活动开启日</td></tr>
+      <tr><td>6月9日</td><td>884</td><td>14,293</td><td>16.2</td><td>全天开放</td></tr>
+      <tr><td>6月10日</td><td>980</td><td>15,889</td><td>16.2</td><td>全天开放</td></tr>
+      <tr><td>6月11日</td><td>1,061</td><td>15,747</td><td>14.8</td><td>活动结束日</td></tr>
+    </tbody>
+  </table>
+  <div class="insight">
+    <strong>💡 关键发现：</strong>
+    参与人数逐日递增(772→1,061)，<strong>第4天达到峰值</strong>，说明活动吸引力持续增强。
+    人均事件数稳定在15-16次/天，说明拼图碎片获取频次较高，<strong>互动性好</strong>。
+  </div>
+</div>
+
+<!-- 7. 总结 -->
+<div class="section">
+  <h2>📋 7. 分析总结与建议</h2>
+  <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
+    <div>
+      <h3 style="color:#3fb950; margin-bottom:12px;">✅ 正向结论</h3>
+      <ul style="list-style:none; font-size:13px; line-height:2;">
+        <li>🔹 参与人数逐日递增，<strong>活动吸引力持续</strong></li>
+        <li>🔹 体力消耗最低阶段也是对照组2.3x，<strong>促活效果全面覆盖</strong></li>
+        <li>🔹 25块进阶付费率25.5%、ARPPU$23.63，<strong>付费转化优秀</strong></li>
+        <li>🔹 拼图完成数分布呈明确里程碑模式(9/16/25)，<strong>成就感驱动明确</strong></li>
+        <li>🔹 日均宝石消耗是对照组15.6x(25块进阶)，<strong>宝石消耗驱动力极强</strong></li>
+      </ul>
+    </div>
+    <div>
+      <h3 style="color:#d29922; margin-bottom:12px;">⚠️ 关注点与建议</h3>
+      <ul style="list-style:none; font-size:13px; line-height:2;">
+        <li>🔸 33.4%停在16块拼图阶段(最大堵点)，<strong>16块→25块跨度过大</strong></li>
+        <li>🔸 前两阶段付费率仅2.5%-3.2%，<strong>中前段缺乏付费刺激</strong></li>
+        <li>🔸 建议在16块→25块之间增加<strong>过渡难度</strong>（如20块拼图）</li>
+        <li>🔸 9块拼图阶段日均宝石30 vs 对照9，增量有限，<strong>建议加强入门奖励</strong></li>
+        <li>🔸 碎片获取规则(金币≥40→1碎片)偏慢，可考虑<strong>增加碎片获取途径</strong></li>
+      </ul>
+    </div>
+  </div>
+</div>
+
+<div class="footer">
+  数据来源: ThinkingData (HWTA) | 项目ID: 36 | 时区: UTC-4 | 生成时间: 2026-06-30
+</div>
+
+<script>
+const darkTheme = {
+  backgroundColor:'transparent', textStyle:{color:'#c9d1d9'},
+  legend:{textStyle:{color:'#8b949e'}},
+  xAxis:{axisLine:{lineStyle:{color:'#30363d'}},axisLabel:{color:'#8b949e'},splitLine:{lineStyle:{color:'#21262d'}}},
+  yAxis:{axisLine:{lineStyle:{color:'#30363d'}},axisLabel:{color:'#8b949e'},splitLine:{lineStyle:{color:'#21262d'}}}
+};
+const tt = {trigger:'axis',backgroundColor:'#21262d',borderColor:'#30363d',textStyle:{color:'#c9d1d9'}};
+
+const stages = ['9块拼图','16块拼图','16块进阶','25块拼图','25块进阶'];
+const stagePct = [18.1,33.4,20.3,14.6,13.6];
+const energy = [592,719,878,888,1313];
+const gems = [30,32,51,62,140];
+const payrate = [2.5,3.2,6.4,9.2,25.5];
+const arpu = [0.18,0.20,0.66,1.05,6.03];
+const arppu = [7.24,6.30,10.29,11.40,23.63];
+
+// 1. 各阶段停留占比
+const c1 = echarts.init(document.getElementById('chart_stage'));
+c1.setOption({
+  ...darkTheme, tooltip:tt,
+  grid:{left:80,right:20,top:20,bottom:30},
+  xAxis:{type:'value',max:40,axisLabel:{formatter:'{value}%',...darkTheme.xAxis.axisLabel},...darkTheme.xAxis},
+  yAxis:{type:'category',data:stages.slice().reverse(),...darkTheme.yAxis,axisLabel:{color:'#c9d1d9'}},
+  series:[{
+    type:'bar', data:stagePct.slice().reverse(),
+    itemStyle:{color:function(p){
+      const colors = ['#f85149','#d29922','#58a6ff','#3fb950','#bc8cff'];
+      return colors[4-p.dataIndex];
+    }},
+    label:{show:true,position:'right',formatter:'{c}%',color:'#c9d1d9'}
+  }]
+});
+
+// 2. 付费率
+const c2 = echarts.init(document.getElementById('chart_payrate'));
+c2.setOption({
+  ...darkTheme, tooltip:tt,
+  grid:{left:60,right:20,top:30,bottom:30},
+  xAxis:{type:'category',data:stages,...darkTheme.xAxis,axisLabel:{...darkTheme.xAxis.axisLabel,rotate:15}},
+  yAxis:{type:'value',axisLabel:{formatter:'{value}%',...darkTheme.yAxis.axisLabel},...darkTheme.yAxis},
+  series:[
+    {name:'付费率',type:'bar',data:payrate,itemStyle:{color:'#d29922'},label:{show:true,position:'top',formatter:'{c}%',color:'#8b949e'}},
+    {name:'对照组',type:'line',data:[1.2,1.2,1.2,1.2,1.2],lineStyle:{type:'dashed',color:'#f85149'},itemStyle:{color:'#f85149'},symbol:'none'}
+  ]
+});
+
+// 3. 拼图完成数分布
+const c3 = echarts.init(document.getElementById('chart_puzzle_dist'));
+const puzzleX = Array.from({length:25},(_,i)=>i+1);
+const puzzleY = [1.3,1.7,1.4,2.3,2.4,2.1,2.2,1.8,25.8,2.0,1.7,1.7,1.3,1.1,1.1,32.9,0.7,0.2,0.3,0.3,0.4,0.4,0.3,0.2,14.1];
+c3.setOption({
+  ...darkTheme, tooltip:{...tt,formatter:function(p){return p[0].name+'张: '+p[0].value+'%';}},
+  grid:{left:50,right:30,top:40,bottom:40},
+  xAxis:{type:'category',data:puzzleX,name:'完成拼图张数',...darkTheme.xAxis,axisLabel:{...darkTheme.xAxis.axisLabel}},
+  yAxis:{type:'value',axisLabel:{formatter:'{value}%',...darkTheme.yAxis.axisLabel},...darkTheme.yAxis},
+  series:[{
+    type:'bar', data:puzzleY,
+    itemStyle:{color:function(p){
+      if(p.dataIndex===8) return '#58a6ff';
+      if(p.dataIndex===15) return '#3fb950';
+      if(p.dataIndex===24) return '#d29922';
+      return '#30363d';
+    }},
+    label:{show:true,position:'top',color:'#8b949e',fontSize:10,formatter:function(p){
+      if(p.dataIndex===8) return '9块\n25.8%';
+      if(p.dataIndex===15) return '16块\n32.9%';
+      if(p.dataIndex===24) return '25块\n14.1%';
+      return p.value>3?p.value+'%':'';
+    }},
+    markLine:{silent:true,lineStyle:{type:'dashed',color:'#484f58'},data:[
+      {xAxis:8,label:{formatter:'9块完成',color:'#58a6ff',position:'start'}},
+      {xAxis:15,label:{formatter:'16块完成',color:'#3fb950',position:'start'}},
+      {xAxis:24,label:{formatter:'25块完成',color:'#d29922',position:'start'}}
+    ]}
+  }]
+});
+
+// 4. 体力消耗
+const c4 = echarts.init(document.getElementById('chart_energy'));
+c4.setOption({
+  ...darkTheme, tooltip:tt,
+  grid:{left:60,right:30,top:30,bottom:30},
+  xAxis:{type:'category',data:stages,...darkTheme.xAxis,axisLabel:{...darkTheme.xAxis.axisLabel,rotate:15}},
+  yAxis:{type:'value',name:'日均体力',...darkTheme.yAxis},
+  series:[
+    {name:'日均体力',type:'bar',data:energy,itemStyle:{color:'#58a6ff'},label:{show:true,position:'top',color:'#8b949e'}},
+    {name:'对照组',type:'line',data:[256,256,256,256,256],lineStyle:{type:'dashed',color:'#f85149'},itemStyle:{color:'#f85149'},symbol:'none'}
+  ]
+});
+
+// 5. 宝石消耗
+const c5 = echarts.init(document.getElementById('chart_gems'));
+c5.setOption({
+  ...darkTheme, tooltip:tt,
+  grid:{left:60,right:30,top:30,bottom:30},
+  xAxis:{type:'category',data:stages,...darkTheme.xAxis,axisLabel:{...darkTheme.xAxis.axisLabel,rotate:15}},
+  yAxis:{type:'value',name:'日均宝石',...darkTheme.yAxis},
+  series:[
+    {name:'日均宝石',type:'bar',data:gems,itemStyle:{color:'#bc8cff'},label:{show:true,position:'top',color:'#8b949e'}},
+    {name:'对照组',type:'line',data:[9,9,9,9,9],lineStyle:{type:'dashed',color:'#f85149'},itemStyle:{color:'#f85149'},symbol:'none'}
+  ]
+});
+
+// 6. 付费率折线
+const c6 = echarts.init(document.getElementById('chart_payrate_line'));
+c6.setOption({
+  ...darkTheme, tooltip:tt,
+  grid:{left:50,right:20,top:30,bottom:30},
+  xAxis:{type:'category',data:stages,...darkTheme.xAxis,axisLabel:{...darkTheme.xAxis.axisLabel,rotate:15}},
+  yAxis:{type:'value',axisLabel:{formatter:'{value}%',...darkTheme.yAxis.axisLabel},...darkTheme.yAxis},
+  series:[{
+    name:'付费率',type:'line',data:payrate,
+    itemStyle:{color:'#d29922'},lineStyle:{width:3},areaStyle:{color:'rgba(210,153,34,0.1)'},
+    symbol:'circle',symbolSize:8,
+    label:{show:true,formatter:'{c}%',color:'#d29922'}
+  }]
+});
+
+// 7. ARPU/ARPPU
+const c7 = echarts.init(document.getElementById('chart_arpu'));
+c7.setOption({
+  ...darkTheme, tooltip:tt,
+  legend:{data:['ARPU','ARPPU'],...darkTheme.legend,top:5},
+  grid:{left:50,right:20,top:40,bottom:30},
+  xAxis:{type:'category',data:stages,...darkTheme.xAxis,axisLabel:{...darkTheme.xAxis.axisLabel,rotate:15}},
+  yAxis:{type:'value',name:'$',...darkTheme.yAxis},
+  series:[
+    {name:'ARPU',type:'bar',data:arpu,itemStyle:{color:'#58a6ff'},label:{show:true,position:'top',color:'#8b949e',formatter:function(p){return '$'+p.value;}}},
+    {name:'ARPPU',type:'line',data:arppu,itemStyle:{color:'#d29922'},lineStyle:{width:2},symbol:'circle',symbolSize:6,label:{show:true,color:'#d29922',formatter:function(p){return '$'+p.value;}}}
+  ]
+});
+
+// 8. 每日趋势
+const c8 = echarts.init(document.getElementById('chart_daily'));
+c8.setOption({
+  ...darkTheme, tooltip:tt,
+  legend:{data:['参与人数','事件数'],...darkTheme.legend,top:5},
+  grid:{left:60,right:60,top:40,bottom:30},
+  xAxis:{type:'category',data:['6/8(开启)','6/9','6/10','6/11(结束)'],...darkTheme.xAxis},
+  yAxis:[
+    {type:'value',name:'参与人数',...darkTheme.yAxis},
+    {type:'value',name:'事件数',...darkTheme.yAxis,splitLine:{show:false}}
+  ],
+  series:[
+    {name:'参与人数',type:'bar',data:[772,884,980,1061],itemStyle:{color:'#58a6ff'},label:{show:true,position:'top',color:'#8b949e'}},
+    {name:'事件数',type:'line',yAxisIndex:1,data:[12009,14293,15889,15747],itemStyle:{color:'#d29922'},lineStyle:{width:2},symbol:'circle',symbolSize:6}
+  ]
+});
+
+window.addEventListener('resize',()=>{[c1,c2,c3,c4,c5,c6,c7,c8].forEach(c=>c.resize());});
+</script>
+</body>
+</html>
