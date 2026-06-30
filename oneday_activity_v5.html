@@ -345,7 +345,8 @@
       <span><b style="background:#D1495B"></b>组合</span>
       <span><b style="background:#4D908E"></b>主题装修</span>
       <span><b style="background:#D45087"></b>棋盘</span>
-      <span><b style="background:#2A9D8F"></b>多日活动</span>
+      <span><b style="background:#2A9D8F"></b>四日活动</span>
+      <span><b style="background:#43AA8B"></b>三日活动</span>
       <span><b style="background:#277DA1"></b>单日活动</span>
       <span><b style="background:#F07C2E"></b>礼包</span>
     </div>
@@ -389,7 +390,7 @@
     <div id="ladoFunnelChart" class="chart-box"></div>
     <div class="insight-box">
       <div class="insight-title">💡 洞察</div>
-      LadO阶梯5步中，每步都有15%-27%的通过者选择放弃下一步。Step 0→Step 1放弃率15%(132/898)，Step 2→Step 3放弃率26%。<strong>Step 3是核心难度分水岭</strong>——通过率仅44.5%(117/263)，加上前置放弃，从Step 2的355通过者到Step 4仅剩86人尝试。最终32人完成全部5步（占起始1135人的2.8%）。
+      LadO阶梯5步漏斗：1134人参与，898人(79.2%)完成第1单，逐步转化到第5单仅32人(2.8%)。<strong>第3→4单是核心流失点</strong>——逐步转化率从59.8%骤降至33.0%，说明第4单难度台阶过高。前3单转化较平稳(79.2%→66.1%→59.8%)，但第4单起几乎每步淘汰2/3玩家。
     </div>
   </div>
 
@@ -829,8 +830,8 @@ window.addEventListener('resize', () => charts.forEach(c => c.resize()));
 // 第一章 甘特图 (纯CSS, 固定行顺序)
 // ============================================================
 (function(){
-  const ROW_LABELS = ['卡册','战令','组合','主题装修','棋盘','多日活动','多日活动','单日活动','礼包'];
-  const ROW_COLORS = ['#7B61FF','#6C757D','#D1495B','#4D908E','#D45087','#2A9D8F','#2A9D8F','#277DA1','#F07C2E'];
+  const ROW_LABELS = ['卡册','战令','组合','主题装修','棋盘','四日活动','三日活动','单日活动','礼包'];
+  const ROW_COLORS = ['#7B61FF','#6C757D','#D1495B','#4D908E','#D45087','#2A9D8F','#43AA8B','#277DA1','#F07C2E'];
   const activities = [
     {name:"卡册",start:"06-01 16:00",end:"07-16 16:00",row:0},
     {name:"战令2(儿童节)",start:"06-01 16:00",end:"07-01 16:00",row:1},
@@ -838,16 +839,17 @@ window.addEventListener('resize', () => charts.forEach(c => c.resize()));
     {name:"气球嘉年华",start:"06-06 16:00",end:"06-30 16:00",row:3},
     {name:"滚动棋盘",start:"06-06 16:00",end:"06-15 16:00",row:4},
     {name:"多层棋盘",start:"06-20 16:00",end:"06-29 16:00",row:4},
-    {name:"杰西卡基金",start:"06-05 16:00",end:"06-08 16:00",row:5},
+    // 四日活动 (row 5): 玩具拼图(4天)、池塘钓鱼(4天)、食品券兑换(4天)
     {name:"玩具拼图",start:"06-08 16:00",end:"06-12 16:00",row:5},
-    {name:"小车竞速",start:"06-12 16:00",end:"06-15 16:00",row:5},
     {name:"池塘钓鱼",start:"06-15 16:00",end:"06-19 16:00",row:5},
-    {name:"开车探险",start:"06-19 16:00",end:"06-22 16:00",row:5},
     {name:"食品券兑换",start:"06-22 16:00",end:"06-26 16:00",row:5},
-    {name:"杰西卡基金",start:"06-26 16:00",end:"06-29 16:00",row:5},
     {name:"玩具拼图",start:"06-29 16:00",end:"07-03 16:00",row:5},
-    {name:"礼包链",start:"06-08 16:00",end:"06-11 16:00",row:6},
-    {name:"礼包链",start:"06-19 16:00",end:"06-22 16:00",row:6},
+    // 三日活动 (row 6): 杰西卡基金(3天)、小车竞速(3天)、开车探险(3天)
+    {name:"杰西卡基金",start:"06-05 16:00",end:"06-08 16:00",row:6},
+    {name:"小车竞速",start:"06-12 16:00",end:"06-15 16:00",row:6},
+    {name:"开车探险",start:"06-19 16:00",end:"06-22 16:00",row:6},
+    {name:"杰西卡基金",start:"06-26 16:00",end:"06-29 16:00",row:6},
+    // 单日活动 (row 7)
     {name:"WO",start:"06-07 16:00",end:"06-08 16:00",row:7},
     {name:"LO",start:"06-10 16:00",end:"06-11 16:00",row:7},
     {name:"CPF",start:"06-12 16:00",end:"06-13 16:00",row:7},
@@ -861,11 +863,14 @@ window.addEventListener('resize', () => charts.forEach(c => c.resize()));
     {name:"CPF",start:"06-26 16:00",end:"06-27 16:00",row:7},
     {name:"ER",start:"06-27 16:00",end:"06-28 16:00",row:7},
     {name:"WO",start:"06-28 16:00",end:"06-29 16:00",row:7},
+    // 礼包 (row 8): 1+2礼包、3in1礼包、礼包链
     {name:"1+2",start:"06-07 16:00",end:"06-08 16:00",row:8},
+    {name:"礼包链",start:"06-08 16:00",end:"06-11 16:00",row:8},
     {name:"3in1",start:"06-12 16:00",end:"06-13 16:00",row:8},
     {name:"1+2",start:"06-14 16:00",end:"06-15 16:00",row:8},
     {name:"3in1",start:"06-16 16:00",end:"06-17 16:00",row:8},
     {name:"1+2",start:"06-17 16:00",end:"06-18 16:00",row:8},
+    {name:"礼包链",start:"06-19 16:00",end:"06-22 16:00",row:8},
     {name:"3in1",start:"06-22 16:00",end:"06-23 16:00",row:8},
     {name:"1+2",start:"06-24 16:00",end:"06-25 16:00",row:8},
     {name:"3in1",start:"06-26 16:00",end:"06-27 16:00",row:8},
@@ -992,59 +997,54 @@ window.addEventListener('resize', () => charts.forEach(c => c.resize()));
 })();
 
 // ============================================================
-// 第二章 图2-2 LadO漏斗 (通过/失败/放弃 三段堆叠)
+// 第二章 图2-2 LadO漏斗 (逐步转化)
 // ============================================================
 (function(){
-  const steps = ['Step 0', 'Step 1', 'Step 2', 'Step 3', 'Step 4'];
-  const enter = [1135, 766, 492, 263, 86];
-  const pass  = [898, 594, 355, 117, 32];
-  const fail  = [237, 172, 137, 146, 54];
-  // 放弃 = 上一步通过 - 本步进入（Step 0 无放弃）
-  const quit  = [0, 898-766, 594-492, 355-263, 117-86]; // [0,132,102,92,31]
-  const rate  = ['79.1%', '77.5%', '72.2%', '44.5%', '37.2%'];
+  // SQL查询结果: 参与1134 → 完成1单898 → 完成2单594 → 完成3单355 → 完成4单117 → 完成5单32
+  const steps = ['参与活动', '完成第1单', '完成第2单', '完成第3单', '完成第4单', '完成第5单'];
+  const reached = [1134, 898, 594, 355, 117, 32];
+  const reachPct = ['100%', '79.2%', '52.4%', '31.3%', '10.3%', '2.8%'];
+  const stepConv = ['100%', '79.2%', '66.1%', '59.8%', '33.0%', '27.4%'];
 
   const chart = makeChart(document.getElementById('ladoFunnelChart'));
   chart.setOption({
-    ...baseOption(),
+    ...baseOption({ grid: { left: 90, right: 60, top: 40, bottom: 30 } }),
     tooltip: {
       trigger: 'axis', axisPointer: { type: 'shadow' },
       formatter: function(ps) {
-        const i = 4 - ps[0].dataIndex; // reversed
+        const i = 5 - ps[0].dataIndex;
         return '<b>' + steps[i] + '</b><br/>'
-          + '进入: ' + enter[i] + '<br/>'
-          + '通过: ' + pass[i] + ' (' + rate[i] + ')<br/>'
-          + '失败: ' + fail[i] + '<br/>'
-          + (quit[i] > 0 ? '放弃: ' + quit[i] + ' (' + (quit[i]/pass[i>0?i-1:0]*100).toFixed(0) + '%)' : '');
+          + '到达人数: ' + reached[i] + '<br/>'
+          + '占总参与: ' + reachPct[i] + '<br/>'
+          + '逐步转化: ' + stepConv[i];
       }
     },
-    legend: { data: ['通过','失败','放弃(未尝试)'], textStyle: { color: THEME.textColor2 }, top: 10 },
     xAxis: { type: 'value', name: '人数', ...axisCommon() },
     yAxis: { type: 'category', data: steps.slice().reverse(), ...axisCommon(), inverse: false },
-    series: [
-      {
-        name: '通过', type: 'bar', stack: 'f', barWidth: 30,
-        data: pass.slice().reverse(),
-        itemStyle: { color: '#34d399' },
-        label: { show: true, position: 'inside', color: '#fff', fontSize: 11, fontWeight: 600 },
-      },
-      {
-        name: '失败', type: 'bar', stack: 'f',
-        data: fail.slice().reverse(),
-        itemStyle: { color: '#f87171' },
-        label: { show: true, position: 'inside', color: '#fff', fontSize: 10, fontWeight: 600,
-          formatter: function(p) { return p.value > 80 ? p.value : ''; }
+    series: [{
+      type: 'bar', barWidth: 28,
+      data: reached.slice().reverse().map(function(v, i) {
+        var idx = 5 - i;
+        var ratio = v / reached[0];
+        return {
+          value: v,
+          itemStyle: {
+            color: new echarts.graphic.LinearGradient(0,0,1,0,[
+              {offset:0, color: ratio > 0.5 ? '#34d399' : ratio > 0.2 ? '#fbbf24' : '#f87171'},
+              {offset:1, color: ratio > 0.5 ? '#2dd4bf' : ratio > 0.2 ? '#f59e0b' : '#ef4444'}
+            ])
+          }
+        };
+      }),
+      label: {
+        show: true, position: 'right', fontSize: 12, fontWeight: 700,
+        formatter: function(p) {
+          var i = 5 - p.dataIndex;
+          return reached[i] + ' (' + reachPct[i] + ')';
         },
+        color: THEME.textColor
       },
-      {
-        name: '放弃(未尝试)', type: 'bar', stack: 'f',
-        data: quit.slice().reverse(),
-        itemStyle: { color: '#8b8fa3', opacity: 0.6 },
-        label: {
-          show: true, position: 'right', color: '#fbbf24', fontSize: 13, fontWeight: 700,
-          formatter: function(p) { return rate.slice().reverse()[p.dataIndex]; }
-        },
-      }
-    ],
+    }],
   });
 })();
 
