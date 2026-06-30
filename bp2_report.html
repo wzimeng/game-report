@@ -39,6 +39,13 @@ tr:hover { background:#1c2128; }
 .insight { background:#1c2128; border-left:3px solid #d29922; padding:12px 16px; margin-top:16px; border-radius:0 6px 6px 0; font-size:13px; line-height:1.6; }
 .insight strong { color:#d29922; }
 .footer { text-align:center; color:#484f58; font-size:12px; margin-top:30px; }
+.def-box { background:#0d1117; border:1px solid #30363d; border-radius:6px; padding:10px 14px; margin-bottom:16px; font-size:12px; color:#8b949e; line-height:1.7; }
+.def-box summary { cursor:pointer; color:#58a6ff; font-size:12px; font-weight:600; user-select:none; }
+.def-box summary:hover { color:#79c0ff; }
+.def-box dt { color:#c9d1d9; font-weight:600; display:inline; }
+.def-box dd { display:inline; margin:0; margin-right:14px; }
+.def-box dd::after { content:''; display:block; margin-bottom:2px; }
+.def-box .filter-tag { display:inline-block; background:#21262d; border:1px solid #30363d; border-radius:3px; padding:1px 6px; font-size:11px; color:#d29922; margin-right:4px; }
 </style>
 </head>
 <body>
@@ -50,6 +57,20 @@ tr:hover { background:#1c2128; }
 </div>
 
 <!-- Overview Cards -->
+<details class="def-box" style="margin-bottom:20px;">
+  <summary>📐 顶部指标定义 & 数据口径</summary>
+  <div style="margin-top:8px;">
+    <span class="filter-tag">事件: USER_PAY</span> <span class="filter-tag">时间: 6.6-6.30</span> <span class="filter-tag">事件: ACTIVITY(BattlePassTwo)</span><br>
+    <dl>
+      <dt>参与总人数：</dt><dd>ACTIVITY事件中 activity_type=BattlePassTwo 的去重用户数（含只登录看了一眼的1级玩家）</dd>
+      <dt>购买者：</dt><dd>USER_PAY事件中 pay_type 为 BattlePassTwo 相关商品（$4.99/$6.99/$9.99）的去重用户数</dd>
+      <dt>购买率：</dt><dd>购买者 ÷ 参与总人数</dd>
+      <dt>总收入：</dt><dd>所有BP商品（$4.99/$6.99/$9.99）的 pay_amount 求和</dd>
+      <dt>ARPPU：</dt><dd>总收入 ÷ 购买者数（每付费用户平均收入）</dd>
+      <dt>$4.99买家 / $9.99买家：</dt><dd>按 pay_amount 筛选的去重用户数；28人同时买了两档（双档），归入$9.99统计中标注</dd>
+    </dl>
+  </div>
+</details>
 <div class="summary-cards">
   <div class="card">
     <div class="label">参与总人数</div>
@@ -83,6 +104,16 @@ tr:hover { background:#1c2128; }
 <!-- Section 1: 每日购买趋势 -->
 <div class="section">
   <h2>📈 每日购买趋势</h2>
+  <details class="def-box">
+    <summary>📐 指标说明</summary>
+    <div style="margin-top:8px;">
+      <span class="filter-tag">事件: USER_PAY</span> <span class="filter-tag">筛选: pay_type 含 BattlePassTwo</span> <span class="filter-tag">按天分组</span><br>
+      <dl>
+        <dt>$4.99 / $6.99 / $9.99：</dt><dd>按 pay_amount 区分的每日购买笔数（非人数，同一人同日多笔分别计）</dd>
+        <dt>$6.99：</dt><dd>VIP→SUPER PASS 升级包，仅限已购$4.99的用户购买</dd>
+      </dl>
+    </div>
+  </details>
   <div id="chartDailyPurchase" class="chart-full"></div>
   <div class="insight">
     <strong>💡 洞察：</strong>首日（$9.99仅4笔）到第二天就飙升到17笔，说明玩家在体验一天后对SUPER PASS价值感认可。6/19和6/25出现购买高峰（37笔/32笔），可能与活动节奏或推送有关。$6.99升级包占比极低（约4%），说明$4.99→$9.99直接升级路径不够吸引。
@@ -92,6 +123,16 @@ tr:hover { background:#1c2128; }
 <!-- Section 2: BP等级分布（全体玩家） -->
 <div class="section">
   <h2>📊 BP等级分布（全体玩家）</h2>
+  <details class="def-box">
+    <summary>📐 指标说明</summary>
+    <div style="margin-top:8px;">
+      <span class="filter-tag">事件: ACTIVITY</span> <span class="filter-tag">筛选: activity_type=BattlePassTwo</span> <span class="filter-tag">取每用户最大 activity_level</span><br>
+      <dl>
+        <dt>BP等级：</dt><dd>玩家在BP活动中达到的最高等级（activity_level 字段最大值），1级=仅参与未推进，40级=满级</dd>
+        <dt>人数：</dt><dd>达到该BP等级的去重用户数</dd>
+      </dl>
+    </div>
+  </details>
   <div id="chartLevelDist" class="chart-full"></div>
   <div class="insight">
     <strong>💡 洞察：</strong>8,072人（45.6%）停在1级——这些是“看一眼就走”的玩家。真正参与的约9,611人中，等级分布呈现两个特征：(1) 8-10级形成小高峰（2,293人）；(2) 30级后急剧衰减，仅22人到40级满级。
@@ -104,6 +145,18 @@ tr:hover { background:#1c2128; }
 <!-- Section 2b: 活跃天数×BP等级 + 日均体力消耗 -->
 <div class="section">
   <h2>📅 活跃天数 × BP等级 + 日均体力消耗</h2>
+  <details class="def-box">
+    <summary>📐 指标说明</summary>
+    <div style="margin-top:8px;">
+      <span class="filter-tag">事件: ACTIVITY(BattlePassTwo)</span> <span class="filter-tag">交叉: 活跃天数 × BP等级段</span><br>
+      <dl>
+        <dt>活跃天数：</dt><dd>该用户在6.6-6.30期间有 ACTIVITY(BattlePassTwo) 记录的不同日期数（去重天数）</dd>
+        <dt>BP等级段：</dt><dd>按 activity_level 最大值分桶：1, 2-5, 6-7, 8-10, 11-15, 16-20, 21-30, 31+</dd>
+        <dt>平均登录天：</dt><dd>该等级段所有用户的活跃天数平均值</dd>
+        <dt>日均体力：</dt><dd>该等级段用户的总体力消耗 ÷ 总活跃天数（体力来自 ACTIVITY 中 energy_cost 字段）</dd>
+      </dl>
+    </div>
+  </details>
   <div class="chart-row">
     <div class="chart-box">
       <h3>活跃天数 × BP等级交叉表</h3>
@@ -138,6 +191,17 @@ tr:hover { background:#1c2128; }
 <!-- Section 2c: BP购买者购买顺序分析 -->
 <div class="section">
   <h2>🛍️ BP购买者购买顺序分析</h2>
+  <details class="def-box">
+    <summary>📐 指标说明</summary>
+    <div style="margin-top:8px;">
+      <span class="filter-tag">事件: USER_PAY</span> <span class="filter-tag">人群: 购买过BP的561人</span> <span class="filter-tag">按时间排序所有购买记录</span><br>
+      <dl>
+        <dt>BP是第N笔购买：</dt><dd>将该用户6.6-6.30期间所有 USER_PAY 记录按时间排序，BP商品出现在第几笔</dd>
+        <dt>河流图：</dt><dd>展示前5笔购买的商品品类流向（Sankey图），每个节点 = 第N笔的品类，连线 = 人数</dd>
+        <dt>购买BP前已购商品：</dt><dd>在BP购买记录之前的所有 USER_PAY 记录中，按 pay_type 分类的购买次数和去重人数</dd>
+      </dl>
+    </div>
+  </details>
   <div class="summary-cards-4">
     <div class="card">
       <div class="label">BP是第1笔购买</div>
@@ -178,6 +242,19 @@ tr:hover { background:#1c2128; }
 <!-- Section 3: 付费档位 × BP等级 -->
 <div class="section">
   <h2>💎 付费档位 × BP等级</h2>
+  <details class="def-box">
+    <summary>📐 指标说明</summary>
+    <div style="margin-top:8px;">
+      <span class="filter-tag">事件: ACTIVITY × USER_PAY</span> <span class="filter-tag">交叉: 付费档位 × BP等级</span><br>
+      <dl>
+        <dt>免费玩家：</dt><dd>参与BP活动但未购买任何Pass的用户（有ACTIVITY记录，无BP相关USER_PAY记录）</dd>
+        <dt>$4.99 VIP：</dt><dd>仅购买$4.99 VIP PASS（未买$9.99）的用户</dd>
+        <dt>$9.99 SUPER：</dt><dd>购买$9.99 SUPER PASS的用户（可能也买了$4.99）</dd>
+        <dt>Both（双档）：</dt><dd>同时购买$4.99和$9.99两档的用户（28人）</dd>
+        <dt>BP等级：</dt><dd>各档位用户的 activity_level 最大值分布</dd>
+      </dl>
+    </div>
+  </details>
   <div class="chart-row">
     <div class="chart-box">
       <h3>免费玩家等级分布</h3>
@@ -196,6 +273,18 @@ tr:hover { background:#1c2128; }
 <!-- Section 4: 任务完成情况 -->
 <div class="section">
   <h2>✅ 任务完成情况</h2>
+  <details class="def-box">
+    <summary>📐 指标说明</summary>
+    <div style="margin-top:8px;">
+      <span class="filter-tag">事件: ACTIVITY(BattlePassTwo)</span> <span class="filter-tag">筛选: activity_action 分组</span><br>
+      <dl>
+        <dt>每日随机任务(1-18)：</dt><dd>activity_action 为任务编号1-18的完成次数和去重用户数</dd>
+        <dt>追加任务(131)：</dt><dd>activity_action=131 的额外任务</dd>
+        <dt>自动领取(301)：</dt><dd>activity_action=301，系统自动完成的任务（覆盖面最广）</dd>
+        <dt>完成次数 vs 参与人数：</dt><dd>次数=总触发count，人数=去重uid count</dd>
+      </dl>
+    </div>
+  </details>
   <div id="chartTask" class="chart-tall"></div>
   <div class="insight">
     <strong>💡 洞察：</strong>每日随机任务从第1个（16,735次）到第18个（5,404次）衰减67.7%，但参与人数仅从6,868降到3,650（46.9%），说明核心玩家会反复完成。追加任务131参与最广（8,522人），自动领取301覆盖9,758人（55.2%的参与者），是最高参与度的任务类型。
@@ -205,6 +294,17 @@ tr:hover { background:#1c2128; }
 <!-- Section 5: 购买决策时机 -->
 <div class="section">
   <h2>🎯 购买决策时机（购买时BP等级）</h2>
+  <details class="def-box">
+    <summary>📐 指标说明</summary>
+    <div style="margin-top:8px;">
+      <span class="filter-tag">事件: USER_PAY × ACTIVITY</span> <span class="filter-tag">关联: 购买时间点的BP等级</span><br>
+      <dl>
+        <dt>购买时BP等级：</dt><dd>用户购买BP Pass时，其当天（或最近一次）的 activity_level 值。1级=立即购买（未推进等级就买了）</dd>
+        <dt>$4.99 VIP / $9.99 SUPER：</dt><dd>按付费档位分别展示等级分布</dd>
+        <dt>"冲动购买"：</dt><dd>1级就购买的用户，说明购买决策由首次展示驱动而非体验后决定</dd>
+      </dl>
+    </div>
+  </details>
   <div id="chartBuyLevel" class="chart-full"></div>
   <div class="insight">
     <strong>💡 洞察：</strong>$9.99的92人在1级就购买（占25.6%），是典型的"冲动购买"行为——对Pass价值的预期驱动。$4.99则有33人在1级购买（19.1%），但更多分散在9-17级区间，说明VIP PASS购买更多是"体验后决策"。两档都在8-12级区间有第二个购买高峰，这是玩家感受到免费通道奖励变少的节点。
@@ -214,6 +314,17 @@ tr:hover { background:#1c2128; }
 <!-- Section 6: 购买者留存分析 -->
 <div class="section">
   <h2>📌 购买者留存分析</h2>
+  <details class="def-box">
+    <summary>📐 指标说明</summary>
+    <div style="margin-top:8px;">
+      <span class="filter-tag">事件: USER_PAY × ACTIVITY</span> <span class="filter-tag">按购买日期分组</span> <span class="filter-tag">看活动结束日(6/30)是否活跃</span><br>
+      <dl>
+        <dt>购买人数：</dt><dd>该日购买BP商品的用户数</dd>
+        <dt>活跃留存：</dt><dd>该日购买者中，在活动最后一天（6/30）仍有 ACTIVITY 记录的人数</dd>
+        <dt>留存率：</dt><dd>活跃留存 ÷ 购买人数 × 100%。注意存活偏差：后期买家留存率天然偏高</dd>
+      </dl>
+    </div>
+  </details>
   <div id="chartRetention" class="chart-full"></div>
   <div class="insight">
     <strong>💡 洞察：</strong>早期购买者（6/6-6/9）留存率仅15-30%，而后期购买者（6/22-6/30）留存率达65-100%。这并非因为后期购买者更忠诚，而是因为"留到后期的玩家本身就更活跃"——存活偏差效应。真正值得关注的是中期购买者（6/13-6/19）约46-54%的留存率，这代表了Pass的真实留存拉力。
@@ -223,6 +334,16 @@ tr:hover { background:#1c2128; }
 <!-- Section 7: 购买者画像 -->
 <div class="section">
   <h2>👤 购买者画像（玩家等级分布）</h2>
+  <details class="def-box">
+    <summary>📐 指标说明</summary>
+    <div style="margin-top:8px;">
+      <span class="filter-tag">事件: USER_PAY</span> <span class="filter-tag">用户属性: player_level</span><br>
+      <dl>
+        <dt>玩家等级：</dt><dd>用户属性中的 player_level（游戏主线等级，非BP等级），取购买时的等级快照</dd>
+        <dt>$4.99 VIP / $9.99 SUPER：</dt><dd>按付费档位分别展示玩家等级分布（柱状图）</dd>
+      </dl>
+    </div>
+  </details>
   <div id="chartProfile" class="chart-full"></div>
   <div class="insight">
     <strong>💡 洞察：</strong>$9.99买家高度集中在玩家等级6（133人，占37%），这对应新手期刚过的节点——系统推送Pass的最佳时机。$4.99买家同样以等级6-9为主（97人，占56%），但分布更平均。高等级（20+）的购买者极少，说明Pass对老玩家吸引力有限。
@@ -232,6 +353,21 @@ tr:hover { background:#1c2128; }
 <!-- Section 8: 非BP付费玩家分析 -->
 <div class="section">
   <h2>🔍 非BP付费玩家分析</h2>
+  <details class="def-box">
+    <summary>📐 指标说明 & 人群定义</summary>
+    <div style="margin-top:8px;">
+      <span class="filter-tag">事件: USER_PAY</span> <span class="filter-tag">事件: ACTIVITY(BattlePassTwo)</span> <span class="filter-tag">时间: 6.6-6.30</span><br>
+      <dl>
+        <dt>总付费玩家：</dt><dd>期间有任意 USER_PAY 记录的去重用户数（1,090人）</dd>
+        <dt>BP买家：</dt><dd>USER_PAY 中 pay_type 含 BattlePassTwo 商品的用户（561人）</dd>
+        <dt>非BP付费玩家：</dt><dd>有 USER_PAY 记录但 pay_type 不含任何BP商品的用户（529人）</dd>
+        <dt>参与BP但未买（493人）：</dt><dd>非BP付费玩家中，在 ACTIVITY 事件中有 activity_type=BattlePassTwo 记录的用户——他们参与了BP活动但没购买Pass</dd>
+        <dt>完全未参与BP（36人）：</dt><dd>非BP付费玩家中，ACTIVITY 中无任何 BattlePassTwo 记录的用户——活动期间从未接触过BP</dd>
+        <dt>付费对比图：</dt><dd>BP买家 vs 非BP付费的人数/总收入/人均消费对比</dd>
+        <dt>BP等级分布（493人）：</dt><dd>参与BP未买者的 activity_level 最大值分布，展示他们推进到了多少级</dd>
+      </dl>
+    </div>
+  </details>
   <div class="summary-cards-4">
     <div class="card">
       <div class="label">总付费玩家</div>
@@ -322,6 +458,19 @@ tr:hover { background:#1c2128; }
 <!-- Section 9: BP买家 vs 非BP付费 留存对比 -->
 <div class="section">
   <h2>📊 BP买家 vs 非BP付费玩家 留存对比</h2>
+  <details class="def-box">
+    <summary>📐 指标说明 & 留存定义</summary>
+    <div style="margin-top:8px;">
+      <span class="filter-tag">事件: USER_PAY + ACTIVITY</span> <span class="filter-tag">人群: BP买家561人 vs 非BP付费529人</span><br>
+      <dl>
+        <dt>每日活跃率（日历日）：</dt><dd>该日有 ACTIVITY 记录的用户数 ÷ 该组总人数 × 100%。按日历日（6/6-6/30）逐天统计</dd>
+        <dt>首付日留存曲线：</dt><dd>以每个用户的首次 USER_PAY 日期为D0，统计D1/D2/.../D20中仍有 ACTIVITY 记录的用户占比。D0=100%（定义起点）</dd>
+        <dt>差值(pp)：</dt><dd>BP买家留存率 - 非BP付费留存率（百分点差）</dd>
+        <dt>次日留存 D1：</dt><dd>首付后第1天仍活跃的用户占比</dd>
+        <dt>7日留存 D7：</dt><dd>首付后第7天仍活跃的用户占比</dd>
+      </dl>
+    </div>
+  </details>
   <div class="summary-cards-4">
     <div class="card">
       <div class="label">BP买家次日留存</div>
