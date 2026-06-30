@@ -258,8 +258,8 @@
   }
   .gantt-bar:hover { opacity: 1; z-index: 10; }
   .gantt-bar strong { font-weight: 600; font-size: 11px; pointer-events: none; }
-  .gantt-bar.is-micro { min-width: 4px; font-size: 0; padding: 0 2px; }
-  .gantt-bar.is-micro strong { font-size: 0; }
+  .gantt-bar.is-single { min-width: 20px; font-size: 10px; padding: 0 3px; }
+  .gantt-bar.is-single strong { font-size: 10px; }
   .gantt-bar.is-clipped-end {
     border-top-right-radius: 0; border-bottom-right-radius: 0;
     border-right: 2px dashed rgba(255,255,255,0.3);
@@ -272,6 +272,25 @@
   .gantt-legend b {
     display: inline-block; width: 14px; height: 14px;
     border-radius: 3px;
+  }
+  .gantt-row-label {
+    position: absolute;
+    left: 0; width: 76px;
+    font-size: 11px; font-weight: 600;
+    color: var(--text2);
+    white-space: nowrap;
+    display: flex; align-items: center;
+    padding-left: 4px;
+  }
+  .gantt-track-inner {
+    position: absolute;
+    left: 80px; right: 0;
+    top: 0; bottom: 0;
+  }
+  .gantt-row-bg {
+    position: absolute;
+    left: 80px; right: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
   }
 </style>
 </head>
@@ -321,14 +340,17 @@
       </div>
     </div>
     <div class="gantt-legend">
-      <span><b style="background:#6C757D"></b>战令</span>
-      <span><b style="background:#D1495B"></b>组合/主题</span>
       <span><b style="background:#7B61FF"></b>卡册</span>
+      <span><b style="background:#6C757D"></b>战令</span>
+      <span><b style="background:#D1495B"></b>组合</span>
       <span><b style="background:#4D908E"></b>主题装修</span>
       <span><b style="background:#D45087"></b>棋盘</span>
-      <span><b style="background:#2A9D8F"></b>小游戏</span>
+      <span><b style="background:#2A9D8F"></b>多日活动</span>
       <span><b style="background:#277DA1"></b>单日活动</span>
       <span><b style="background:#F07C2E"></b>礼包</span>
+    </div>
+    <div class="info-card" style="margin-top:16px">
+      <strong>📌 礼包内容变更</strong>：6/22、6/24、6/26 的限时礼包（1+2礼包/三合一礼包）主要内容为<strong>飞镖</strong>，是主题装修·气球嘉年华活动的关键道具。
     </div>
   </div>
 
@@ -367,7 +389,7 @@
     <div id="ladoFunnelChart" class="chart-box"></div>
     <div class="insight-box">
       <div class="insight-title">💡 洞察</div>
-      LadO漏斗呈经典衰减曲线：前三步通过率维持在72%-79%，但Step 3骤降至44.5%，Step 4仅37.2%。<strong>Step 3是核心难度分水岭</strong>，有146人（55.5%）在此失败。可考虑适当降低Step 3难度或增加激励，以提升完成率。最终仅32人（占898起始人数的3.6%）完成全部5步。
+      LadO阶梯5步中，每步都有15%-27%的通过者选择放弃下一步。Step 0→Step 1放弃率15%(132/898)，Step 2→Step 3放弃率26%。<strong>Step 3是核心难度分水岭</strong>——通过率仅44.5%(117/263)，加上前置放弃，从Step 2的355通过者到Step 4仅剩86人尝试。最终32人完成全部5步（占起始1135人的2.8%）。
     </div>
   </div>
 
@@ -389,9 +411,16 @@
       </div>
     </div>
   </div>
-</section>
 
-<!-- ==================== 第三章 ==================== -->
+  <div class="card">
+    <div class="card-title">图2-5 · CPF 单日参与概况</div>
+    <div id="cpfChart" class="chart-box"></div>
+    <div class="insight-box">
+      <div class="insight-title">💡 洞察</div>
+      CPF(CardPackageFrenzy)在6/12和6/19各开放一天。6/12有1126人参与产生9290次提交(人均8.2次)，6/19有1443人参与产生9278次提交(人均6.4次)。参与人数增长28%但人均提交次数下降——更多休闲玩家加入拉低了人均深度。<strong>CPF解锁等级仅Lv.7</strong>，是参与门槛最低的活动。
+    </div>
+  </div>
+</section> -->
 <section class="chapter" id="ch3">
   <div class="chapter-title"><span class="chapter-num">第三章</span> 难度调整前后对比</div>
 
@@ -400,7 +429,7 @@
     <ul style="margin-top:8px;padding-left:20px;color:var(--text2);font-size:14px;">
       <li>单日活动日均通关体力：<span class="badge badge-red">800体</span> → <span class="badge badge-green">1500体</span></li>
       <li>三四日活动日均通关体力：<span class="badge badge-red">800体</span> → <span class="badge badge-green">1200体</span></li>
-      <li>6/22 – 6/26：商店礼包改为售卖气球嘉年华道具</li>
+      <li>6/22 – 6/26：限时礼包主要内容改为<strong>飞镖</strong>（针对主题装修·气球嘉年华活动道具）</li>
     </ul>
   </div>
 
@@ -426,208 +455,236 @@
 
 <!-- ==================== 第四章 ==================== -->
 <section class="chapter" id="ch4">
-  <div class="chapter-title"><span class="chapter-num">第四章</span> 活动对付费的近邻效果</div>
+  <div class="chapter-title"><span class="chapter-num">第四章</span> 单日活动付费效果分析</div>
 
   <div class="card">
-    <div class="card-title">图4-1 · 活动类型汇总（Level≥12 队列） <span class="tag" style="background:rgba(52,211,153,0.15);color:#34d399;">ARPDAU排序</span></div>
+    <div class="card-title">4-1 · 全队列 Level≥12 活动日 vs 无活动日汇总</div>
     <div id="actSummaryChart" class="chart-box"></div>
-    <div class="insight-box">
-      <div class="insight-title">💡 洞察</div>
-      <strong>LadO和ER是ARPDAU最高的活动类型</strong>（$0.42、$0.41），但付费率最低（3.0%、3.9%），说明这两类活动吸引的是高付费能力的核心用户，单笔金额较高。LO付费率最高（8.3%）但ARPDAU中等（$0.35），属于"广撒网"型。无活动日付费率12.6%看似最高，实际因为基数是全体DAU——说明日常也有稳定的付费基本盘。
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">图4-2 · 逐日 ARPDAU 走势（Level≥12，6/12起）</div>
-    <div id="dailyArpdauChart" class="chart-box"></div>
-    <div class="insight-box">
-      <div class="insight-title">💡 洞察</div>
-      CPF+3in1组合日（6/12）ARPDAU达峰值$0.48，LadO+3in1（6/22）紧随$0.42。<strong>3in1礼包的叠加效应显著</strong>。无活动日ARPDAU波动大（$0.09-$0.34），说明活动日是收入稳定器。6/23-6/25连续低谷（$0.12/$0.20/$0.09）值得关注。
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">逐日明细表格（Level≥12 队列，20天） <span class="tag" style="background:rgba(251,191,36,0.15);color:#fbbf24;">⚠️ 6/6-6/10仅供参考</span></div>
-    <div class="info-card warn">
-      <strong>⚠️ 前几天不具可比性</strong>：6/6仅138人达到12级以上，前几天数据受DAU快速增长影响。有效对比区间从6/12起（DAU 470+，中位数订单≥13）。
-    </div>
-    <div style="overflow-x:auto">
-    <table class="data-table">
-      <thead>
-        <tr><th>日期</th><th>标签</th><th class="num">DAU</th><th class="num">人均订单</th><th class="num">中位数</th><th class="num">人均体力</th><th class="num">中位数</th><th class="num">付费人</th><th class="num">付费率</th><th class="num">ARPDAU</th></tr>
-      </thead>
-      <tbody>
-        <tr style="opacity:0.5"><td>6/6</td><td>无</td><td class="num">138</td><td class="num">0.2</td><td class="num">0</td><td class="num">8</td><td class="num">0</td><td class="num">6</td><td class="num">4.3%</td><td class="num">$0.32</td></tr>
-        <tr style="opacity:0.5"><td>6/7</td><td style="color:#fbbf24">WO+Gift</td><td class="num">281</td><td class="num">3.1</td><td class="num">0</td><td class="num">100</td><td class="num">0</td><td class="num">10</td><td class="num">3.6%</td><td class="num">$0.44</td></tr>
-        <tr style="opacity:0.5"><td>6/8</td><td>无</td><td class="num">356</td><td class="num">7.5</td><td class="num">0</td><td class="num">233</td><td class="num">0</td><td class="num">13</td><td class="num">3.7%</td><td class="num">$0.37</td></tr>
-        <tr style="opacity:0.5"><td>6/9</td><td>无</td><td class="num">409</td><td class="num">9.9</td><td class="num">1</td><td class="num">319</td><td class="num">13</td><td class="num">13</td><td class="num">3.2%</td><td class="num">$0.17</td></tr>
-        <tr style="opacity:0.5"><td>6/10</td><td style="color:#f87171">LO_only</td><td class="num">487</td><td class="num">11.8</td><td class="num">5</td><td class="num">426</td><td class="num">171</td><td class="num">26</td><td class="num">5.3%</td><td class="num highlight">$0.52</td></tr>
-        <tr style="opacity:0.5"><td>6/11</td><td>无</td><td class="num">481</td><td class="num">14.5</td><td class="num">12</td><td class="num">496</td><td class="num">336</td><td class="num">17</td><td class="num">3.5%</td><td class="num">$0.39</td></tr>
-        <tr><td>6/12</td><td style="color:#ff6b9d">CPF+ThreeIn</td><td class="num">474</td><td class="num">18.9</td><td class="num">15</td><td class="num">644</td><td class="num">485</td><td class="num">19</td><td class="num">4.0%</td><td class="num highlight">$0.48</td></tr>
-        <tr><td>6/13</td><td>无</td><td class="num">479</td><td class="num">18.1</td><td class="num">16</td><td class="num">631</td><td class="num">555</td><td class="num">19</td><td class="num">4.0%</td><td class="num">$0.33</td></tr>
-        <tr><td>6/14</td><td style="color:#fbbf24">WO+Gift</td><td class="num">477</td><td class="num">18.4</td><td class="num">16</td><td class="num">621</td><td class="num">589</td><td class="num">16</td><td class="num">3.4%</td><td class="num">$0.35</td></tr>
-        <tr><td>6/15</td><td>无</td><td class="num">475</td><td class="num">16.5</td><td class="num">15</td><td class="num">561</td><td class="num">504</td><td class="num">14</td><td class="num">2.9%</td><td class="num">$0.25</td></tr>
-        <tr><td>6/16</td><td>无</td><td class="num">470</td><td class="num">15.6</td><td class="num">13</td><td class="num">544</td><td class="num">484</td><td class="num">17</td><td class="num">3.6%</td><td class="num">$0.34</td></tr>
-        <tr><td>6/17</td><td style="color:#f87171">LO+Gift</td><td class="num">472</td><td class="num">13.7</td><td class="num">11</td><td class="num">543</td><td class="num">473</td><td class="num">17</td><td class="num">3.6%</td><td class="num">$0.33</td></tr>
-        <tr><td>6/18</td><td>无</td><td class="num">476</td><td class="num">14.2</td><td class="num">12</td><td class="num">514</td><td class="num">429</td><td class="num">14</td><td class="num">2.9%</td><td class="num">$0.26</td></tr>
-        <tr><td>6/19</td><td style="color:#ff6b9d">CPF_only</td><td class="num">452</td><td class="num">15.5</td><td class="num">13</td><td class="num">572</td><td class="num">481</td><td class="num">15</td><td class="num">3.3%</td><td class="num">$0.32</td></tr>
-        <tr><td>6/20</td><td style="color:#22d3ee">ER</td><td class="num">456</td><td class="num">16.5</td><td class="num">14</td><td class="num">631</td><td class="num">533</td><td class="num">18</td><td class="num">3.9%</td><td class="num highlight">$0.41</td></tr>
-        <tr><td>6/21</td><td style="color:#fbbf24">WO_only</td><td class="num">470</td><td class="num">15.2</td><td class="num">13</td><td class="num">577</td><td class="num">472</td><td class="num">14</td><td class="num">3.0%</td><td class="num">$0.23</td></tr>
-        <tr><td>6/22</td><td style="color:#a78bfa">LadO+ThreeIn</td><td class="num">462</td><td class="num">15.7</td><td class="num">13</td><td class="num">609</td><td class="num">488</td><td class="num">14</td><td class="num">3.0%</td><td class="num highlight">$0.42</td></tr>
-        <tr><td>6/23</td><td>无</td><td class="num">466</td><td class="num">14.3</td><td class="num">12</td><td class="num">545</td><td class="num">431</td><td class="num">6</td><td class="num">1.3%</td><td class="num neg">$0.12</td></tr>
-        <tr><td>6/24</td><td style="color:#f87171">LO+Gift</td><td class="num">443</td><td class="num">13.4</td><td class="num">11</td><td class="num">554</td><td class="num">469</td><td class="num">10</td><td class="num">2.3%</td><td class="num">$0.20</td></tr>
-        <tr><td>6/25</td><td>无</td><td class="num">432</td><td class="num">13.0</td><td class="num">11</td><td class="num">495</td><td class="num">424</td><td class="num">7</td><td class="num">1.6%</td><td class="num neg">$0.09</td></tr>
-      </tbody>
-    </table>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">图4-3 · 每实例近邻对比（Level≥12 ARPDAU）</div>
-    <div id="neighborChart" class="chart-box"></div>
     <table class="data-table" style="margin-top:16px">
       <thead>
-        <tr><th>活动日</th><th>活动</th><th class="num">ARPDAU</th><th>近邻无活动日</th><th class="num">ARPDAU</th><th class="num">增量</th></tr>
+        <tr><th>活动类型</th><th class="num">人天数</th><th class="num">人均订单</th><th class="num">中位数</th><th class="num">人均体力</th><th class="num">中位数</th><th class="num">付费率</th><th class="num">ARPDAU</th></tr>
       </thead>
       <tbody>
-        <tr><td>6/12</td><td>CPF+ThreeIn</td><td class="num">$0.48</td><td>6/13 无</td><td class="num">$0.33</td><td class="num highlight">+45%</td></tr>
-        <tr><td>6/14</td><td>WO+Gift</td><td class="num">$0.35</td><td>6/15 无</td><td class="num">$0.25</td><td class="num highlight">+40%</td></tr>
-        <tr><td>6/17</td><td>LO+Gift</td><td class="num">$0.33</td><td>6/18 无</td><td class="num">$0.26</td><td class="num highlight">+27%</td></tr>
-        <tr><td>6/19</td><td>CPF_only</td><td class="num">$0.32</td><td>6/18 无</td><td class="num">$0.26</td><td class="num highlight">+23%</td></tr>
-        <tr><td>6/20</td><td>ER</td><td class="num">$0.41</td><td>6/23 无</td><td class="num">$0.12</td><td class="num highlight">+242%</td></tr>
-        <tr><td>6/21</td><td>WO_only</td><td class="num">$0.23</td><td>6/23 无</td><td class="num">$0.12</td><td class="num highlight">+92%</td></tr>
-        <tr><td>6/22</td><td>LadO+ThreeIn</td><td class="num">$0.42</td><td>6/23 无</td><td class="num">$0.12</td><td class="num highlight">+250%</td></tr>
-        <tr><td>6/24</td><td>LO+Gift</td><td class="num">$0.20</td><td>6/25 无</td><td class="num">$0.09</td><td class="num highlight">+122%</td></tr>
+        <tr><td style="color:#ff6b9d">CPF</td><td class="num">926</td><td class="num">17.2</td><td class="num">14</td><td class="num">609</td><td class="num">483</td><td class="num">5.9%</td><td class="num highlight">$0.40</td></tr>
+        <tr><td style="color:#22d3ee">ER</td><td class="num">456</td><td class="num">16.5</td><td class="num">14</td><td class="num">631</td><td class="num">533</td><td class="num">3.9%</td><td class="num highlight">$0.41</td></tr>
+        <tr><td style="color:#a78bfa">LadO</td><td class="num">462</td><td class="num">15.7</td><td class="num">13</td><td class="num">609</td><td class="num">490</td><td class="num">3.0%</td><td class="num highlight">$0.42</td></tr>
+        <tr><td style="color:#fbbf24">WO</td><td class="num">1,228</td><td class="num">13.7</td><td class="num">11</td><td class="num">485</td><td class="num">395</td><td class="num">5.7%</td><td class="num">$0.32</td></tr>
+        <tr style="opacity:0.6"><td>无活动日</td><td class="num">4,182</td><td class="num">13.5</td><td class="num">11</td><td class="num">476</td><td class="num">384</td><td class="num">12.6%</td><td class="num">$0.26</td></tr>
+        <tr><td style="color:#f87171">LO</td><td class="num">1,402</td><td class="num">13.0</td><td class="num">10</td><td class="num">506</td><td class="num">403</td><td class="num">8.3%</td><td class="num">$0.35</td></tr>
       </tbody>
     </table>
-    <div class="insight-box">
-      <div class="insight-title">💡 洞察</div>
-      每个活动日的ARPDAU都高于相邻无活动日，增幅23%-250%。<strong>后期（6/20-6/24）增量比例更大</strong>，因为无活动日基线ARPDAU已跌到$0.09-0.12——活动在老玩家付费衰减期起到了重要的"托底"作用。
-    </div>
   </div>
 
   <div class="card">
-    <div class="card-title">全服总流水近邻对比 <span class="tag" style="background:rgba(251,191,36,0.15);color:#fbbf24;">绝对值</span></div>
+    <div class="card-title">4-2 · 每实例近邻配对对比 <span class="tag" style="background:rgba(52,211,153,0.15);color:#34d399;">按活动类型分表</span></div>
+
+    <h4 style="color:#fbbf24;margin:16px 0 8px">WaterOrder（Lv.12解锁）</h4>
     <table class="data-table">
-      <thead>
-        <tr><th>活动实例</th><th class="num">活动日流水</th><th class="num">活动日ARPDAU</th><th>近邻无活动日</th><th class="num">流水</th><th class="num">增量</th></tr>
-      </thead>
+      <thead><tr><th>活动实例</th><th>活动日</th><th>近邻无活动日</th><th class="num">流水增量</th><th class="num">ARPDAU增量</th></tr></thead>
       <tbody>
-        <tr><td>6/7 WO+Gift</td><td class="num">$580</td><td class="num">$0.30</td><td>6/8 无 $408</td><td class="num">$0.23</td><td class="num highlight">+42%</td></tr>
-        <tr><td>6/10 LO_only</td><td class="num">$938</td><td class="num">$0.50</td><td>6/11 无 $551</td><td class="num">$0.29</td><td class="num highlight">+70%</td></tr>
-        <tr><td>6/12 CPF+3in1</td><td class="num">$966</td><td class="num">$0.45</td><td>6/11 无 $551</td><td class="num">$0.29</td><td class="num highlight">+75%</td></tr>
-        <tr><td>6/14 WO+Gift</td><td class="num">$1,107</td><td class="num">$0.43</td><td>6/15 无 $882</td><td class="num">$0.35</td><td class="num highlight">+26%</td></tr>
-        <tr><td>6/17 LO+Gift</td><td class="num">$1,584</td><td class="num">$0.60</td><td>6/18 无 $1,259</td><td class="num">$0.45</td><td class="num highlight">+26%</td></tr>
-        <tr><td>6/19 CPF_only</td><td class="num">$1,415</td><td class="num">$0.50</td><td>6/18 无 $1,259</td><td class="num">$0.45</td><td class="num highlight">+12%</td></tr>
-        <tr><td>6/20 ER</td><td class="num">$1,350</td><td class="num">$0.47</td><td>6/18 无 $1,259</td><td class="num">$0.45</td><td class="num highlight">+7%</td></tr>
-        <tr><td>6/21 WO_only</td><td class="num">$1,487</td><td class="num">$0.46</td><td>6/23 无 $1,371</td><td class="num">$0.40</td><td class="num highlight">+8%</td></tr>
-        <tr><td>6/22 LadO+3in1</td><td class="num">$1,534</td><td class="num">$0.45</td><td>6/23 无 $1,371</td><td class="num">$0.40</td><td class="num highlight">+12%</td></tr>
-        <tr><td>6/24 LO+Gift</td><td class="num">$1,746</td><td class="num">$0.50</td><td>6/25 无 $1,313</td><td class="num">$0.39</td><td class="num highlight">+33%</td></tr>
+        <tr><td>6/7 WO+Gift</td><td>$580 / $0.30</td><td>6/8无 $408 / $0.23</td><td class="num highlight">+$172 (+42%)</td><td class="num highlight">+$0.07 (+30%)</td></tr>
+        <tr><td>6/14 WO+Gift</td><td>$1,107 / $0.43</td><td>6/15无 $882 / $0.35</td><td class="num highlight">+$225 (+26%)</td><td class="num highlight">+$0.08 (+23%)</td></tr>
+        <tr><td>6/21 WO_only</td><td>$1,487 / $0.46</td><td>6/23无 $1,371 / $0.40</td><td class="num highlight">+$116 (+8%)</td><td class="num highlight">+$0.06 (+15%)</td></tr>
       </tbody>
     </table>
-    <div class="insight-box">
-      <div class="insight-title">💡 洞察</div>
-      <strong>LO是流水增量绝对值最大的活动</strong>，每次实例带来$300-430增量。6/10首开增量最惊人（+70%）。WO+Gift的增量比WO_only更强（6/7 +42%、6/14 +26% vs 6/21仅+8%）——GiftOnAddOne配套是WO付费增量的关键放大器。CPF+3in1增量远大于CPF_only（+75% vs +12%），ThreeInOnePack是CPF的核心付费驱动。
-    </div>
+    <div class="insight-box" style="margin-bottom:20px">WO+Gift的增量比WO_only更强——6/7 +42%、6/14 +26%，而6/21无配套礼包仅+8%。<strong>GiftOnAddOne配套是WO付费增量的关键放大器。</strong></div>
+
+    <h4 style="color:#f87171;margin:16px 0 8px">LimitedOrder（Lv.12解锁）</h4>
+    <table class="data-table">
+      <thead><tr><th>活动实例</th><th>活动日</th><th>近邻无活动日</th><th class="num">流水增量</th><th class="num">ARPDAU增量</th></tr></thead>
+      <tbody>
+        <tr><td>6/10 LO_only</td><td>$938 / $0.50</td><td>6/11无 $551 / $0.29</td><td class="num highlight">+$387 (+70%)</td><td class="num highlight">+$0.21 (+72%)</td></tr>
+        <tr><td>6/17 LO+Gift</td><td>$1,584 / $0.60</td><td>6/18无 $1,259 / $0.45</td><td class="num highlight">+$325 (+26%)</td><td class="num highlight">+$0.15 (+33%)</td></tr>
+        <tr><td>6/24 LO+Gift</td><td>$1,746 / $0.50</td><td>6/25无 $1,313 / $0.39</td><td class="num highlight">+$433 (+33%)</td><td class="num highlight">+$0.11 (+28%)</td></tr>
+      </tbody>
+    </table>
+    <div class="insight-box" style="margin-bottom:20px"><strong>LO是流水增量绝对值最大的活动。</strong>每次实例都带来$300-430的增量。6/10首开时增量最惊人(+70%)，后续两次依然稳定+26%-33%。</div>
+
+    <h4 style="color:#ff6b9d;margin:16px 0 8px">CardPackageFrenzy（Lv.7解锁）</h4>
+    <table class="data-table">
+      <thead><tr><th>活动实例</th><th>活动日</th><th>近邻无活动日</th><th class="num">流水增量</th><th class="num">ARPDAU增量</th></tr></thead>
+      <tbody>
+        <tr><td>6/12 CPF+3in1</td><td>$966 / $0.45</td><td>6/11无 $551 / $0.29</td><td class="num highlight">+$415 (+75%)</td><td class="num highlight">+$0.16 (+55%)</td></tr>
+        <tr><td>6/19 CPF_only</td><td>$1,415 / $0.50</td><td>6/18无 $1,259 / $0.45</td><td class="num highlight">+$156 (+12%)</td><td class="num highlight">+$0.05 (+11%)</td></tr>
+      </tbody>
+    </table>
+    <div class="insight-box" style="margin-bottom:20px">CPF+三合一礼包的增量远大于CPF_only(+75% vs +12%)。<strong>ThreeInOnePack是CPF的核心付费驱动。</strong></div>
+
+    <h4 style="color:#22d3ee;margin:16px 0 8px">EndlessReward（Lv.12解锁）& LadderOrder（Lv.12解锁）</h4>
+    <table class="data-table">
+      <thead><tr><th>活动实例</th><th>活动日</th><th>近邻无活动日</th><th class="num">流水增量</th><th class="num">ARPDAU增量</th></tr></thead>
+      <tbody>
+        <tr><td>6/20 ER</td><td>$1,350 / $0.47</td><td>6/18无 $1,259 / $0.45</td><td class="num highlight">+$91 (+7%)</td><td class="num">+$0.02</td></tr>
+        <tr><td>6/22 LadO+3in1</td><td>$1,534 / $0.45</td><td>6/23无 $1,371 / $0.40</td><td class="num highlight">+$163 (+12%)</td><td class="num">+$0.05</td></tr>
+      </tbody>
+    </table>
+    <div class="insight-box">ER和LadO的近邻增量不如LO/WO大。但这两个活动是6/19-6/22连续活动日，前一天的活动效果可能"透支"了玩家消费能力。</div>
   </div>
 
   <div class="card">
-    <div class="card-title">图4-4 · 首付 vs 复付流水堆叠面积图</div>
+    <div class="card-title">4-3 · 首付 vs 复付拆分</div>
     <div id="firstRepeatChart" class="chart-box"></div>
-    <div class="insight-box">
-      <div class="insight-title">💡 洞察</div>
-      复付流水从6/7的$91逐步攀升至6/22的$1,065，占比从15.7%提升至69.4%。<strong>活动对复付用户的激活效果远强于首付</strong>。6/17（LO+Gift日）复付首次破$1,200，6/24（LO+Gift日）复付$1,212创峰值。首付流水相对稳定在$400-$700区间。
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">参与者分段对比（活动日 vs 无活动日 ARPDAU）</div>
-    <table class="data-table">
-      <thead>
-        <tr><th>参与者队列</th><th class="num">人数</th><th class="num">活动日 ARPDAU</th><th class="num">无活动日 ARPDAU</th><th class="num">增量</th></tr>
-      </thead>
-      <tbody>
-        <tr><td><span style="color:#fbbf24">●</span> WO</td><td class="num">189</td><td class="num">$0.75</td><td class="num">$0.50</td><td class="num highlight">+50%</td></tr>
-        <tr><td><span style="color:#f87171">●</span> LO</td><td class="num">495</td><td class="num">$0.34</td><td class="num">$0.26</td><td class="num highlight">+31%</td></tr>
-        <tr><td><span style="color:#ff6b9d">●</span> CPF</td><td class="num">445</td><td class="num">$0.43</td><td class="num">$0.26</td><td class="num highlight">+65%</td></tr>
-        <tr><td><span style="color:#a78bfa">●</span> LadO</td><td class="num">336</td><td class="num">$0.55</td><td class="num">$0.24</td><td class="num highlight">+129%</td></tr>
-        <tr><td><span style="color:#22d3ee">●</span> ER</td><td class="num">387</td><td class="num">$0.47</td><td class="num">$0.29</td><td class="num highlight">+62%</td></tr>
-      </tbody>
-    </table>
-    <div class="insight-box">
-      <div class="insight-title">💡 洞察</div>
-      <strong>LadO参与者增量最高（+129%）</strong>，活动日ARPDAU达$0.55，是无活动日的2.3倍。CPF（+65%）和ER（+62%）紧随其后。WO虽然增量"仅"+50%，但其无活动日ARPDAU基线就高达$0.50，说明WO参与者本身就是高付费人群。
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="card-title">交叉对比矩阵 · A活动参与者在B活动日的表现 <span class="tag" style="background:rgba(167,139,250,0.15);color:#a78bfa;">5×6 ARPDAU</span></div>
     <div style="overflow-x:auto">
-    <table class="data-table">
-      <thead>
-        <tr><th>参与者分段</th><th class="num">在CPF日</th><th class="num">在ER日</th><th class="num">在LadO日</th><th class="num">在WO日</th><th class="num">在LO日</th><th class="num">在无活动日</th></tr>
-      </thead>
+    <table class="data-table" style="margin-top:16px">
+      <thead><tr><th>日期</th><th>活动</th><th class="num">首付人</th><th class="num">首付流水</th><th class="num">复付人</th><th class="num">复付流水</th><th class="num">首付占比</th></tr></thead>
       <tbody>
-        <tr><td><span style="color:#fbbf24">●</span> WO参与者(189人)</td><td class="num">$0.80 / 19.9单</td><td class="num highlight">$0.90 / 19.1单</td><td class="num">$0.71 / 18.2单</td><td class="num">$0.75 / 19.2单</td><td class="num">$0.77 / 15.4单</td><td class="num">$0.50 / 16.2单</td></tr>
-        <tr><td><span style="color:#f87171">●</span> LO参与者(495人)</td><td class="num">$0.41 / 17.7单</td><td class="num">$0.40 / 16.8单</td><td class="num highlight">$0.43 / 16.1单</td><td class="num">$0.33 / 14.2单</td><td class="num">$0.34 / 13.3单</td><td class="num">$0.26 / 13.9单</td></tr>
-        <tr><td><span style="color:#ff6b9d">●</span> CPF参与者(445人)</td><td class="num">$0.43 / 17.9单</td><td class="num">$0.42 / 17.1单</td><td class="num highlight">$0.45 / 16.3单</td><td class="num">$0.33 / 14.3单</td><td class="num">$0.38 / 13.5单</td><td class="num">$0.26 / 14.1单</td></tr>
-        <tr><td><span style="color:#a78bfa">●</span> LadO参与者(336人)</td><td class="num">$0.41 / 18.1单</td><td class="num">$0.42 / 18.2单</td><td class="num highlight">$0.55 / 17.5单</td><td class="num">$0.33 / 14.8单</td><td class="num">$0.42 / 13.7单</td><td class="num">$0.24 / 14.2单</td></tr>
-        <tr><td><span style="color:#22d3ee">●</span> ER参与者(387人)</td><td class="num">$0.46 / 18.3单</td><td class="num">$0.47 / 18.1单</td><td class="num highlight">$0.54 / 16.7单</td><td class="num">$0.33 / 14.7单</td><td class="num">$0.44 / 13.6单</td><td class="num">$0.29 / 14.3单</td></tr>
+        <tr><td>6/7</td><td style="color:#fbbf24">WO+Gift</td><td class="num">36</td><td class="num">$489</td><td class="num">7</td><td class="num">$91</td><td class="num highlight">84%</td></tr>
+        <tr><td>6/8</td><td>无</td><td class="num">26</td><td class="num">$230</td><td class="num">14</td><td class="num">$179</td><td class="num">56%</td></tr>
+        <tr><td>6/10</td><td style="color:#f87171">LO_only</td><td class="num">58</td><td class="num">$719</td><td class="num">22</td><td class="num">$219</td><td class="num highlight">77%</td></tr>
+        <tr><td>6/11</td><td>无</td><td class="num">22</td><td class="num">$193</td><td class="num">21</td><td class="num">$359</td><td class="num">35%</td></tr>
+        <tr><td>6/12</td><td style="color:#ff6b9d">CPF+3in1</td><td class="num">49</td><td class="num">$585</td><td class="num">23</td><td class="num">$381</td><td class="num">61%</td></tr>
+        <tr><td>6/13</td><td>无</td><td class="num">51</td><td class="num">$657</td><td class="num">29</td><td class="num">$382</td><td class="num">63%</td></tr>
+        <tr><td>6/14</td><td style="color:#fbbf24">WO+Gift</td><td class="num">40</td><td class="num">$486</td><td class="num">40</td><td class="num">$620</td><td class="num">44%</td></tr>
+        <tr><td>6/15</td><td>无</td><td class="num">42</td><td class="num">$444</td><td class="num">34</td><td class="num">$437</td><td class="num">50%</td></tr>
+        <tr><td>6/17</td><td style="color:#f87171">LO+Gift</td><td class="num">37</td><td class="num">$382</td><td class="num">57</td><td class="num">$1,202</td><td class="num neg">24%</td></tr>
+        <tr><td>6/18</td><td>无</td><td class="num">50</td><td class="num">$583</td><td class="num">52</td><td class="num">$676</td><td class="num">46%</td></tr>
+        <tr><td>6/19</td><td style="color:#ff6b9d">CPF_only</td><td class="num">62</td><td class="num">$585</td><td class="num">57</td><td class="num">$830</td><td class="num">41%</td></tr>
+        <tr><td>6/20</td><td style="color:#22d3ee">ER</td><td class="num">39</td><td class="num">$403</td><td class="num">78</td><td class="num">$947</td><td class="num neg">30%</td></tr>
+        <tr><td>6/22</td><td style="color:#a78bfa">LadO+3in1</td><td class="num">43</td><td class="num">$469</td><td class="num">76</td><td class="num">$1,065</td><td class="num neg">31%</td></tr>
+        <tr><td>6/24</td><td style="color:#f87171">LO+Gift</td><td class="num">54</td><td class="num">$534</td><td class="num">87</td><td class="num">$1,212</td><td class="num neg">31%</td></tr>
+        <tr><td>6/25</td><td>无</td><td class="num">49</td><td class="num">$571</td><td class="num">69</td><td class="num">$742</td><td class="num">44%</td></tr>
       </tbody>
     </table>
     </div>
     <div class="insight-box">
-      <div class="insight-title">💡 洞察</div>
-      <strong>WO参与者是"超级鲸鱼"群体</strong>：仅189人但在所有日子的ARPDAU都最高——无活动日$0.50、ER日$0.90、CPF日$0.80。<br/>
-      <strong>所有分段在任意活动日的ARPDAU都高于无活动日</strong>——说明活动的付费刺激是普遍的，不限于"自己的"活动。<br/>
-      <strong>LadO日的ARPDAU对各分段都偏高</strong>（$0.43-$0.71），虽然通关率极低（3.6%），但付费刺激面很广。<br/>
-      LO参与者在LO日ARPDAU($0.34)反而不是最高——他们在LadO日$0.43、CPF日$0.41更高，可能因为LO有3个实例（含早期低值拉低均值）。
+      <div class="insight-title">💡 关键发现</div>
+      <strong>早期活动是"首付转化器"</strong>：6/7 WO首付36人/$489(占84%)、6/10 LO首付58人/$719(77%)。6/10 LO是全期最强首付日。<br/>
+      <strong>后期活动转为"复付驱动器"</strong>：6/17 LO+Gift复付57人/$1,202(占76%)、6/24 LO+Gift复付87人/$1,212(69%)。<br/>
+      <strong>LO对复付刺激最强</strong>：6/17 LO复付$1,202 vs 6/18无活动日$676(+78%)，6/24 LO复付$1,212 vs 6/25无活动日$742(+63%)。限时高难度机制迫使老付费玩家买体力包/礼包来冲关。
     </div>
   </div>
 </section>
 
 <!-- ==================== 第五章 ==================== -->
 <section class="chapter" id="ch5">
-  <div class="chapter-title"><span class="chapter-num">第五章</span> 品类偏好</div>
+  <div class="chapter-title"><span class="chapter-num">第五章</span> 各活动日品类偏好</div>
 
-  <div class="card">
-    <div class="card-title">图5-1 · 各活动日热销品类对比（日均流水） <span class="tag" style="background:rgba(34,211,238,0.15);color:#22d3ee;">按日均计算</span></div>
-    <div id="categoryChart" class="chart-box" style="height:450px"></div>
-    <div class="insight-box">
-      <div class="insight-title">💡 洞察</div>
-      <strong>ThreeInOnePack是LadO的爆款品类</strong>，日均$326远超其他活动（CPF日均$83）。LO和CPF的Shop品类日均接近$400，显著高于其他活动。GiftOnAddOne完全是LO/WO的专属品类，无活动日几乎无销量。EnergyPack在LadO日最高（$197），体力需求驱动明显。
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title" style="color:#f87171">LimitedOrder日（3天均值）</div>
+      <table class="data-table">
+        <thead><tr><th>品类</th><th class="num">总流水</th><th class="num">日均</th><th class="num">买家</th><th class="num">均价</th><th>说明</th></tr></thead>
+        <tbody>
+          <tr><td>Shop</td><td class="num">$1,192</td><td class="num">$397</td><td class="num">102</td><td class="num">$8.11</td><td style="font-size:11px;color:var(--text2)">LO日均价最高</td></tr>
+          <tr><td>BattlePassTwo</td><td class="num">$650</td><td class="num">$217</td><td class="num">72</td><td class="num">$8.67</td><td></td></tr>
+          <tr><td>GiftOnAddOne</td><td class="num">$595</td><td class="num highlight">$297</td><td class="num">42</td><td class="num">$13.21</td><td style="font-size:11px;color:var(--green)">LO日独有增量</td></tr>
+          <tr><td>DailyPack</td><td class="num">$588</td><td class="num">$196</td><td class="num">48</td><td class="num">$9.81</td><td></td></tr>
+          <tr><td>EnergyPack</td><td class="num">$389</td><td class="num">$194</td><td class="num">27</td><td class="num highlight">$13.88</td><td style="font-size:11px;color:var(--text2)">均价最高品类</td></tr>
+          <tr><td>LevelPack</td><td class="num">$373</td><td class="num">$124</td><td class="num">66</td><td class="num">$4.91</td><td></td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:#fbbf24">WaterOrder日（3天均值）</div>
+      <table class="data-table">
+        <thead><tr><th>品类</th><th class="num">总流水</th><th class="num">日均</th><th class="num">买家</th><th class="num">均价</th></tr></thead>
+        <tbody>
+          <tr><td>Shop</td><td class="num">$747</td><td class="num">$249</td><td class="num">76</td><td class="num">$6.67</td></tr>
+          <tr><td>BattlePassTwo</td><td class="num">$570</td><td class="num">$190</td><td class="num">65</td><td class="num">$8.39</td></tr>
+          <tr><td>DailyPack</td><td class="num">$531</td><td class="num">$177</td><td class="num">39</td><td class="num">$10.03</td></tr>
+          <tr><td>GiftOnAddOne</td><td class="num">$302</td><td class="num">$151</td><td class="num">29</td><td class="num">$10.06</td></tr>
+          <tr><td>LevelPack</td><td class="num">$287</td><td class="num">$96</td><td class="num">44</td><td class="num">$4.96</td></tr>
+          <tr><td>EnergyPack</td><td class="num">$169</td><td class="num">$169</td><td class="num">14</td><td class="num">$12.06</td></tr>
+          <tr><td>ChainPack</td><td class="num">$190</td><td class="num">$190</td><td class="num">21</td><td class="num">$9.04</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="grid-2">
+    <div class="card">
+      <div class="card-title" style="color:#a78bfa">LadderOrder日（1天）</div>
+      <table class="data-table">
+        <thead><tr><th>品类</th><th class="num">流水</th><th class="num">买家</th><th class="num">均价</th></tr></thead>
+        <tbody>
+          <tr><td>ThreeInOnePack</td><td class="num highlight">$326</td><td class="num">16</td><td class="num">$20.37</td></tr>
+          <tr><td>Shop</td><td class="num">$250</td><td class="num">32</td><td class="num">$5.55</td></tr>
+          <tr><td>LevelPack</td><td class="num">$220</td><td class="num">28</td><td class="num">$6.10</td></tr>
+          <tr><td>BattlePassTwo</td><td class="num">$216</td><td class="num">26</td><td class="num">$7.99</td></tr>
+          <tr><td>DailyPack</td><td class="num">$203</td><td class="num">19</td><td class="num">$9.66</td></tr>
+          <tr><td>EnergyPack</td><td class="num">$197</td><td class="num">19</td><td class="num">$9.84</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="card">
+      <div class="card-title" style="color:#22d3ee">EndlessReward日（1天）</div>
+      <table class="data-table">
+        <thead><tr><th>品类</th><th class="num">流水</th><th class="num">买家</th><th class="num">均价</th></tr></thead>
+        <tbody>
+          <tr><td>MiniBoardDoor</td><td class="num highlight">$238</td><td class="num">34</td><td class="num">$6.99</td></tr>
+          <tr><td>Shop</td><td class="num">$223</td><td class="num">28</td><td class="num">$6.96</td></tr>
+          <tr><td>BattlePassTwo</td><td class="num">$190</td><td class="num">22</td><td class="num">$8.63</td></tr>
+          <tr><td>DailyPack</td><td class="num">$188</td><td class="num">15</td><td class="num">$10.43</td></tr>
+          <tr><td>LevelPack</td><td class="num">$180</td><td class="num">29</td><td class="num">$4.99</td></tr>
+          <tr><td>EnergyPack</td><td class="num">$176</td><td class="num">16</td><td class="num">$10.99</td></tr>
+          <tr><td>ChainPack</td><td class="num">$147</td><td class="num">14</td><td class="num">$8.64</td></tr>
+        </tbody>
+      </table>
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">活动独占品类增量</div>
+    <div class="card-title" style="color:#ff6b9d">CPF日（2天均值）</div>
     <table class="data-table">
-      <thead>
-        <tr><th>品类</th><th>均价区间</th><th class="num">活动日总销量</th><th class="num">无活动日总销量</th><th class="num">增量倍数</th></tr>
-      </thead>
+      <thead><tr><th>品类</th><th class="num">总流水</th><th class="num">日均</th><th class="num">买家</th><th class="num">均价</th></tr></thead>
       <tbody>
-        <tr><td>GiftOnAddOne</td><td>$10 – $13</td><td class="num">$897</td><td class="num">$35</td><td class="num highlight">25.6x</td></tr>
-        <tr><td>ThreeInOnePack</td><td>$20 – $24</td><td class="num">$490</td><td class="num">$135</td><td class="num highlight">3.6x</td></tr>
-        <tr><td>EnergyPack</td><td>$11 – $14</td><td class="num">日均 $132</td><td class="num">日均 $74</td><td class="num highlight">1.8x</td></tr>
+        <tr><td>Shop</td><td class="num">$788</td><td class="num">$394</td><td class="num">77</td><td class="num">$7.10</td></tr>
+        <tr><td>BattlePassTwo</td><td class="num">$468</td><td class="num">$234</td><td class="num">60</td><td class="num">$7.81</td></tr>
+        <tr><td>DailyPack</td><td class="num">$341</td><td class="num">$170</td><td class="num">30</td><td class="num">$10.02</td></tr>
+        <tr><td>LevelPack</td><td class="num">$307</td><td class="num">$154</td><td class="num">44</td><td class="num">$4.96</td></tr>
+        <tr><td>EnergyPack</td><td class="num">$206</td><td class="num">$206</td><td class="num">18</td><td class="num">$11.43</td></tr>
+        <tr><td>ThreeInOnePack</td><td class="num">$165</td><td class="num">$165</td><td class="num">7</td><td class="num">$23.56</td></tr>
       </tbody>
     </table>
-    <div class="insight-box">
-      <div class="insight-title">💡 洞察</div>
-      <strong>GiftOnAddOne的活动依赖度极高（25.6倍）</strong>，几乎完全依赖LO/WO活动日驱动。ThreeInOnePack增量3.6倍，主要受LadO和CPF带动。EnergyPack在活动日需求增加1.8倍，说明玩家为通关活动愿意额外购买体力。
-    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">品类洞察汇总</div>
+    <table class="data-table">
+      <thead><tr><th>品类</th><th>在哪类活动日卖得最好</th><th>驱动因素</th></tr></thead>
+      <tbody>
+        <tr><td><strong>GiftOnAddOne ($13)</strong></td><td>LO日 $297/天、WO日 $151/天</td><td>配套礼包，只在WO/LO日有售</td></tr>
+        <tr><td><strong>ThreeInOnePack ($21-24)</strong></td><td>LadO日 $326、CPF日 $165</td><td>配套礼包，只在LadO/CPF日有售，单价最高</td></tr>
+        <tr><td><strong>EnergyPack ($11-14)</strong></td><td>CPF日 $206、LO日 $194、LadO日 $197</td><td>高难度活动需要体力</td></tr>
+        <tr><td><strong>MiniBoardDoor ($7)</strong></td><td>ER日 $238</td><td>ER当天同时开放了多层棋盘活动</td></tr>
+        <tr><td><strong>ChainPack ($9)</strong></td><td>ER日 $147、WO日 $190</td><td>与礼包链活动同期</td></tr>
+        <tr><td><strong>Shop</strong></td><td>每天都卖，但LO日均价$8.1最高</td><td>LO日玩家买更贵的Shop商品</td></tr>
+      </tbody>
+    </table>
   </div>
 </section>
 
 <!-- ==================== 第六章 ==================== -->
 <section class="chapter" id="ch6">
-  <div class="chapter-title"><span class="chapter-num">第六章</span> 留存影响</div>
+  <div class="chapter-title"><span class="chapter-num">第六章</span> 活动对次日留存的影响</div>
 
   <div class="card">
-    <div class="card-title">图6-1 · 次日回访率趋势（6/7 – 6/24）</div>
+    <div class="card-title">6-1 · DAU 与次日回访率逐日明细</div>
     <div id="retentionChart" class="chart-box"></div>
-    <div class="insight-box">
-      <div class="insight-title">💡 洞察</div>
-      次日回访率从6/7的46.3%稳步提升至6/24的63.7%，整体提升<strong>+17.4个百分点</strong>。留存率的整体上升趋势（46%→65%）主要是因为玩家群体逐渐成熟，与单日活动类型关系不大。
+    <div style="overflow-x:auto">
+    <table class="data-table" style="margin-top:16px">
+      <thead><tr><th>日期</th><th>活动</th><th class="num">DAU</th><th class="num">次日回访</th><th class="num">次日回访率</th></tr></thead>
+      <tbody>
+        <tr><td>6/7</td><td style="color:#fbbf24">WO</td><td class="num">1,930</td><td class="num">894</td><td class="num">46.3%</td></tr>
+        <tr><td>6/8</td><td>无</td><td class="num">1,786</td><td class="num">967</td><td class="num">54.1%</td></tr>
+        <tr><td>6/9</td><td>无</td><td class="num">1,709</td><td class="num">935</td><td class="num">54.7%</td></tr>
+        <tr><td>6/10</td><td style="color:#f87171">LO</td><td class="num">1,876</td><td class="num">1,132</td><td class="num highlight">60.3%</td></tr>
+        <tr><td>6/11</td><td>无</td><td class="num">1,880</td><td class="num">1,104</td><td class="num">58.7%</td></tr>
+        <tr><td>6/12</td><td style="color:#ff6b9d">CPF</td><td class="num">2,129</td><td class="num">1,210</td><td class="num">56.8%</td></tr>
+        <tr><td>6/13</td><td>无</td><td class="num">2,323</td><td class="num">1,364</td><td class="num">58.7%</td></tr>
+        <tr><td>6/14</td><td style="color:#fbbf24">WO</td><td class="num">2,585</td><td class="num">1,501</td><td class="num">58.1%</td></tr>
+        <tr><td>6/15</td><td>无</td><td class="num">2,517</td><td class="num">1,520</td><td class="num">60.4%</td></tr>
+        <tr><td>6/16</td><td>无</td><td class="num">2,593</td><td class="num">1,573</td><td class="num">60.7%</td></tr>
+        <tr><td>6/17</td><td style="color:#f87171">LO</td><td class="num">2,656</td><td class="num">1,620</td><td class="num highlight">61.0%</td></tr>
+        <tr><td>6/18</td><td>无</td><td class="num">2,815</td><td class="num">1,661</td><td class="num">59.0%</td></tr>
+        <tr><td>6/19</td><td style="color:#ff6b9d">CPF</td><td class="num">2,835</td><td class="num">1,714</td><td class="num">60.5%</td></tr>
+        <tr><td>6/20</td><td style="color:#22d3ee">ER</td><td class="num">2,873</td><td class="num">1,806</td><td class="num">62.9%</td></tr>
+        <tr><td>6/21</td><td style="color:#fbbf24">WO</td><td class="num">3,242</td><td class="num">2,031</td><td class="num">62.6%</td></tr>
+        <tr><td>6/22</td><td style="color:#a78bfa">LadO</td><td class="num">3,375</td><td class="num">2,126</td><td class="num">63.0%</td></tr>
+        <tr><td>6/23</td><td>无</td><td class="num">3,391</td><td class="num">2,209</td><td class="num highlight">65.1%</td></tr>
+        <tr><td>6/24</td><td style="color:#f87171">LO</td><td class="num">3,493</td><td class="num">2,226</td><td class="num">63.7%</td></tr>
+      </tbody>
+    </table>
     </div>
   </div>
 
@@ -635,69 +692,92 @@
     <div class="card-title">留存配对对比</div>
     <table class="data-table">
       <thead>
-        <tr><th>对比组</th><th>日期</th><th class="num">次日回访率</th><th>对照日</th><th class="num">次日回访率</th><th class="num">差值</th></tr>
+        <tr><th>活动实例</th><th class="num">活动日次日留存</th><th>近邻无活动日</th><th class="num">差异</th></tr>
       </thead>
       <tbody>
-        <tr><td>LO①</td><td>6/10</td><td class="num">60.3%</td><td>6/11 无</td><td class="num">58.7%</td><td class="num highlight">+1.6pp</td></tr>
-        <tr><td>CPF①</td><td>6/12</td><td class="num">56.8%</td><td>6/13 无</td><td class="num">58.7%</td><td class="num neg">-1.9pp</td></tr>
-        <tr><td>WO②+Gift</td><td>6/14</td><td class="num">58.1%</td><td>6/15 无</td><td class="num">60.4%</td><td class="num neg">-2.3pp</td></tr>
-        <tr><td>LO②+Gift</td><td>6/17</td><td class="num">61.0%</td><td>6/18 无</td><td class="num">59.0%</td><td class="num highlight">+2.0pp</td></tr>
-        <tr><td>CPF②</td><td>6/19</td><td class="num">60.5%</td><td>6/18 无</td><td class="num">59.0%</td><td class="num highlight">+1.5pp</td></tr>
-        <tr><td>ER</td><td>6/20</td><td class="num">62.9%</td><td>6/23 无</td><td class="num">65.1%</td><td class="num neg">-2.2pp</td></tr>
-        <tr><td>LadO+3in1</td><td>6/22</td><td class="num">63.0%</td><td>6/23 无</td><td class="num">65.1%</td><td class="num neg">-2.1pp</td></tr>
-        <tr><td>LO③+Gift</td><td>6/24</td><td class="num">63.7%</td><td>—</td><td class="num">—</td><td class="num">—</td></tr>
+        <tr><td>6/10 LO</td><td class="num">60.3%</td><td>6/11无 58.7%</td><td class="num highlight">+1.6pp</td></tr>
+        <tr><td>6/12 CPF</td><td class="num">56.8%</td><td>6/13无 58.7%</td><td class="num neg">-1.9pp</td></tr>
+        <tr><td>6/14 WO</td><td class="num">58.1%</td><td>6/15无 60.4%</td><td class="num neg">-2.3pp</td></tr>
+        <tr><td>6/17 LO</td><td class="num">61.0%</td><td>6/18无 59.0%</td><td class="num highlight">+2.0pp</td></tr>
+        <tr><td>6/19 CPF</td><td class="num">60.5%</td><td>6/18无 59.0%</td><td class="num highlight">+1.5pp</td></tr>
+        <tr><td>6/20 ER</td><td class="num">62.9%</td><td>6/23无 65.1%</td><td class="num neg">-2.2pp</td></tr>
+        <tr><td>6/22 LadO</td><td class="num">63.0%</td><td>6/23无 65.1%</td><td class="num neg">-2.1pp</td></tr>
+        <tr><td>6/24 LO</td><td class="num">63.7%</td><td>—</td><td class="num">—</td></tr>
       </tbody>
     </table>
     <div class="insight-box">
-      <div class="insight-title">💡 洞察</div>
-      <strong>LO对次日留存有轻微正向影响</strong>（+1.6~2.0pp），可能因为LO是限时24小时，玩家次日回来检查结果。CPF效果不一致（6/12 -1.9pp、6/19 +1.5pp）。WO对留存有轻微负影响（-2.3pp），可能因为WO较简单，当天做完就走。整体来看活动对留存的影响很小（±2pp以内），留存主要由整体DAU增长趋势驱动。
+      <div class="insight-title">💡 留存结论</div>
+      <strong>LO对次日留存有轻微正向影响</strong>（+1.6~2.0pp），可能因为LO是限时24小时，玩家次日回来检查结果。CPF效果不一致（6/12 -1.9pp、6/19 +1.5pp）。WO对留存有轻微负影响（-2.3pp）。整体来看活动对留存的影响很小（±2pp以内），留存主要由整体DAU增长趋势驱动（从46%→65%稳步上升）。留存率的整体上升趋势主要是因为玩家群体逐渐成熟，与单日活动类型关系不大。
     </div>
   </div>
 </section>
 
 <!-- ==================== 第七章 ==================== -->
 <section class="chapter" id="ch7">
-  <div class="chapter-title"><span class="chapter-num">第七章</span> 综合结论与运营建议</div>
+  <div class="chapter-title"><span class="chapter-num">第七章</span> 综合结论</div>
 
   <div class="card">
-    <div class="card-title">🔍 五大核心发现</div>
-    <ol class="conclusion-list">
-      <li><strong>Finding 1 — 活动是收入稳定器：</strong>有活动日ARPDAU均值$0.38，无活动日仅$0.26（Level≥12队列），活动带来的增量约46%。全服数据显示单日活动平均带来+27%的流水增量。</li>
-      <li><strong>Finding 2 — LadO是ARPDAU冠军：</strong>参与者维度增量+129%，ARPDAU $0.42领跑。其核心引擎是ThreeInOnePack（日均$326）和EnergyPack（日均$197）。5步阶梯设计创造了强烈的"沉没成本"付费动机。</li>
-      <li><strong>Finding 3 — 3in1叠加效果显著：</strong>CPF+3in1（$0.48）和LadO+3in1（$0.42）是ARPDAU最高的两天。3in1的存在将ThreeInOnePack品类销量提升3.6倍。建议未来所有适配活动均叠加3in1。</li>
-      <li><strong>Finding 4 — 难度调整扩大参与但未提升通过率：</strong>6/20调整后LO参与者从690增至1078（+56%），但通过率从17.7%降至14.0%。绝对通过人数增加（122→151），表明调整方向正确——更多玩家有机会接触和尝试活动。</li>
-      <li><strong>Finding 5 — 复付驱动收入增长：</strong>复付流水从6/7的$91增至6/24的$1,212（13倍增长），占比从16%攀升至69%。活动对复付激活的效果远强于首付转化，说明活动的核心价值在于"激活已付费用户复购"而非"转化新付费用户"。</li>
-    </ol>
-  </div>
-
-  <div class="card">
-    <div class="card-title">三类活动的差异化价值</div>
-    <table class="data-table">
-      <thead>
-        <tr><th>类型</th><th>代表</th><th class="num">对做单的拉动</th><th class="num">对付费的刺激</th><th class="num">参与者ARPDAU增量</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>第一类：正常订单额外奖励</td><td>WO, CPF</td><td class="num">WO≈无影响，CPF+27%</td><td class="num">WO+23%，CPF+54%</td><td class="num highlight">WO+50%，CPF+65%</td></tr>
-        <tr><td>第二类：额外高难度订单</td><td>LO, LadO</td><td class="num">LO≈无影响，LadO+16%</td><td class="num">LO+35%，LadO+62%</td><td class="num highlight">LO+31%，LadO+129%</td></tr>
-        <tr><td>第三类：单独活动窗口</td><td>ER</td><td class="num">+22%</td><td class="num">+58%</td><td class="num highlight">+62%</td></tr>
-      </tbody>
-    </table>
-    <div class="insight-box">
-      <div class="insight-title">💡 洞察</div>
-      第一类WO的"拉做单"效应在level≥12后消失（WO日人均13.7单≈无活动日13.5单），但WO参与者群体（189人）本身就是高付费鲸鱼。CPF同为第一类但做单拉动明显——可能因为解锁等级低（Lv.7），更多中等级玩家能参与。<br/>
-      <strong>第二类LadO的付费刺激最强</strong>——参与者ARPDAU在LadO日比无活动日高129%，尽管通关率只有3.6%。第三类ER在做单和付费上都有正向效果。
+    <div class="card-title">① 活动对付费有明确的正向刺激</div>
+    <div style="font-size:14px;color:var(--text);line-height:1.8;padding:4px 0">
+      每个活动实例的总流水和ARPDAU都高于相邻无活动日：<br/>
+      &bull; <strong>LO增量最大</strong>：每次+$300-430（+26%-70%），是全期最强付费驱动活动<br/>
+      &bull; <strong>WO+Gift增量稳定</strong>：每次+$170-225（+23%-42%），但WO_only仅+8%——配套礼包是关键<br/>
+      &bull; <strong>CPF+三合一增量显著</strong>（+75%），无配套时仅+12%
     </div>
   </div>
 
   <div class="card">
-    <div class="card-title">📋 运营建议</div>
-    <ul class="rec-list">
-      <li><strong>建议 1 — 优化LadO阶梯设计：</strong>Step 3通过率骤降至44.5%，是最大流失点。建议在Step 3增加"复活币"机制或降低10%-15%难度，目标将Step 3通过率提升至55%+。同时增加Step 4-5的奖励价值，提高完成动机。</li>
-      <li><strong>建议 2 — 常态化3in1叠加：</strong>数据显示3in1组合日ARPDAU显著高于单活动日。建议将3in1从"偶尔叠加"升级为"固定搭配"，尤其配合LadO、CPF使用。</li>
-      <li><strong>建议 3 — 优化ER里程碑曲线：</strong>M7-M9流失率高达80%，建议在M7-M8增加"额外奖励里程碑"或"体力折扣"，延缓衰减曲线。目标将M10留存从5.7%提升至10%+。</li>
-      <li><strong>建议 4 — 填补活动空窗：</strong>6/23、6/25等无活动日ARPDAU极低（$0.12、$0.09），建议保持"每日至少一个活动"的节奏。可用低成本活动（如迷你WO、限时折扣）填补空窗。</li>
-      <li><strong>建议 5 — 差异化定价复付礼包：</strong>复付用户贡献69%流水但付费率相对稳定。建议针对复付用户提供"累计购买折扣"或"VIP专属礼包"，进一步提升复购频次和客单价。</li>
-    </ul>
+    <div class="card-title">② 活动的付费机制随时间演变</div>
+    <table class="data-table">
+      <thead><tr><th>阶段</th><th class="num">首付占比</th><th>驱动逻辑</th></tr></thead>
+      <tbody>
+        <tr><td>早期(6/7-6/12)</td><td class="num highlight">61%-84%</td><td>活动是新玩家"破冰首付"的催化剂</td></tr>
+        <tr><td>中期(6/14-6/19)</td><td class="num">24%-44%</td><td>首付/复付各半</td></tr>
+        <tr><td>后期(6/20-6/24)</td><td class="num neg">30%-31%</td><td>活动转为"老玩家复购"驱动，复付占流水70%</td></tr>
+      </tbody>
+    </table>
+    <div class="insight-box">LO在后期复付驱动力最强：6/17复付$1,202（vs无活动日$676，+78%），6/24复付$1,212（vs $742，+63%）。限时高难度机制迫使老付费玩家买EnergyPack($14均价)和GiftOnAddOne($13)来冲关。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">③ 配套礼包是活动付费的核心放大器</div>
+    <table class="data-table">
+      <thead><tr><th>配套礼包</th><th class="num">均价</th><th>专属活动日</th><th>无活动日销量</th></tr></thead>
+      <tbody>
+        <tr><td>GiftOnAddOne</td><td class="num">$10-13</td><td>WO/LO日</td><td class="neg">几乎为零（$35/9天）</td></tr>
+        <tr><td>ThreeInOnePack</td><td class="num">$20-24</td><td>CPF/LadO日</td><td class="neg">几乎为零（$135/9天）</td></tr>
+      </tbody>
+    </table>
+    <div class="insight-box">这两个礼包在活动日创造了<strong>纯增量收入</strong>，而不是抢占其他品类。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">④ 高难度活动驱动体力包消费</div>
+    <table class="data-table">
+      <thead><tr><th>活动</th><th class="num">EnergyPack日均</th><th class="num">均价</th></tr></thead>
+      <tbody>
+        <tr><td style="color:#a78bfa">LadO日</td><td class="num highlight">$197/天</td><td class="num">$9.84</td></tr>
+        <tr><td style="color:#22d3ee">ER日</td><td class="num highlight">$176/天</td><td class="num">$10.99</td></tr>
+        <tr><td style="color:#f87171">LO日</td><td class="num">$130/天</td><td class="num highlight">$13.88</td></tr>
+        <tr><td style="color:#ff6b9d">CPF日</td><td class="num">$103/天</td><td class="num">$11.43</td></tr>
+        <tr style="opacity:0.6"><td>无活动日</td><td class="num">$74/天</td><td class="num">$11.81</td></tr>
+      </tbody>
+    </table>
+    <div class="insight-box">高难度活动（尤其LadO和ER）使EnergyPack日均销量翻倍。LO日均价拉高到$13.88——玩家在冲关压力下倾向购买更大额的体力包。</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⑤ 活动对留存影响有限</div>
+    <div style="font-size:14px;color:var(--text);line-height:1.8;padding:4px 0">
+      次日回访率差异在±2pp以内，不足以作为活动设计的主要考量。留存的整体上升趋势由玩家群体成熟度驱动。
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title">⑥ 飞镖礼包与主题装修联动</div>
+    <div style="font-size:14px;color:var(--text);line-height:1.8;padding:4px 0">
+      6/22-6/26限时礼包改为飞镖（气球嘉年华道具），这些礼包不仅刺激了短期消费，还为主题装修活动提供了道具支持，形成了"限时礼包→飞镖→气球嘉年华参与度→活跃度"的正向循环。
+    </div>
   </div>
 </section>
 
@@ -746,105 +826,140 @@ function makeChart(dom) {
 window.addEventListener('resize', () => charts.forEach(c => c.resize()));
 
 // ============================================================
-// 第一章 甘特图 (纯CSS)
+// 第一章 甘特图 (纯CSS, 固定行顺序)
 // ============================================================
 (function(){
+  const ROW_LABELS = ['卡册','战令','组合','主题装修','棋盘','多日活动','多日活动','单日活动','礼包'];
+  const ROW_COLORS = ['#7B61FF','#6C757D','#D1495B','#4D908E','#D45087','#2A9D8F','#2A9D8F','#277DA1','#F07C2E'];
   const activities = [
-    {name:"战令2（儿童节）",start:"06-01 16:00",end:"07-01 16:00",color:"#6C757D"},
-    {name:"【主题】组合活动",start:"06-01 16:00",end:"07-01 16:00",color:"#D1495B"},
-    {name:"卡册",start:"06-01 16:00",end:"07-16 16:00",color:"#7B61FF"},
-    {name:"主题装修：气球嘉年华",start:"06-06 16:00",end:"06-30 16:00",color:"#4D908E"},
-    {name:"区域锁定滚动棋盘",start:"06-06 16:00",end:"06-15 16:00",color:"#D45087"},
-    {name:"多层棋盘",start:"06-20 16:00",end:"06-29 16:00",color:"#D45087"},
-    {name:"杰西卡基金募集",start:"06-05 16:00",end:"06-08 16:00",color:"#2A9D8F"},
-    {name:"露娜的玩具拼图",start:"06-08 16:00",end:"06-12 16:00",color:"#2A9D8F"},
-    {name:"礼包链",start:"06-08 16:00",end:"06-11 16:00",color:"#F07C2E"},
-    {name:"水滴订单",start:"06-07 16:00",end:"06-08 16:00",color:"#277DA1"},
-    {name:"1+2 礼包",start:"06-07 16:00",end:"06-08 16:00",color:"#F07C2E"},
-    {name:"限时订单",start:"06-10 16:00",end:"06-11 16:00",color:"#277DA1"},
-    {name:"卡册狂热",start:"06-12 16:00",end:"06-13 16:00",color:"#277DA1"},
-    {name:"三合一礼包",start:"06-12 16:00",end:"06-13 16:00",color:"#F07C2E"},
-    {name:"艾瑞克小车竞速",start:"06-12 16:00",end:"06-15 16:00",color:"#2A9D8F"},
-    {name:"水滴订单",start:"06-14 16:00",end:"06-15 16:00",color:"#277DA1"},
-    {name:"1+2 礼包",start:"06-14 16:00",end:"06-15 16:00",color:"#F07C2E"},
-    {name:"塞缪尔池塘钓鱼",start:"06-15 16:00",end:"06-19 16:00",color:"#2A9D8F"},
-    {name:"三合一礼包",start:"06-16 16:00",end:"06-17 16:00",color:"#F07C2E"},
-    {name:"限时订单",start:"06-17 16:00",end:"06-18 16:00",color:"#277DA1"},
-    {name:"1+2 礼包",start:"06-17 16:00",end:"06-18 16:00",color:"#F07C2E"},
-    {name:"卡册狂热",start:"06-19 16:00",end:"06-20 16:00",color:"#277DA1"},
-    {name:"礼包链",start:"06-19 16:00",end:"06-22 16:00",color:"#F07C2E"},
-    {name:"杰西卡开车探险",start:"06-19 16:00",end:"06-22 16:00",color:"#2A9D8F"},
-    {name:"无尽奖励",start:"06-20 16:00",end:"06-21 16:00",color:"#277DA1"},
-    {name:"水滴订单",start:"06-21 16:00",end:"06-22 16:00",color:"#277DA1"},
-    {name:"限时订单链（剪羊毛）",start:"06-22 16:00",end:"06-23 16:00",color:"#277DA1"},
-    {name:"三合一礼包",start:"06-22 16:00",end:"06-23 16:00",color:"#F07C2E"},
-    {name:"凯的食品券兑换",start:"06-22 16:00",end:"06-26 16:00",color:"#2A9D8F"},
-    {name:"限时订单",start:"06-24 16:00",end:"06-25 16:00",color:"#277DA1"},
-    {name:"1+2 礼包",start:"06-24 16:00",end:"06-25 16:00",color:"#F07C2E"},
-    {name:"卡册狂热",start:"06-26 16:00",end:"06-27 16:00",color:"#277DA1"},
-    {name:"三合一礼包",start:"06-26 16:00",end:"06-27 16:00",color:"#F07C2E"},
-    {name:"杰西卡基金募集",start:"06-26 16:00",end:"06-29 16:00",color:"#2A9D8F"},
-    {name:"无尽奖励",start:"06-27 16:00",end:"06-28 16:00",color:"#277DA1"},
-    {name:"水滴订单",start:"06-28 16:00",end:"06-29 16:00",color:"#277DA1"},
-    {name:"1+2 礼包",start:"06-28 16:00",end:"06-29 16:00",color:"#F07C2E"},
-    {name:"露娜的玩具拼图",start:"06-29 16:00",end:"07-03 16:00",color:"#2A9D8F"},
+    {name:"卡册",start:"06-01 16:00",end:"07-16 16:00",row:0},
+    {name:"战令2(儿童节)",start:"06-01 16:00",end:"07-01 16:00",row:1},
+    {name:"组合活动",start:"06-01 16:00",end:"07-01 16:00",row:2},
+    {name:"气球嘉年华",start:"06-06 16:00",end:"06-30 16:00",row:3},
+    {name:"滚动棋盘",start:"06-06 16:00",end:"06-15 16:00",row:4},
+    {name:"多层棋盘",start:"06-20 16:00",end:"06-29 16:00",row:4},
+    {name:"杰西卡基金",start:"06-05 16:00",end:"06-08 16:00",row:5},
+    {name:"玩具拼图",start:"06-08 16:00",end:"06-12 16:00",row:5},
+    {name:"小车竞速",start:"06-12 16:00",end:"06-15 16:00",row:5},
+    {name:"池塘钓鱼",start:"06-15 16:00",end:"06-19 16:00",row:5},
+    {name:"开车探险",start:"06-19 16:00",end:"06-22 16:00",row:5},
+    {name:"食品券兑换",start:"06-22 16:00",end:"06-26 16:00",row:5},
+    {name:"杰西卡基金",start:"06-26 16:00",end:"06-29 16:00",row:5},
+    {name:"玩具拼图",start:"06-29 16:00",end:"07-03 16:00",row:5},
+    {name:"礼包链",start:"06-08 16:00",end:"06-11 16:00",row:6},
+    {name:"礼包链",start:"06-19 16:00",end:"06-22 16:00",row:6},
+    {name:"WO",start:"06-07 16:00",end:"06-08 16:00",row:7},
+    {name:"LO",start:"06-10 16:00",end:"06-11 16:00",row:7},
+    {name:"CPF",start:"06-12 16:00",end:"06-13 16:00",row:7},
+    {name:"WO",start:"06-14 16:00",end:"06-15 16:00",row:7},
+    {name:"LO",start:"06-17 16:00",end:"06-18 16:00",row:7},
+    {name:"CPF",start:"06-19 16:00",end:"06-20 16:00",row:7},
+    {name:"ER",start:"06-20 16:00",end:"06-21 16:00",row:7},
+    {name:"WO",start:"06-21 16:00",end:"06-22 16:00",row:7},
+    {name:"LadO",start:"06-22 16:00",end:"06-23 16:00",row:7},
+    {name:"LO",start:"06-24 16:00",end:"06-25 16:00",row:7},
+    {name:"CPF",start:"06-26 16:00",end:"06-27 16:00",row:7},
+    {name:"ER",start:"06-27 16:00",end:"06-28 16:00",row:7},
+    {name:"WO",start:"06-28 16:00",end:"06-29 16:00",row:7},
+    {name:"1+2",start:"06-07 16:00",end:"06-08 16:00",row:8},
+    {name:"3in1",start:"06-12 16:00",end:"06-13 16:00",row:8},
+    {name:"1+2",start:"06-14 16:00",end:"06-15 16:00",row:8},
+    {name:"3in1",start:"06-16 16:00",end:"06-17 16:00",row:8},
+    {name:"1+2",start:"06-17 16:00",end:"06-18 16:00",row:8},
+    {name:"3in1",start:"06-22 16:00",end:"06-23 16:00",row:8},
+    {name:"1+2",start:"06-24 16:00",end:"06-25 16:00",row:8},
+    {name:"3in1",start:"06-26 16:00",end:"06-27 16:00",row:8},
+    {name:"1+2",start:"06-28 16:00",end:"06-29 16:00",row:8},
   ];
 
-  // Parse date relative to June 1 00:00
   function parseDay(s) {
-    // s = "06-DD HH:MM" or "07-DD HH:MM"
     const [md, hm] = s.split(' ');
     const [m, d] = md.split('-').map(Number);
     const [h] = hm.split(':').map(Number);
-    // day 1 = June 1 00:00 => offset 0
     if (m === 6) return (d - 1) + h / 24;
     if (m === 7) return 30 + (d - 1) + h / 24;
     return 0;
   }
 
-  // Sort by duration descending (long at top, single-day at bottom)
-  const sorted = activities.slice().sort((a, b) => {
-    const dA = parseDay(a.end) - parseDay(a.start);
-    const dB = parseDay(b.end) - parseDay(b.start);
-    return dB - dA;
-  });
-
   const TOTAL_DAYS = 30;
-  const BAR_H = 28;
-  const GAP = 4;
+  const BAR_H = 24;
+  const GAP = 3;
+  const ROW_GAP = 8;
   const track = document.getElementById('ganttTrack');
 
-  // Lane allocation: greedy algorithm to avoid overlap
-  const lanes = []; // lanes[i] = end-day of last bar in that lane
-  sorted.forEach(act => {
-    const s = parseDay(act.start);
-    const e = parseDay(act.end);
-    const leftPct = (s / TOTAL_DAYS * 100);
-    const widthPct = ((e - s) / TOTAL_DAYS * 100);
-    const clipped = e > TOTAL_DAYS;
-    const durDays = e - s;
-
-    // Find first lane where this bar fits
-    let lane = -1;
-    for (let i = 0; i < lanes.length; i++) {
-      if (lanes[i] <= s + 0.01) { lane = i; break; }
-    }
-    if (lane === -1) { lane = lanes.length; }
-    lanes[lane] = e;
-
-    const top = lane * (BAR_H + GAP);
-    const bar = document.createElement('div');
-    bar.className = 'gantt-bar' + (durDays <= 1.1 ? ' is-micro' : '') + (clipped ? ' is-clipped-end' : '');
-    bar.style.cssText = `left:${leftPct.toFixed(2)}%;width:${Math.min(widthPct, 100 - leftPct).toFixed(2)}%;top:${top}px;--type-color:${act.color};`;
-    bar.title = `${act.name} · ${act.start} - ${act.end}`;
-    bar.innerHTML = `<strong>${act.name}</strong>`;
-    track.appendChild(bar);
+  // Group by row, allocate lanes within each row
+  const rowGroups = {};
+  activities.forEach(act => {
+    if (!rowGroups[act.row]) rowGroups[act.row] = [];
+    rowGroups[act.row].push(act);
   });
 
-  // Adjust track height
-  const totalH = lanes.length * (BAR_H + GAP);
-  track.style.height = totalH + 'px';
-  document.getElementById('ganttCanvas').style.setProperty('--chart-height', totalH + 'px');
+  // Unique display rows (merge 5 and 6 visually but keep separate lane allocation)
+  const DISPLAY_ROWS = [0,1,2,3,4,5,6,7,8];
+  const DISPLAY_LABELS = ['卡册','战令','组合','主题装修','棋盘','四日活动','三日活动','单日活动','礼包'];
+
+  let currentTop = 0;
+  const rowTops = {};
+  const rowHeights = {};
+
+  DISPLAY_ROWS.forEach(rowIdx => {
+    const items = rowGroups[rowIdx] || [];
+    const lanes = [];
+    rowTops[rowIdx] = currentTop;
+
+    items.forEach(act => {
+      const s = parseDay(act.start);
+      const e = parseDay(act.end);
+      let lane = -1;
+      for (let i = 0; i < lanes.length; i++) {
+        if (lanes[i] <= s + 0.01) { lane = i; break; }
+      }
+      if (lane === -1) { lane = lanes.length; }
+      lanes[lane] = e;
+
+      const leftPct = (s / TOTAL_DAYS * 100);
+      const widthPct = ((e - s) / TOTAL_DAYS * 100);
+      const clipped = e > TOTAL_DAYS;
+      const top = currentTop + lane * (BAR_H + GAP);
+      const color = ROW_COLORS[rowIdx];
+
+      const bar = document.createElement('div');
+      bar.className = 'gantt-bar' + (clipped ? ' is-clipped-end' : '');
+      bar.style.cssText = `left:calc(80px + ${leftPct.toFixed(2)}% * (100% - 80px) / 100);width:calc(${Math.min(widthPct, 100 - leftPct).toFixed(2)}% * (100% - 80px) / 100);top:${top}px;--type-color:${color};height:${BAR_H}px;font-size:${(e-s)<=1.5?'9px':'11px'};`;
+      bar.title = `${act.name}`;
+      bar.innerHTML = `<strong>${act.name}</strong>`;
+      track.appendChild(bar);
+    });
+
+    const numLanes = Math.max(lanes.length, 1);
+    rowHeights[rowIdx] = numLanes * (BAR_H + GAP);
+
+    // Add row label
+    const label = document.createElement('div');
+    label.className = 'gantt-row-label';
+    label.style.cssText = `top:${currentTop}px;height:${rowHeights[rowIdx]}px;`;
+    label.textContent = DISPLAY_LABELS[DISPLAY_ROWS.indexOf(rowIdx)];
+    track.appendChild(label);
+
+    // Add row background
+    const bg = document.createElement('div');
+    bg.className = 'gantt-row-bg';
+    bg.style.cssText = `top:${currentTop}px;height:${rowHeights[rowIdx]}px;`;
+    track.appendChild(bg);
+
+    currentTop += rowHeights[rowIdx] + ROW_GAP;
+  });
+
+  track.style.height = currentTop + 'px';
+  document.getElementById('ganttCanvas').style.setProperty('--chart-height', currentTop + 'px');
+
+  // Fix bar positioning to use percentage of track-inner width
+  track.querySelectorAll('.gantt-bar').forEach(bar => {
+    // Recalculate using simple percentage of remaining width after label
+    const style = bar.style;
+    const leftMatch = style.left;
+    // Already set inline, keep as is - CSS calc handles it
+  });
 })();
 
 // ============================================================
@@ -882,19 +997,32 @@ window.addEventListener('resize', () => charts.forEach(c => c.resize()));
 })();
 
 // ============================================================
-// 第二章 图2-2 LadO漏斗
+// 第二章 图2-2 LadO漏斗 (通过/失败/放弃 三段堆叠)
 // ============================================================
 (function(){
   const steps = ['Step 0', 'Step 1', 'Step 2', 'Step 3', 'Step 4'];
-  const pass = [898, 594, 355, 117, 32];
-  const fail = [237, 172, 137, 146, 54];
-  const rate = ['79.1%', '77.5%', '72.2%', '44.5%', '37.2%'];
+  const enter = [1135, 766, 492, 263, 86];
+  const pass  = [898, 594, 355, 117, 32];
+  const fail  = [237, 172, 137, 146, 54];
+  // 放弃 = 上一步通过 - 本步进入（Step 0 无放弃）
+  const quit  = [0, 898-766, 594-492, 355-263, 117-86]; // [0,132,102,92,31]
+  const rate  = ['79.1%', '77.5%', '72.2%', '44.5%', '37.2%'];
 
   const chart = makeChart(document.getElementById('ladoFunnelChart'));
   chart.setOption({
     ...baseOption(),
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    legend: { data: ['通过','失败'], textStyle: { color: THEME.textColor2 }, top: 10 },
+    tooltip: {
+      trigger: 'axis', axisPointer: { type: 'shadow' },
+      formatter: function(ps) {
+        const i = 4 - ps[0].dataIndex; // reversed
+        return '<b>' + steps[i] + '</b><br/>'
+          + '进入: ' + enter[i] + '<br/>'
+          + '通过: ' + pass[i] + ' (' + rate[i] + ')<br/>'
+          + '失败: ' + fail[i] + '<br/>'
+          + (quit[i] > 0 ? '放弃: ' + quit[i] + ' (' + (quit[i]/pass[i>0?i-1:0]*100).toFixed(0) + '%)' : '');
+      }
+    },
+    legend: { data: ['通过','失败','放弃(未尝试)'], textStyle: { color: THEME.textColor2 }, top: 10 },
     xAxis: { type: 'value', name: '人数', ...axisCommon() },
     yAxis: { type: 'category', data: steps.slice().reverse(), ...axisCommon(), inverse: false },
     series: [
@@ -908,6 +1036,14 @@ window.addEventListener('resize', () => charts.forEach(c => c.resize()));
         name: '失败', type: 'bar', stack: 'f',
         data: fail.slice().reverse(),
         itemStyle: { color: '#f87171' },
+        label: { show: true, position: 'inside', color: '#fff', fontSize: 10, fontWeight: 600,
+          formatter: function(p) { return p.value > 80 ? p.value : ''; }
+        },
+      },
+      {
+        name: '放弃(未尝试)', type: 'bar', stack: 'f',
+        data: quit.slice().reverse(),
+        itemStyle: { color: '#8b8fa3', opacity: 0.6 },
         label: {
           show: true, position: 'right', color: '#fbbf24', fontSize: 13, fontWeight: 700,
           formatter: function(p) { return rate.slice().reverse()[p.dataIndex]; }
@@ -933,6 +1069,54 @@ window.addEventListener('resize', () => charts.forEach(c => c.resize()));
       { name:'R2', type:'bar', data:[5,49,83], itemStyle:{color:'#34d399'} },
       { name:'R3', type:'bar', data:[1,16,25], itemStyle:{color:'#fbbf24'} },
       { name:'R4+', type:'bar', data:[0,14,12], itemStyle:{color:'#f87171'} },
+    ],
+  });
+})();
+
+// ============================================================
+// 第二章 图2-5 CPF参与概况
+// ============================================================
+(function(){
+  const dom = document.getElementById('cpfChart');
+  if (!dom) return;
+  const chart = makeChart(dom);
+  chart.setOption({
+    ...baseOption({ grid: { left: 60, right: 60, top: 60, bottom: 40 } }),
+    tooltip: {
+      trigger: 'axis',
+      formatter: function(ps) {
+        let s = '<b>' + ps[0].name + '</b>';
+        ps.forEach(function(p) { s += '<br/>' + p.marker + p.seriesName + ': ' + (typeof p.value === 'number' ? p.value.toLocaleString() : p.value); });
+        return s;
+      }
+    },
+    legend: { data: ['参与人数','提交次数','人均提交'], textStyle: { color: THEME.textColor2 }, top: 5 },
+    xAxis: { type: 'category', data: ['6/12 CPF+3in1','6/19 CPF_only'], ...axisCommon() },
+    yAxis: [
+      { type: 'value', name: '次数/人数', ...axisCommon() },
+      { type: 'value', name: '人均', ...axisCommon(), axisLabel: { formatter: '{value}', color: THEME.textColor2 }, splitLine: { show: false } }
+    ],
+    series: [
+      {
+        name: '参与人数', type: 'bar', yAxisIndex: 0, barGap: '15%',
+        data: [1126, 1443],
+        itemStyle: { color: '#ff6b9d' },
+        label: { show: true, position: 'top', color: THEME.textColor, fontSize: 13, fontWeight: 600 },
+      },
+      {
+        name: '提交次数', type: 'bar', yAxisIndex: 0,
+        data: [9290, 9278],
+        itemStyle: { color: '#a78bfa' },
+        label: { show: true, position: 'top', color: THEME.textColor, fontSize: 13, fontWeight: 600 },
+      },
+      {
+        name: '人均提交', type: 'line', yAxisIndex: 1,
+        data: [8.2, 6.4],
+        lineStyle: { color: '#fbbf24', width: 3 },
+        itemStyle: { color: '#fbbf24' },
+        symbol: 'circle', symbolSize: 14,
+        label: { show: true, position: 'top', formatter: '{c}次/人', color: '#fbbf24', fontSize: 14, fontWeight: 700 },
+      }
     ],
   });
 })();
@@ -1065,137 +1249,62 @@ window.addEventListener('resize', () => charts.forEach(c => c.resize()));
   });
 })();
 
+// (dailyArpdauChart and neighborChart removed — HTML containers deleted in ch4 restructure)
+
 // ============================================================
-// 第四章 图4-2 逐日ARPDAU
+// 第四章 图4-3 首付vs复付 (15个数据点，匹配表格)
 // ============================================================
 (function(){
-  const dates = ['6/12','6/13','6/14','6/15','6/16','6/17','6/18','6/19','6/20','6/21','6/22','6/23','6/24','6/25'];
-  const labels = ['CPF+3in1','无','WO+Gift','无','无','LO+Gift','无','CPF','ER','WO','LadO+3in1','无','LO+Gift','无'];
-  const values = [0.48,0.33,0.35,0.25,0.34,0.33,0.26,0.32,0.41,0.23,0.42,0.12,0.20,0.09];
-  const colorMap = {'CPF+3in1':'#ff6b9d','WO+Gift':'#fbbf24','LO+Gift':'#f87171','CPF':'#ff6b9d','ER':'#22d3ee','WO':'#fbbf24','LadO+3in1':'#a78bfa','无':'#8b8fa3'};
+  const dates = ['6/7','6/8','6/10','6/11','6/12','6/13','6/14','6/15','6/17','6/18','6/19','6/20','6/22','6/24','6/25'];
+  const acts  = ['WO+Gift','无','LO_only','无','CPF+3in1','无','WO+Gift','无','LO+Gift','无','CPF_only','ER','LadO+3in1','LO+Gift','无'];
+  const first = [489,230,719,193,585,657,486,444,382,583,585,403,469,534,571];
+  const repeat= [91,179,219,359,381,382,620,437,1202,676,830,947,1065,1212,742];
 
-  const chart = makeChart(document.getElementById('dailyArpdauChart'));
-  chart.setOption({
-    ...baseOption({ grid: { left: 50, right: 20, top: 70, bottom: 40 } }),
-    tooltip: { trigger: 'axis', formatter: function(ps) { return `${dates[ps[0].dataIndex]} (${labels[ps[0].dataIndex]})<br/>ARPDAU: $${values[ps[0].dataIndex]}`; } },
-    xAxis: { type: 'category', data: dates, ...axisCommon(), axisLabel:{rotate:30, color:THEME.textColor2} },
-    yAxis: { type: 'value', name: 'ARPDAU ($)', ...axisCommon(), axisLabel:{formatter:'${value}',color:THEME.textColor2} },
-    series: [{
-      type: 'line', data: values.map((v,i) => ({
-        value: v,
-        itemStyle: { color: colorMap[labels[i]] },
-        symbolSize: labels[i] !== '无' ? 12 : 6,
-      })),
-      lineStyle: { color: '#6c7bff', width: 2 },
-      symbol: 'circle',
-      label: {
-        show: true, position: 'top', fontSize: 10, color: THEME.textColor2,
-        formatter: function(p) {
-          const l = labels[p.dataIndex];
-          return l !== '无' ? l + '\n$' + values[p.dataIndex] : '';
-        }
-      },
-      markLine: {
-        data: [{ type: 'average', name: '均值' }],
-        lineStyle: { color: '#fbbf24', type: 'dotted' },
-        label: { formatter: '均值 ${c}', color: '#fbbf24', fontSize: 11 },
-      }
-    }],
-  });
-})();
-
-// ============================================================
-// 第四章 图4-3 近邻对比 (ARPDAU)
-// ============================================================
-(function(){
-  const pairs = ['CPF+3in1\nvs 6/13','WO+Gift\nvs 6/15','LO+Gift\nvs 6/18','CPF_only\nvs 6/18','ER\nvs 6/23','WO_only\nvs 6/23','LadO+3in1\nvs 6/23','LO+Gift\nvs 6/25'];
-  const actVal = [0.48, 0.35, 0.33, 0.32, 0.41, 0.23, 0.42, 0.20];
-  const noActVal = [0.33, 0.25, 0.26, 0.26, 0.12, 0.12, 0.12, 0.09];
-  const incr = ['+45%','+40%','+27%','+23%','+242%','+92%','+250%','+122%'];
-
-  const chart = makeChart(document.getElementById('neighborChart'));
-  chart.setOption({
-    ...baseOption({ grid: { left: 60, right: 30, top: 50, bottom: 60 } }),
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: function(ps) {
-      const i = ps[0].dataIndex;
-      return `活动日 ARPDAU: $${actVal[i]}<br/>无活动日 ARPDAU: $${noActVal[i]}<br/>增量: ${incr[i]}`;
-    }},
-    legend: { data: ['活动日ARPDAU','近邻无活动日'], textStyle: { color: THEME.textColor2 }, top: 10 },
-    xAxis: { type: 'category', data: pairs, ...axisCommon(), axisLabel:{fontSize:10,interval:0,color:THEME.textColor2} },
-    yAxis: { type: 'value', name: 'ARPDAU ($)', ...axisCommon(), axisLabel:{formatter:'${value}',color:THEME.textColor2} },
-    series: [
-      {
-        name: '活动日ARPDAU', type: 'bar', data: actVal, barGap: '15%',
-        itemStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'#6c7bff'},{offset:1,color:'#4c5bc4'}]) },
-        label: {
-          show: true, position: 'top', color: '#34d399', fontSize: 12, fontWeight: 700,
-          formatter: function(p) { return incr[p.dataIndex]; }
-        },
-      },
-      {
-        name: '近邻无活动日', type: 'bar', data: noActVal,
-        itemStyle: { color: '#3a3d4a' },
-      }
-    ],
-  });
-})();
-
-// ============================================================
-// 第四章 图4-4 首付vs复付
-// ============================================================
-(function(){
-  const dates = ['6/7','6/8','6/9','6/10','6/11','6/12','6/13','6/14','6/15','6/16','6/17','6/18','6/19','6/20','6/21','6/22','6/23','6/24','6/25'];
-  const first = [489,230,207,719,193,585,657,486,444,346,382,583,585,403,684,469,669,534,571];
-  const repeat = [91,179,202,219,359,381,382,620,437,358,1202,676,830,947,803,1065,702,1212,742];
+  const colorMap = {'WO+Gift':'#fbbf24','LO_only':'#f87171','CPF+3in1':'#ff6b9d','LO+Gift':'#f87171','CPF_only':'#ff6b9d','ER':'#22d3ee','LadO+3in1':'#a78bfa','无':'#8b8fa3'};
 
   const chart = makeChart(document.getElementById('firstRepeatChart'));
   chart.setOption({
-    ...baseOption(),
-    tooltip: { trigger: 'axis', axisPointer: { type: 'cross' } },
+    ...baseOption({ grid: { left: 60, right: 30, top: 50, bottom: 50 } }),
+    tooltip: {
+      trigger: 'axis', axisPointer: { type: 'cross' },
+      formatter: function(ps) {
+        const i = ps[0].dataIndex;
+        const total = first[i] + repeat[i];
+        const pct = (first[i] / total * 100).toFixed(0);
+        return '<b>' + dates[i] + ' (' + acts[i] + ')</b><br/>'
+          + '首付: $' + first[i] + ' (' + pct + '%)<br/>'
+          + '复付: $' + repeat[i] + ' (' + (100 - pct) + '%)<br/>'
+          + '合计: $' + total;
+      }
+    },
     legend: { data: ['首付流水','复付流水'], textStyle: { color: THEME.textColor2 }, top: 10 },
-    xAxis: { type: 'category', data: dates, ...axisCommon(), boundaryGap: false },
+    xAxis: {
+      type: 'category', data: dates.map(function(d,i){ return acts[i] !== '无' ? d+'\n'+acts[i] : d; }),
+      ...axisCommon(), axisLabel: { fontSize: 9, interval: 0, rotate: 40, color: THEME.textColor2 }
+    },
     yAxis: { type: 'value', name: '流水 ($)', ...axisCommon(), axisLabel:{formatter:'${value}',color:THEME.textColor2} },
     series: [
       {
-        name: '复付流水', type: 'line', stack: 'rev', data: repeat, smooth: true,
-        areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(167,139,250,0.5)'},{offset:1,color:'rgba(167,139,250,0.05)'}]) },
-        lineStyle: { color: '#a78bfa', width: 2 },
-        itemStyle: { color: '#a78bfa' },
-        symbol: 'none',
+        name: '复付流水', type: 'bar', stack: 'rev', barWidth: 22,
+        data: repeat.map(function(v,i){ return { value: v, itemStyle: { color: 'rgba(167,139,250,' + (acts[i]==='无'?'0.4':'0.85') + ')' } }; }),
       },
       {
-        name: '首付流水', type: 'line', stack: 'rev', data: first, smooth: true,
-        areaStyle: { color: new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(52,211,153,0.5)'},{offset:1,color:'rgba(52,211,153,0.05)'}]) },
-        lineStyle: { color: '#34d399', width: 2 },
-        itemStyle: { color: '#34d399' },
-        symbol: 'none',
+        name: '首付流水', type: 'bar', stack: 'rev',
+        data: first.map(function(v,i){ return { value: v, itemStyle: { color: 'rgba(52,211,153,' + (acts[i]==='无'?'0.4':'0.85') + ')' } }; }),
+        label: {
+          show: true, position: 'top', fontSize: 10, fontWeight: 600, color: THEME.textColor2,
+          formatter: function(p) {
+            const i = p.dataIndex;
+            const total = first[i] + repeat[i];
+            return '$' + total;
+          }
+        },
       },
     ],
   });
 })();
 
-// ============================================================
-// 第五章 图5-1 品类对比
-// ============================================================
-(function(){
-  const cats = ['Shop','BattlePassTwo','DailyPack','GiftOnAddOne','ThreeInOnePack','EnergyPack'];
-  const chart = makeChart(document.getElementById('categoryChart'));
-  chart.setOption({
-    ...baseOption({ grid: { left: 120, right: 30, top: 50, bottom: 40 } }),
-    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    legend: { data: ['LO','WO','CPF','LadO','ER','无活动日'], textStyle: { color: THEME.textColor2, fontSize: 11 }, top: 5 },
-    yAxis: { type: 'category', data: cats.slice().reverse(), ...axisCommon() },
-    xAxis: { type: 'value', name: '日均流水 ($)', ...axisCommon(), axisLabel:{formatter:'${value}',color:THEME.textColor2} },
-    series: [
-      { name:'LO', type:'bar', data:[397,217,196,198,25,130].reverse(), itemStyle:{color:'#f87171'}, barGap:'5%' },
-      { name:'WO', type:'bar', data:[249,190,177,101,0,56].reverse(), itemStyle:{color:'#fbbf24'} },
-      { name:'CPF', type:'bar', data:[394,234,170,0,83,103].reverse(), itemStyle:{color:'#ff6b9d'} },
-      { name:'LadO', type:'bar', data:[250,216,203,0,326,197].reverse(), itemStyle:{color:'#a78bfa'} },
-      { name:'ER', type:'bar', data:[223,190,188,0,0,176].reverse(), itemStyle:{color:'#22d3ee'} },
-      { name:'无活动日', type:'bar', data:[219,188,157,4,15,74].reverse(), itemStyle:{color:'#3a3d4a'} },
-    ],
-  });
-})();
+// (categoryChart removed — HTML container deleted in ch5 restructure)
 
 // ============================================================
 // 第六章 图6-1 次日回访率
