@@ -812,8 +812,8 @@
           <td class="num" style="color:var(--text2)">—</td>
           <td class="num" style="color:var(--text2)">—</td>
           <td class="num" style="color:var(--text2)">—</td>
-          <td class="num highlight">2.9%<span style="color:var(--text2);font-size:10px;"> (109人)</span></td>
-          <td class="num" style="color:var(--text2)">—</td>
+          <td class="num highlight">2.9%</td>
+          <td class="num">12.5%</td>
           <td class="num">1,544</td>
           <td class="num" style="color:#d29922;">✅</td>
         </tr>
@@ -1149,10 +1149,10 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
   var c1 = makeChart(dom1);
   c1.setOption(Object.assign(baseOption({ grid: { left: 50, right: 20, top: 50, bottom: 40 } }), {
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    legend: { data: ['通关日均体力','对照组日均体力'], textStyle: { color: THEME.textColor2 }, top: 6 },
+    legend: { data: ['通关日均体力','隐藏关日均体力','对照组日均体力'], textStyle: { color: THEME.textColor2 }, top: 6 },
     xAxis: {
       type: 'category',
-      data: ['小车竞速','开车探险★','金币募集\n(10关)★','金币募集\n(隐藏11关)★'],
+      data: ['小车竞速','开车探险★','金币募集★'],
       axisLabel: { color: THEME.textColor2, fontSize: 10, interval: 0 },
       axisLine: { lineStyle: { color: THEME.axisLine } }
     },
@@ -1164,18 +1164,25 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
     },
     series: [
       {
-        name: '通关日均体力', type: 'bar', barWidth: 44,
+        name: '通关日均体力', type: 'bar', barWidth: 36, barGap: '10%',
         data: [
           { value: 933, itemStyle: { color: '#277DA1' } },
           { value: 1324, itemStyle: { color: '#D1495B', borderColor: '#d29922', borderWidth: 2 } },
-          { value: 1030, itemStyle: { color: '#43AA8B', borderColor: '#d29922', borderWidth: 2 } },
-          { value: 1544, itemStyle: { color: '#43AA8B', borderColor: '#d29922', borderWidth: 2 } }
+          { value: 1030, itemStyle: { color: '#43AA8B', borderColor: '#d29922', borderWidth: 2 } }
+        ],
+        label: { show: true, position: 'top', fontSize: 11, color: THEME.textColor, formatter: '{c}' }
+      },
+      {
+        name: '隐藏关日均体力', type: 'bar', barWidth: 36, barGap: '10%',
+        data: [
+          '-', '-',
+          { value: 1544, itemStyle: { color: '#43AA8B', borderColor: '#d29922', borderWidth: 2, borderType: 'dashed' } }
         ],
         label: { show: true, position: 'top', fontSize: 11, color: THEME.textColor, formatter: '{c}' }
       },
       {
         name: '对照组日均体力', type: 'line', symbol: 'none',
-        data: [340, 373, 290, 290],
+        data: [340, 373, 290],
         lineStyle: { color: 'rgba(139,143,163,0.5)', type: 'dashed', width: 2 },
         itemStyle: { color: THEME.textColor2 }
       }
