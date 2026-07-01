@@ -777,7 +777,7 @@
           <td class="num">12.3%</td>
           <td class="num">270</td>
           <td class="num">44.8%</td>
-          <td class="num pending-data">待更新</td>
+          <td class="num">934</td>
           <td class="num pending-data">待更新</td>
           <td class="num">$27.44</td>
           <td class="num">—</td>
@@ -791,7 +791,7 @@
           <td class="num">3.8%</td>
           <td class="num">99</td>
           <td class="num">41.0%</td>
-          <td class="num pending-data">待更新</td>
+          <td class="num">1,324</td>
           <td class="num pending-data">待更新</td>
           <td class="num">$30.09</td>
           <td class="num" style="color:#d29922;">✅</td>
@@ -805,7 +805,7 @@
           <td class="num highlight">5.7%</td>
           <td class="num">104</td>
           <td class="num">35.7%</td>
-          <td class="num pending-data">待更新</td>
+          <td class="num">1,030</td>
           <td class="num pending-data">待更新</td>
           <td class="num">$17.98</td>
           <td class="num" style="color:#d29922;">✅</td>
@@ -817,7 +817,7 @@
           <td class="num highlight">2.9%<span style="color:var(--text2);font-size:10px;"> (109人)</span></td>
           <td class="num">109</td>
           <td class="num" style="color:var(--text2)">—</td>
-          <td class="num pending-data">待更新</td>
+          <td class="num">1,544</td>
           <td class="num pending-data">待更新</td>
           <td class="num highlight">$40.32</td>
           <td class="num" style="color:#d29922;">✅</td>
@@ -864,7 +864,7 @@
           <td class="num">13.6%<span style="color:var(--text2);font-size:10px;"> (25块进阶)</span></td>
           <td class="num">243</td>
           <td class="num">45.6%</td>
-          <td class="num pending-data">待更新</td>
+          <td class="num">1,143</td>
           <td class="num pending-data">待更新</td>
           <td class="num">$23.63</td>
           <td class="num">—</td>
@@ -878,7 +878,7 @@
           <td class="num">5.4%<span style="color:var(--text2);font-size:10px;"> (普通10关通关)</span></td>
           <td class="num">275</td>
           <td class="num">38.8%</td>
-          <td class="num pending-data">待更新</td>
+          <td class="num">1,203</td>
           <td class="num pending-data">待更新</td>
           <td class="num">$12.07</td>
           <td class="num">—</td>
@@ -892,7 +892,7 @@
           <td class="num">11.6%<span style="color:var(--text2);font-size:10px;"> (循环档)</span></td>
           <td class="num">421</td>
           <td class="num">49.1%</td>
-          <td class="num pending-data">待更新</td>
+          <td class="num">1,232</td>
           <td class="num pending-data">待更新</td>
           <td class="num">$23.33</td>
           <td class="num" style="color:#d29922;">✅</td>
@@ -1196,7 +1196,6 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
   c1.setOption(Object.assign(baseOption({ grid: { left: 50, right: 20, top: 50, bottom: 40 } }), {
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
     legend: { data: ['通关日均体力','对照组日均体力'], textStyle: { color: THEME.textColor2 }, top: 6 },
-    title: { text: 'ℹ️ 体力数据待更新', textStyle: { color: '#d29922', fontSize: 11, fontWeight: 'normal' }, right: 20, top: 8 },
     xAxis: {
       type: 'category',
       data: ['小车竞速\n(10轮)','开车探险\n(37节点)★','杰西卡金币募集\n(10关)★','杰西卡金币募集\n(隐藏11关)★'],
@@ -1204,7 +1203,7 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
       axisLine: { lineStyle: { color: THEME.axisLine } }
     },
     yAxis: {
-      type: 'value', name: '日均体力（待更新）',
+      type: 'value', name: '日均体力',
       axisLabel: { color: THEME.textColor2, fontSize: 11 },
       splitLine: { lineStyle: { color: THEME.splitLine, type: 'dashed' } },
       axisLine: { lineStyle: { color: THEME.axisLine } }
@@ -1213,10 +1212,10 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
       {
         name: '通关日均体力', type: 'bar', barWidth: 44,
         data: [
-          { value: 1271, itemStyle: { color: '#277DA1' } },
-          { value: 1371, itemStyle: { color: '#D1495B', borderColor: '#d29922', borderWidth: 2 } },
-          { value: 1135, itemStyle: { color: 'rgba(67,170,139,0.6)', borderColor: '#d29922', borderWidth: 2 } },
-          { value: 1830, itemStyle: { color: 'rgba(67,170,139,0.6)', borderColor: '#d29922', borderWidth: 2 } }
+          { value: 934, itemStyle: { color: '#277DA1' } },
+          { value: 1324, itemStyle: { color: '#D1495B', borderColor: '#d29922', borderWidth: 2 } },
+          { value: 1030, itemStyle: { color: 'rgba(67,170,139,0.6)', borderColor: '#d29922', borderWidth: 2 } },
+          { value: 1544, itemStyle: { color: 'rgba(67,170,139,0.6)', borderColor: '#d29922', borderWidth: 2 } }
         ],
         label: { show: true, position: 'top', fontSize: 11, color: THEME.textColor, formatter: '{c}' }
       },
@@ -1236,7 +1235,6 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
   c2.setOption(Object.assign(baseOption({ grid: { left: 50, right: 20, top: 50, bottom: 40 } }), {
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
     legend: { data: ['通关日均宝石','对照组日均宝石'], textStyle: { color: THEME.textColor2 }, top: 6 },
-    title: { text: 'ℹ️ 宝石数据待更新', textStyle: { color: '#d29922', fontSize: 11, fontWeight: 'normal' }, right: 20, top: 8 },
     xAxis: {
       type: 'category',
       data: ['小车竞速\n(10轮)','开车探险\n(37节点)★','杰西卡金币募集\n(10关)★','杰西卡金币募集\n(隐藏11关)★'],
@@ -1244,7 +1242,7 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
       axisLine: { lineStyle: { color: THEME.axisLine } }
     },
     yAxis: {
-      type: 'value', name: '日均宝石（待更新）',
+      type: 'value', name: '日均宝石',
       axisLabel: { color: THEME.textColor2, fontSize: 11 },
       splitLine: { lineStyle: { color: THEME.splitLine, type: 'dashed' } },
       axisLine: { lineStyle: { color: THEME.axisLine } }
@@ -1280,7 +1278,6 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
   c1.setOption(Object.assign(baseOption({ grid: { left: 50, right: 20, top: 50, bottom: 50 } }), {
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
     legend: { data: ['深度层日均体力','对照组日均体力'], textStyle: { color: THEME.textColor2 }, top: 6 },
-    title: { text: 'ℹ️ 体力数据待更新', textStyle: { color: '#d29922', fontSize: 11, fontWeight: 'normal' }, right: 20, top: 8 },
     xAxis: {
       type: 'category',
       data: ['玩具拼图\n(25块进阶)','水塘钓鱼\n(普通10关)','食品券兑换\n(循环档)★','食品券兑换\n(12档全通)★'],
@@ -1297,9 +1294,9 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
       {
         name: '深度层日均体力', type: 'bar', barWidth: 44,
         data: [
-          { value: 1313, itemStyle: { color: '#2A9D8F' } },
-          { value: 881, itemStyle: { color: '#4D908E' } },
-          { value: 1285, itemStyle: { color: 'rgba(42,157,143,0.6)', borderColor: '#d29922', borderWidth: 2 } },
+          { value: 1143, itemStyle: { color: '#2A9D8F' } },
+          { value: 1203, itemStyle: { color: '#4D908E' } },
+          { value: 1232, itemStyle: { color: 'rgba(42,157,143,0.6)', borderColor: '#d29922', borderWidth: 2 } },
           { value: 899, itemStyle: { color: 'rgba(42,157,143,0.35)', borderColor: '#d29922', borderWidth: 2 } }
         ],
         label: { show: true, position: 'top', fontSize: 11, color: THEME.textColor, formatter: '{c}' }
@@ -1319,7 +1316,6 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
   c2.setOption(Object.assign(baseOption({ grid: { left: 50, right: 20, top: 50, bottom: 50 } }), {
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
     legend: { data: ['深度层日均宝石','对照组日均宝石'], textStyle: { color: THEME.textColor2 }, top: 6 },
-    title: { text: 'ℹ️ 宝石数据待更新', textStyle: { color: '#d29922', fontSize: 11, fontWeight: 'normal' }, right: 20, top: 8 },
     xAxis: {
       type: 'category',
       data: ['玩具拼图\n(25块进阶)','水塘钓鱼\n(普通10关)','食品券兑换\n(循环档)★','食品券兑换\n(12档全通)★'],
@@ -1390,22 +1386,22 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
     },
     series: [
       { name: '小车竞速', type: 'line', smooth: true, symbol: 'circle', symbolSize: 5,
-        data: [432,491,670,664,745,767,844,868,867,1271],
+        data: [432,491,670,664,745,767,844,868,867,934],
         lineStyle: { color: '#277DA1', width: 2 }, itemStyle: { color: '#277DA1' } },
       { name: '开车探险★', type: 'line', smooth: true, symbol: 'circle', symbolSize: 5,
-        data: [377,351,441,439,497,567,605,657,730,869,1371],
+        data: [377,351,441,439,497,567,605,657,730,869,1324],
         lineStyle: { color: '#D1495B', width: 2, type: 'dashed' }, itemStyle: { color: '#D1495B' } },
       { name: '杰西卡金币募集★', type: 'line', smooth: true, symbol: 'circle', symbolSize: 5,
-        data: [347,436,474,486,490,561,598,718,885,1135,1830],
+        data: [347,436,474,486,490,561,598,718,885,1030,1544],
         lineStyle: { color: '#3fb950', width: 2, type: 'dashed' }, itemStyle: { color: '#3fb950' } },
       { name: '玩具拼图', type: 'line', smooth: true, symbol: 'diamond', symbolSize: 6,
-        data: [592,719,878,888,1313],
+        data: [592,719,878,888,1143],
         lineStyle: { color: '#2A9D8F', width: 2 }, itemStyle: { color: '#2A9D8F' } },
       { name: '水塘钓鱼', type: 'line', smooth: true, symbol: 'diamond', symbolSize: 6,
-        data: [246,490,529,592,623,669,674,742,828,881],
+        data: [246,490,529,592,623,669,674,742,828,1203],
         lineStyle: { color: '#4D908E', width: 2 }, itemStyle: { color: '#4D908E' } },
       { name: '食品券兑换★', type: 'line', smooth: true, symbol: 'diamond', symbolSize: 6,
-        data: [340,458,578,517,556,613,599,650,692,701,825,899,1285],
+        data: [340,458,578,517,556,613,599,650,692,701,825,899,1232],
         lineStyle: { color: '#d29922', width: 2, type: 'dashed' }, itemStyle: { color: '#d29922' } }
     ]
   }));
