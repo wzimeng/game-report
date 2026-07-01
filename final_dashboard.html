@@ -132,6 +132,7 @@
   .data-table .highlight { color: var(--green); font-weight: 600; }
   .data-table .neg { color: var(--red); }
   .data-table .adjusted { color: var(--yellow); font-weight: 600; }
+  .data-table .pending-data { color: var(--yellow); font-style: italic; font-size: 11px; opacity: 0.8; }
 
   /* Gantt */
   .gantt-scroll { overflow-x: auto; margin-top: 8px; }
@@ -768,32 +769,6 @@
         </tr>
       </thead>
       <tbody>
-        <tr class="group-row"><td colspan="10"><span style="color:#43AA8B">●</span> 金币募集 — 10关 + 1隐藏关</td></tr>
-        <tr style="background:rgba(63,185,80,0.06);">
-          <td>第二期 <span style="color:#d29922;font-size:10px;">★调整</span></td>
-          <td class="num">6/26 – 6/29</td>
-          <td class="num">3,761</td>
-          <td class="num highlight">5.7%</td>
-          <td class="num">104</td>
-          <td class="num">35.7%</td>
-          <td class="num">1,135</td>
-          <td class="num">98</td>
-          <td class="num">$17.98</td>
-          <td class="num" style="color:#d29922;">✅</td>
-        </tr>
-        <tr style="background:rgba(63,185,80,0.06);">
-          <td>　隐藏关(11关) <span style="color:#d29922;font-size:10px;">★调整</span></td>
-          <td class="num" style="color:var(--text2)">—</td>
-          <td class="num" style="color:var(--text2)">—</td>
-          <td class="num highlight">2.9%<span style="color:var(--text2);font-size:10px;"> (109人)</span></td>
-          <td class="num">109</td>
-          <td class="num" style="color:var(--text2)">—</td>
-          <td class="num">1,830</td>
-          <td class="num highlight">432</td>
-          <td class="num highlight">$40.32</td>
-          <td class="num" style="color:#d29922;">✅</td>
-        </tr>
-
         <tr class="group-row"><td colspan="10"><span style="color:#43AA8B">●</span> 小车竞速 — 10轮排名竞速</td></tr>
         <tr>
           <td>艾瑞克小车竞速</td>
@@ -802,8 +777,8 @@
           <td class="num">12.3%</td>
           <td class="num">270</td>
           <td class="num">44.8%</td>
-          <td class="num">1,271</td>
-          <td class="num">187</td>
+          <td class="num pending-data">待更新</td>
+          <td class="num pending-data">待更新</td>
           <td class="num">$27.44</td>
           <td class="num">—</td>
         </tr>
@@ -816,61 +791,41 @@
           <td class="num">3.8%</td>
           <td class="num">99</td>
           <td class="num">41.0%</td>
-          <td class="num">1,371</td>
-          <td class="num">208</td>
+          <td class="num pending-data">待更新</td>
+          <td class="num pending-data">待更新</td>
           <td class="num">$30.09</td>
+          <td class="num" style="color:#d29922;">✅</td>
+        </tr>
+
+        <tr class="group-row"><td colspan="10"><span style="color:#43AA8B">●</span> 金币募集 — 10关 + 1隐藏关</td></tr>
+        <tr style="background:rgba(63,185,80,0.06);">
+          <td>杰西卡金币募集 <span style="color:#d29922;font-size:10px;">★调整</span></td>
+          <td class="num">6/26 – 6/29</td>
+          <td class="num">3,761</td>
+          <td class="num highlight">5.7%</td>
+          <td class="num">104</td>
+          <td class="num">35.7%</td>
+          <td class="num pending-data">待更新</td>
+          <td class="num pending-data">待更新</td>
+          <td class="num">$17.98</td>
+          <td class="num" style="color:#d29922;">✅</td>
+        </tr>
+        <tr style="background:rgba(63,185,80,0.06);">
+          <td>　隐藏关(11关) <span style="color:#d29922;font-size:10px;">★调整</span></td>
+          <td class="num" style="color:var(--text2)">—</td>
+          <td class="num" style="color:var(--text2)">—</td>
+          <td class="num highlight">2.9%<span style="color:var(--text2);font-size:10px;"> (109人)</span></td>
+          <td class="num">109</td>
+          <td class="num" style="color:var(--text2)">—</td>
+          <td class="num pending-data">待更新</td>
+          <td class="num pending-data">待更新</td>
+          <td class="num highlight">$40.32</td>
           <td class="num" style="color:#d29922;">✅</td>
         </tr>
       </tbody>
     </table>
     </div>
   </div>
-
-  <!-- 金币募集第一期（默认折叠） -->
-  <details class="collapsible">
-    <summary style="cursor:pointer;font-size:15px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:8px;">
-      <span style="transition:transform .2s;display:inline-block;">▾</span> 金币募集第一期数据（6/5 – 6/8，原版难度）
-    </summary>
-    <div style="margin-top:16px;overflow-x:auto;">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th style="text-align:left;">关卡</th>
-          <th>通关率</th>
-          <th>通关人数</th>
-          <th>通关玩家付费率</th>
-          <th>通关日均体力</th>
-          <th>通关日均宝石</th>
-          <th>通关ARPPU</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>10关通关</td>
-          <td class="num">2.5%</td>
-          <td class="num">20</td>
-          <td class="num">60.0%</td>
-          <td class="num">1,788</td>
-          <td class="num">207</td>
-          <td class="num">$20.97</td>
-        </tr>
-        <tr>
-          <td>隐藏关(11关)</td>
-          <td class="num">0.6%<span style="color:var(--text2);font-size:10px;"> (5人)</span></td>
-          <td class="num">5</td>
-          <td class="num">40.0%</td>
-          <td class="num">1,704</td>
-          <td class="num">170</td>
-          <td class="num">$14.98</td>
-        </tr>
-      </tbody>
-    </table>
-    </div>
-    <div class="info-card warn" style="margin-top:12px;margin-bottom:0;">
-      <strong style="color:var(--yellow);">📌 待补算：</strong>
-      第一期参与人数仅788人（同期活跃3,360），怀疑大量玩家在活动开放时尚未达到Lv.8解锁等级。需从数据库统计：活动开放前已达到Lv.8的玩家中参与率和通关体力消耗，以排除等级因素后进行两期对比。
-    </div>
-  </details>
 
   <!-- 三日活动 各关卡停留体力/宝石消耗对比图 -->
   <div class="card">
@@ -909,8 +864,8 @@
           <td class="num">13.6%<span style="color:var(--text2);font-size:10px;"> (25块进阶)</span></td>
           <td class="num">243</td>
           <td class="num">45.6%</td>
-          <td class="num">1,313</td>
-          <td class="num">140</td>
+          <td class="num pending-data">待更新</td>
+          <td class="num pending-data">待更新</td>
           <td class="num">$23.63</td>
           <td class="num">—</td>
         </tr>
@@ -923,8 +878,8 @@
           <td class="num">5.4%<span style="color:var(--text2);font-size:10px;"> (普通10关通关)</span></td>
           <td class="num">275</td>
           <td class="num">38.8%</td>
-          <td class="num">881</td>
-          <td class="num">55</td>
+          <td class="num pending-data">待更新</td>
+          <td class="num pending-data">待更新</td>
           <td class="num">$12.07</td>
           <td class="num">—</td>
         </tr>
@@ -937,8 +892,8 @@
           <td class="num">11.6%<span style="color:var(--text2);font-size:10px;"> (循环档)</span></td>
           <td class="num">421</td>
           <td class="num">49.1%</td>
-          <td class="num">1,285</td>
-          <td class="num">157</td>
+          <td class="num pending-data">待更新</td>
+          <td class="num pending-data">待更新</td>
           <td class="num">$23.33</td>
           <td class="num" style="color:#d29922;">✅</td>
         </tr>
@@ -949,8 +904,8 @@
           <td class="num">14.7%<span style="color:var(--text2);font-size:10px;"> (531人)</span></td>
           <td class="num">531</td>
           <td class="num" style="color:var(--text2)">—</td>
-          <td class="num">899</td>
-          <td class="num">57</td>
+          <td class="num pending-data">待更新</td>
+          <td class="num pending-data">待更新</td>
           <td class="num">$13.82</td>
           <td class="num" style="color:#d29922;">✅</td>
         </tr>
@@ -970,7 +925,7 @@
 
   <!-- 关卡停留消耗分布（汇总） -->
   <div class="card">
-    <div class="card-title">各活动关卡停留 · 日均体力消耗曲线</div>
+    <div class="card-title">各活动关卡停留 · 日均体力消耗曲线 <span style="color:var(--yellow);font-size:12px;font-weight:400;">（体力数据待更新）</span></div>
     <div id="allEnergyChart" class="chart-box" style="height:420px;"></div>
   </div>
 
@@ -978,8 +933,8 @@
   <div class="info-card warn">
     <strong style="color:var(--yellow);">📌 以下指标需从数据库补算：</strong>
     <ul style="margin:8px 0 0 20px;font-size:13px;line-height:2;color:var(--text);">
-      <li><strong>金币募集第一期</strong> — 活动开放前已达Lv.8玩家的参与率和通关体力消耗（排除等级因素后与二期对比）</li>
-      <li><strong>金币募集二期</strong> — 通关玩家在活动期间的登录天数分布（怀疑部分玩家入场时活动天数已不足）</li>
+      <li><strong>全部活动 · 体力/宝石</strong> — 通关日均体力和日均宝石需用修正口径重新统计：统计范围为活动开放日到玩家完成时刻（而非活动全程），先算每个玩家的日均，再取玩家维度的平均值</li>
+      <li><strong>杰西卡金币募集</strong> — 通关玩家在活动期间的登录天数分布（怀疑部分玩家入场时活动天数已不足）</li>
       <li><strong>玩具拼图</strong> — 玩家完成第五阶段（25块进阶）时刻的日均体力消耗（当前数据为活动全程日均，需精确到到达时刻）</li>
       <li><strong>全部活动</strong> — 付费玩家通关率当前为各层付费人数反算估值，精确值需从数据库查询活动结束前有付费记录的玩家中的通关比例</li>
     </ul>
@@ -1241,14 +1196,15 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
   c1.setOption(Object.assign(baseOption({ grid: { left: 50, right: 20, top: 50, bottom: 40 } }), {
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
     legend: { data: ['通关日均体力','对照组日均体力'], textStyle: { color: THEME.textColor2 }, top: 6 },
+    title: { text: 'ℹ️ 体力数据待更新', textStyle: { color: '#d29922', fontSize: 11, fontWeight: 'normal' }, right: 20, top: 8 },
     xAxis: {
       type: 'category',
-      data: ['小车竞速\n(10轮)','开车探险\n(37节点)★','金币募集二期\n(10关)★','金币募集二期\n(隐藏11关)★'],
+      data: ['小车竞速\n(10轮)','开车探险\n(37节点)★','杰西卡金币募集\n(10关)★','杰西卡金币募集\n(隐藏11关)★'],
       axisLabel: { color: THEME.textColor2, fontSize: 10, interval: 0 },
       axisLine: { lineStyle: { color: THEME.axisLine } }
     },
     yAxis: {
-      type: 'value', name: '日均体力',
+      type: 'value', name: '日均体力（待更新）',
       axisLabel: { color: THEME.textColor2, fontSize: 11 },
       splitLine: { lineStyle: { color: THEME.splitLine, type: 'dashed' } },
       axisLine: { lineStyle: { color: THEME.axisLine } }
@@ -1280,14 +1236,15 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
   c2.setOption(Object.assign(baseOption({ grid: { left: 50, right: 20, top: 50, bottom: 40 } }), {
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
     legend: { data: ['通关日均宝石','对照组日均宝石'], textStyle: { color: THEME.textColor2 }, top: 6 },
+    title: { text: 'ℹ️ 宝石数据待更新', textStyle: { color: '#d29922', fontSize: 11, fontWeight: 'normal' }, right: 20, top: 8 },
     xAxis: {
       type: 'category',
-      data: ['小车竞速\n(10轮)','开车探险\n(37节点)★','金币募集二期\n(10关)★','金币募集二期\n(隐藏11关)★'],
+      data: ['小车竞速\n(10轮)','开车探险\n(37节点)★','杰西卡金币募集\n(10关)★','杰西卡金币募集\n(隐藏11关)★'],
       axisLabel: { color: THEME.textColor2, fontSize: 10, interval: 0 },
       axisLine: { lineStyle: { color: THEME.axisLine } }
     },
     yAxis: {
-      type: 'value', name: '日均宝石',
+      type: 'value', name: '日均宝石（待更新）',
       axisLabel: { color: THEME.textColor2, fontSize: 11 },
       splitLine: { lineStyle: { color: THEME.splitLine, type: 'dashed' } },
       axisLine: { lineStyle: { color: THEME.axisLine } }
@@ -1323,6 +1280,7 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
   c1.setOption(Object.assign(baseOption({ grid: { left: 50, right: 20, top: 50, bottom: 50 } }), {
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
     legend: { data: ['深度层日均体力','对照组日均体力'], textStyle: { color: THEME.textColor2 }, top: 6 },
+    title: { text: 'ℹ️ 体力数据待更新', textStyle: { color: '#d29922', fontSize: 11, fontWeight: 'normal' }, right: 20, top: 8 },
     xAxis: {
       type: 'category',
       data: ['玩具拼图\n(25块进阶)','水塘钓鱼\n(普通10关)','食品券兑换\n(循环档)★','食品券兑换\n(12档全通)★'],
@@ -1361,6 +1319,7 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
   c2.setOption(Object.assign(baseOption({ grid: { left: 50, right: 20, top: 50, bottom: 50 } }), {
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
     legend: { data: ['深度层日均宝石','对照组日均宝石'], textStyle: { color: THEME.textColor2 }, top: 6 },
+    title: { text: 'ℹ️ 宝石数据待更新', textStyle: { color: '#d29922', fontSize: 11, fontWeight: 'normal' }, right: 20, top: 8 },
     xAxis: {
       type: 'category',
       data: ['玩具拼图\n(25块进阶)','水塘钓鱼\n(普通10关)','食品券兑换\n(循环档)★','食品券兑换\n(12档全通)★'],
@@ -1412,7 +1371,7 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
       }
     },
     legend: {
-      data: ['金币募集二期★','小车竞速','开车探险★','玩具拼图','水塘钓鱼','食品券兑换★'],
+      data: ['小车竞速','开车探险★','杰西卡金币募集★','玩具拼图','水塘钓鱼','食品券兑换★'],
       textStyle: { color: THEME.textColor2, fontSize: 11 }, top: 6, type: 'scroll'
     },
     xAxis: {
@@ -1430,15 +1389,15 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
       nameTextStyle: { color: THEME.textColor2 }
     },
     series: [
-      { name: '金币募集二期★', type: 'line', smooth: true, symbol: 'circle', symbolSize: 5,
-        data: [347,436,474,486,490,561,598,718,885,1135,1830],
-        lineStyle: { color: '#3fb950', width: 2, type: 'dashed' }, itemStyle: { color: '#3fb950' } },
       { name: '小车竞速', type: 'line', smooth: true, symbol: 'circle', symbolSize: 5,
         data: [432,491,670,664,745,767,844,868,867,1271],
         lineStyle: { color: '#277DA1', width: 2 }, itemStyle: { color: '#277DA1' } },
       { name: '开车探险★', type: 'line', smooth: true, symbol: 'circle', symbolSize: 5,
         data: [377,351,441,439,497,567,605,657,730,869,1371],
         lineStyle: { color: '#D1495B', width: 2, type: 'dashed' }, itemStyle: { color: '#D1495B' } },
+      { name: '杰西卡金币募集★', type: 'line', smooth: true, symbol: 'circle', symbolSize: 5,
+        data: [347,436,474,486,490,561,598,718,885,1135,1830],
+        lineStyle: { color: '#3fb950', width: 2, type: 'dashed' }, itemStyle: { color: '#3fb950' } },
       { name: '玩具拼图', type: 'line', smooth: true, symbol: 'diamond', symbolSize: 6,
         data: [592,719,878,888,1313],
         lineStyle: { color: '#2A9D8F', width: 2 }, itemStyle: { color: '#2A9D8F' } },

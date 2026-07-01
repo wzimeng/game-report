@@ -61,6 +61,13 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
 .gantt-row-bg{position:absolute;left:80px;right:0;border-bottom:1px solid rgba(255,255,255,.03)}
 .diff-pos{color:var(--green);font-weight:600}
 .diff-neg{color:var(--red);font-weight:600}
+.def-box{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--text2);line-height:1.7}
+.def-box summary{cursor:pointer;color:var(--accent);font-size:12px;font-weight:600;user-select:none}
+.def-box summary:hover{color:#9ca8ff}
+.def-box dt{color:var(--text);font-weight:600;display:inline}
+.def-box dd{display:inline;margin:0;margin-right:14px}
+.def-box dd::after{content:'';display:block;margin-bottom:2px}
+.def-box .filter-tag{display:inline-block;background:rgba(108,123,255,.1);border:1px solid var(--border);border-radius:3px;padding:1px 6px;font-size:11px;color:var(--orange);margin-right:4px}
 @media(max-width:768px){.chart-row{grid-template-columns:1fr}.card-grid{grid-template-columns:1fr 1fr}h1{font-size:22px}}
 </style>
 </head>
@@ -135,6 +142,17 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
 <!-- ======================== 首日活动数量 vs 留存/付费 ======================== -->
 <div class="section">
   <h2 class="section-title">首日参与活动数量 vs 留存 & 付费</h2>
+  <details class="def-box">
+    <summary>📐 指标说明</summary>
+    <div style="margin-top:8px;">
+      <span class="filter-tag">事件: ACTIVITY</span> <span class="filter-tag">D0 当天</span> <span class="filter-tag">按活动数分组</span><br>
+      <dl>
+        <dt>活动数：</dt><dd>玩家D0当天参与的不同 activity_type 去重数量（0=仅有ENERGY_CHANGE_USE但无ACTIVITY事件）</dd>
+        <dt>次留率(卡片大字)：</dt><dd>该组玩家D0+1天有任意事件的比例</dd>
+        <dt>付费率(卡片小字)：</dt><dd>该组玩家在整个观测期(6/6~6/24)内有USER_PAY的比例</dd>
+      </dl>
+    </div>
+  </details>
   <div class="card-grid">
     <div class="stat-card"><div class="label">0 个活动</div><div class="value" style="color:var(--red)">17.7%</div><div class="sub">96 人 · 付费 2.1%</div></div>
     <div class="stat-card"><div class="label">1 个活动</div><div class="value" style="color:var(--orange)">37.5%</div><div class="sub">7,857 人 · 付费 3.3%</div></div>
@@ -167,6 +185,18 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
 <!-- ======================== 各活动首日参与者留存/付费 ======================== -->
 <div class="section">
   <h2 class="section-title">各活动首日参与者的留存率 & 付费率</h2>
+  <details class="def-box">
+    <summary>📐 指标说明</summary>
+    <div style="margin-top:8px;">
+      <span class="filter-tag">事件: ACTIVITY</span> <span class="filter-tag">D0 当天</span> <span class="filter-tag">按 activity_type 分组</span><br>
+      <dl>
+        <dt>D0 参与人：</dt><dd>D0当天有该 activity_type 的ACTIVITY事件的去重用户数</dd>
+        <dt>次留率：</dt><dd>D0+1天有任意事件的人数 ÷ D0参与人</dd>
+        <dt>付费率：</dt><dd>整个观测期内有USER_PAY的人数 ÷ D0参与人</dd>
+        <dt>开启等级：</dt><dd>BasicConfig.FunctionUnlock 配置的解锁等级</dd>
+      </dl>
+    </div>
+  </details>
   <div class="chart-box full">
     <div class="chart-title">D0 参与某活动的玩家，次留率和付费率</div>
     <div class="chart-sub">样本 = 首日有该活动 ACTIVITY 事件的玩家；按留存率排序</div>
@@ -208,6 +238,17 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
 <!-- ======================== 控制等级后的活动效果 ======================== -->
 <div class="section">
   <h2 class="section-title">控制等级后的活动效果（Lv≥8 玩家）</h2>
+  <details class="def-box">
+    <summary>📐 指标说明</summary>
+    <div style="margin-top:8px;">
+      <span class="filter-tag">样本: D0等级≥8</span> <span class="filter-tag">基线: 3,259人</span><br>
+      <dl>
+        <dt>参与留存/付费：</dt><dd>D0等级≥8 且 D0参与了该活动的玩家的次留率/付费率</dd>
+        <dt>未参与留存/付费：</dt><dd>D0等级≥8 但 D0未参与该活动的玩家的次留率/付费率</dd>
+        <dt>留存差/付费差：</dt><dd>参与组 - 未参与组(pp)，正值表示参与该活动有正向效果</dd>
+      </dl>
+    </div>
+  </details>
   <div class="chart-box full">
     <div class="chart-title">同为 Lv≥8 的玩家，参与 vs 未参与某活动的留存率和付费率差异</div>
     <div class="chart-sub">控制等级后排除"等级越高活动越多"的混淆因素（基线：3,259 人，留存 68.3%，付费 14.5%）</div>
@@ -247,6 +288,17 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
 <!-- ======================== 等级分层 × 活动参与 ======================== -->
 <div class="section">
   <h2 class="section-title">等级分层 × 活动参与 vs 留存</h2>
+  <details class="def-box">
+    <summary>📐 指标说明</summary>
+    <div style="margin-top:8px;">
+      <span class="filter-tag">按D0等级分层</span> <span class="filter-tag">有/无活动参与</span><br>
+      <dl>
+        <dt>有活动：</dt><dd>D0当天至少有1条ACTIVITY事件(activity_type非空)的玩家</dd>
+        <dt>无活动：</dt><dd>D0当天只有ENERGY_CHANGE_USE但无ACTIVITY事件的玩家</dd>
+        <dt>留存差：</dt><dd>有活动组次留率 - 无活动组次留率(pp)</dd>
+      </dl>
+    </div>
+  </details>
   <div class="chart-row">
     <div class="chart-box">
       <div class="chart-title">各等级段：有活动 vs 无活动的留存率</div>
@@ -284,6 +336,16 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
 <!-- ======================== 活动组合 TOP ======================== -->
 <div class="section">
   <h2 class="section-title">首日活动组合 TOP 排名</h2>
+  <details class="def-box">
+    <summary>📐 指标说明</summary>
+    <div style="margin-top:8px;">
+      <span class="filter-tag">按D0活动组合分组</span> <span class="filter-tag">≥10人的组合</span><br>
+      <dl>
+        <dt>活动组合：</dt><dd>玩家D0当天参与的所有 activity_type 集合（按字母序拼接），完全相同的组合归为一组</dd>
+        <dt>次留率/付费率：</dt><dd>该组合玩家的D1留存率和观测期付费率</dd>
+      </dl>
+    </div>
+  </details>
   <div class="chart-box full">
     <div class="chart-title">D0 活动组合（≥10人）的留存率和付费率</div>
     <div class="chart-sub">组合 = 玩家首日参与的所有活动的集合</div>
@@ -322,6 +384,18 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
 <!-- ======================== 首日付费玩家 × 活动参与 × 留存 ======================== -->
 <div class="section">
   <h2 class="section-title">首日付费玩家 × 活动参与 × D1/D3/D7 留存</h2>
+  <details class="def-box">
+    <summary>📐 指标说明</summary>
+    <div style="margin-top:8px;">
+      <span class="filter-tag">样本: D0有USER_PAY的玩家</span> <span class="filter-tag">336人</span> <span class="filter-tag">D0范围 6/6~6/23</span><br>
+      <dl>
+        <dt>符合人数：</dt><dd>D0当天该活动开放 且 玩家D0等级≥活动解锁等级 的付费玩家数</dd>
+        <dt>参与/未参与：</dt><dd>符合条件的玩家中，D0有/无该activity_type的ACTIVITY事件</dd>
+        <dt>D1/D3/D7留存：</dt><dd>D0后第1/3/7天有任意事件的比例（D7要求D0≤6/23）</dd>
+        <dt>差值(pp)：</dt><dd>参与组留存率 - 未参与组留存率，正值=参与有正向留存效果</dd>
+      </dl>
+    </div>
+  </details>
   <div class="card-grid">
     <div class="stat-card"><div class="label">D0 付费玩家</div><div class="value" style="color:var(--accent)">336</div><div class="sub">6/6~6/23 首日付费</div></div>
     <div class="stat-card"><div class="label">有活动记录</div><div class="value" style="color:var(--green)">335</div><div class="sub">99.7% 参与了至少1个活动</div></div>
@@ -350,6 +424,35 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
     </table>
     <div class="chart-sub" style="margin-top:8px">* CardPackageFrenzy(n=40,未参与仅3人)、PuzzleToy(n=55,未参与仅1人)、EndlessReward(n=1)、LadderOrder(n=3) 因样本不足省略</div>
   </div>
+
+  <div class="chart-box full">
+    <div class="chart-title">难度调整前后分段对比（6/20 起单日活动日均通关体力 800→1500、三四日 800→1200）</div>
+    <div class="chart-sub">仅展示两个时段内均有足够可比数据的活动 · 6/6~6/19 共270名付费玩家 · 6/20~6/23 共66名付费玩家</div>
+    <table class="data">
+      <thead><tr><th rowspan="2">活动</th><th colspan="4" style="text-align:center;border-right:2px solid var(--border)">6/6~6/19（调整前）</th><th colspan="4" style="text-align:center">6/20~6/23（调整后）</th></tr>
+      <tr><th>符合</th><th>参与</th><th>D1差</th><th style="border-right:2px solid var(--border)">D3差</th><th>符合</th><th>参与</th><th>D1差</th><th>D3差</th></tr></thead>
+      <tbody>
+        <tr><td>ThemeDecoBalloon</td><td>176</td><td>44</td><td class="diff-pos">+25.0pp</td><td style="border-right:2px solid var(--border)" class="diff-pos">+9.1pp</td><td>40</td><td>40</td><td colspan="2" style="color:var(--text2);text-align:center">全员参与，无对照</td></tr>
+        <tr><td>RoadTrip</td><td>19</td><td>14</td><td style="color:var(--text2)">-1.4pp</td><td style="border-right:2px solid var(--border)" class="diff-pos">+10.0pp</td><td>29</td><td>17</td><td class="diff-pos">+44.1pp</td><td class="diff-pos">+31.4pp</td></tr>
+        <tr><td>Balloon</td><td>176</td><td>83</td><td class="diff-neg">-15.5pp</td><td style="border-right:2px solid var(--border);color:var(--text2)">-0.9pp</td><td>40</td><td>0</td><td colspan="2" style="color:var(--text2);text-align:center">无参与者</td></tr>
+        <tr><td>WaterOrder</td><td>10</td><td>6</td><td class="diff-pos">+25.0pp</td><td style="border-right:2px solid var(--border);color:var(--text2)">—</td><td>6</td><td>4</td><td class="diff-pos">+50.0pp</td><td class="diff-neg">-50.0pp</td></tr>
+        <tr><td>FoodCollection</td><td colspan="4" style="text-align:center;color:var(--text2);border-right:2px solid var(--border)">该时段无此活动</td><td>22</td><td>18</td><td class="diff-pos">+33.3pp</td><td class="diff-pos">+47.2pp</td></tr>
+        <tr><td>MiniBoardDoor</td><td colspan="4" style="text-align:center;color:var(--text2);border-right:2px solid var(--border)">该时段无此活动</td><td>27</td><td>22</td><td class="diff-neg">-13.6pp</td><td class="diff-neg">-22.7pp</td></tr>
+        <tr><td>MiniBoardAreaScroll</td><td>93</td><td>90</td><td style="color:var(--text2)">-1.1pp</td><td style="border-right:2px solid var(--border)" class="diff-pos">+20.0pp</td><td colspan="4" style="text-align:center;color:var(--text2)">该时段无此活动</td></tr>
+        <tr><td>CoinRacing</td><td>98</td><td>47</td><td class="diff-neg">-10.3pp</td><td style="border-right:2px solid var(--border);color:var(--text2)">-2.2pp</td><td>29</td><td>0</td><td colspan="2" style="color:var(--text2);text-align:center">无参与者</td></tr>
+      </tbody>
+    </table>
+    <div class="insight-box" style="margin-top:12px">
+      <h4>💡 分段对比洞察</h4>
+      <ul>
+        <li><b>RoadTrip 调整后效果跃升</b>：D1差从 -1.4pp（调整前）大幅升至 +44.1pp（调整后），虽然调整后样本偏小(n=29)，但信号明显</li>
+        <li><b>ThemeDecoBalloon 调整前正效应显著(D1 +25.0pp)</b>，调整后因全员参与无法对比</li>
+        <li><b>6/20后新增活动</b>：FoodCollection 表现优秀(D1 +33.3pp, D3 +47.2pp)；MiniBoardDoor 出现负效应但未参与组仅5人</li>
+        <li>分段后样本进一步缩小，特别是 post_620 仅66人且部分活动无对照组，结论仅供参考</li>
+      </ul>
+    </div>
+  </div>
+
   <div class="insight-box">
     <h4>💡 付费玩家活动×留存洞察</h4>
     <ul>
