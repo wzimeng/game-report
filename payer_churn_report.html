@@ -453,8 +453,8 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
 
   <div class="chart-row">
     <div class="chart-box">
-      <div class="chart-title">流失玩家末次登录日期分布</div>
-      <div class="chart-sub">519名流失付费玩家 | 按末次登录日期统计人数与人均充值</div>
+      <div class="chart-title">流失玩家末次登录日期分布与流失率</div>
+      <div class="chart-sub">519名流失付费玩家 | 柱=当日流失人数 | 橙线=日流失率(当日流失/剩余存量) | 蓝虚线=累计流失率 | 分母=1,122总付费玩家逐日递减</div>
       <div id="chart_last_login" class="chart-tall"></div>
     </div>
     <div class="chart-box">
@@ -505,9 +505,10 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
   <div class="warn-box">
     <h4>⚠️ 末次登录趋势发现</h4>
     <ul>
-      <li><b>6/24-28 集中流失</b>：最后5天流失243人（占47%），其中6/28最多75人。6/24出现流失加速拐点（37人），人均充值$492，说明活动周期结束后大规模集中流失。</li>
-      <li><b>早期流失价值更高</b>：6/12-13两天虽仅22人流失，但人均充值$587-$689，为全时段最高，说明高付费玩家反而更早离开。</li>
-      <li><b>末期流失等级更高</b>：6/24后流失玩家平均等级13.5-15.1，高于早期（Lv4-10），表明这批是度过新手期但在中后期内容匮乏时流失的。</li>
+      <li><b>日流失率持续加速</b>：前两周日流失率稳定在0.7-2.3%，6/24起骤升至4.4%，6/28达到<span class="hl">11.0%</span>（75人/681存量）。流失在加速而非因基数变大。</li>
+      <li><b>累计流失率近半</b>：到6/28累计流失率达<span class="hl">46.0%</span>，即观察期结束时近半数付费玩家已流失。</li>
+      <li><b>6/24是拐点</b>：日流失率从前一天的2.3%跳升至4.4%，之后再无回落。可能与活动周期结束、版本内容耗尽有关。</li>
+      <li><b>早期流失者价值更高</b>：6/12-13虽仅22人流失（日流失率0.7-1.4%），但人均充值$587-$689，为全时段最高。高付费玩家反而更早离开。</li>
     </ul>
   </div>
 
@@ -1195,34 +1196,44 @@ const tooltipStyle={backgroundColor:'#1a1d28',borderColor:'#2a2d3a',textStyle:{c
   window.addEventListener('resize',function(){chart.resize()});
 })();
 
-/* ====== Chart 13: 末次登录日期分布 ====== */
+/* ====== Chart 13: 末次登录日期分布（流失率%） ====== */
 (function(){
   var dom=document.getElementById('chart_last_login');
   if(!dom)return;
   var chart=echarts.init(dom);
   var dates=['06-06','06-07','06-08','06-09','06-10','06-11','06-12','06-13','06-14','06-15','06-16','06-17','06-18','06-19','06-20','06-21','06-22','06-23','06-24','06-25','06-26','06-27','06-28'];
   var players=[1,5,12,11,13,9,7,15,13,23,20,15,21,22,20,21,25,20,37,33,46,52,75];
-  var avgRev=[15,34,29,67,61,67,689,587,52,133,257,643,378,134,215,464,166,469,492,259,311,462,293];
+  /* 日流失率 = 当日流失人数 / 当日剩余付费存量（1122 - 累计已流失） */
+  var dailyRate=[0.1,0.4,1.1,1.0,1.2,0.8,0.7,1.4,1.2,2.2,2.0,1.5,2.1,2.3,2.1,2.3,2.8,2.3,4.4,4.1,5.9,7.1,11.0];
+  /* 累计流失率 */
+  var cumRate=[0.1,0.5,1.6,2.6,3.7,4.5,5.2,6.5,7.7,9.7,11.5,12.8,14.7,16.7,18.4,20.3,22.5,24.3,27.6,30.6,34.7,39.3,46.0];
   chart.setOption({
     tooltip:Object.assign({trigger:'axis',formatter:function(p){
-      return p[0].axisValue+'<br/>'+
-        '<span style="color:'+C.red+'">●</span> 流失人数: <b>'+p[0].value+'</b>人<br/>'+
-        (p[1]?'<span style="color:'+C.orange+'">●</span> 人均充值: <b>$'+p[1].value+'</b>':'');
+      var d=p[0].axisValue;
+      var items='';
+      for(var i=0;i<p.length;i++){
+        var s=p[i];
+        items+=s.marker+s.seriesName+': <b>'+(s.seriesName.indexOf('%')>=0||s.seriesName.indexOf('率')>=0?s.value+'%':s.value+'人')+'</b><br/>';
+      }
+      return d+'<br/>'+items;
     }},tooltipStyle),
-    legend:{data:['流失人数','人均充值($)'],textStyle:{color:'#e4e6eb'},top:6},
+    legend:{data:['流失人数','日流失率(%)','累计流失率(%)'],textStyle:{color:'#e4e6eb'},top:6},
     grid:{left:55,right:55,top:50,bottom:50},
     xAxis:{type:'category',data:dates,axisLabel:{color:C.text2,rotate:45,fontSize:10},axisLine:{lineStyle:{color:'#2a2d3a'}}},
     yAxis:[
       {type:'value',name:'人数',nameTextStyle:{color:C.text2},axisLabel:{color:C.text2},splitLine:{lineStyle:{color:'#2a2d3a'}}},
-      {type:'value',name:'人均充值($)',nameTextStyle:{color:C.text2},axisLabel:{color:C.text2,formatter:'${value}'},splitLine:{show:false}}
+      {type:'value',name:'流失率%',nameTextStyle:{color:C.text2},axisLabel:{color:C.text2,formatter:'{value}%'},splitLine:{show:false},max:50}
     ],
     series:[
       {name:'流失人数',type:'bar',data:players,barWidth:14,
-       itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:C.red},{offset:1,color:'rgba(248,113,113,.3)'}])},
+       itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(248,113,113,.6)'},{offset:1,color:'rgba(248,113,113,.15)'}])},
        markArea:{silent:true,data:[[{xAxis:'06-24',itemStyle:{color:'rgba(248,113,113,.06)'}},{xAxis:'06-28'}]]}},
-      {name:'人均充值($)',type:'line',yAxisIndex:1,data:avgRev,smooth:true,
-       lineStyle:{color:C.orange,width:2},symbol:'circle',symbolSize:4,
-       itemStyle:{color:C.orange},areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(251,191,36,.15)'},{offset:1,color:'rgba(251,191,36,0)'}])}}
+      {name:'日流失率(%)',type:'line',yAxisIndex:1,data:dailyRate,smooth:true,
+       lineStyle:{color:C.orange,width:2},symbol:'circle',symbolSize:5,
+       itemStyle:{color:C.orange}},
+      {name:'累计流失率(%)',type:'line',yAxisIndex:1,data:cumRate,smooth:true,
+       lineStyle:{color:C.cyan,width:2,type:'dashed'},symbol:'diamond',symbolSize:5,
+       itemStyle:{color:C.cyan},areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(34,211,238,.1)'},{offset:1,color:'rgba(34,211,238,0)'}])}}
     ]
   });
   window.addEventListener('resize',function(){chart.resize()});
@@ -1325,78 +1336,6 @@ const tooltipStyle={backgroundColor:'#1a1d28',borderColor:'#2a2d3a',textStyle:{c
       type:'scatter',data:scatterData,
       symbolSize:function(val){var s=Math.sqrt(val[2])*2.5;return Math.max(6,Math.min(s,40))},
       itemStyle:{borderColor:'rgba(255,255,255,.2)',borderWidth:1}
-    }]
-  });
-  window.addEventListener('resize',function(){chart.resize()});
-})();
-
-/* ====== Chart 13: 末次登录日期分布 ====== */
-(function(){
-  var dom=document.getElementById('chart_last_login');
-  if(!dom) return;
-  var chart=echarts.init(dom);
-  var dates=['6/06','6/07','6/08','6/09','6/10','6/11','6/12','6/13','6/14','6/15','6/16','6/17','6/18','6/19','6/20','6/21','6/22','6/23','6/24','6/25','6/26','6/27','6/28'];
-  var players=[1,5,12,11,13,9,7,15,13,23,20,15,21,22,20,21,25,20,37,33,46,52,75];
-  var avgRev=[15,34,29,67,61,67,689,587,52,133,257,643,378,134,215,464,166,469,492,259,311,462,293];
-  chart.setOption({
-    tooltip:Object.assign({trigger:'axis',formatter:function(p){
-      var d=p[0].axisValue;
-      var n=p[0]?p[0].value:0;
-      var r=p[1]?p[1].value:0;
-      return d+'<br/>流失人数: <b style=\"color:'+C.red+'\">'+n+'人</b><br/>人均充值: <b style=\"color:'+C.orange+'\">$'+r+'</b>';
-    }},tooltipStyle),
-    legend:{data:['流失人数','人均充值'],textStyle:{color:'#e4e6eb'},top:6},
-    grid:{left:50,right:50,top:45,bottom:55},
-    xAxis:{type:'category',data:dates,axisLabel:{color:C.text2,rotate:45,fontSize:10},axisLine:{lineStyle:{color:'#2a2d3a'}}},
-    yAxis:[
-      {type:'value',name:'人数',nameTextStyle:{color:C.text2},axisLabel:{color:C.text2},splitLine:{lineStyle:{color:'#2a2d3a'}}},
-      {type:'value',name:'人均充值$',nameTextStyle:{color:C.text2},axisLabel:{color:C.text2,formatter:'${value}'},splitLine:{show:false}}
-    ],
-    series:[
-      {name:'流失人数',type:'bar',data:players,barWidth:12,
-       itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:C.red},{offset:1,color:'rgba(248,113,113,.3)'}])},
-       label:{show:false}},
-      {name:'人均充值',type:'line',yAxisIndex:1,data:avgRev,smooth:true,
-       lineStyle:{color:C.orange,width:2},symbol:'circle',symbolSize:4,
-       itemStyle:{color:C.orange},areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(251,191,36,.2)'},{offset:1,color:'rgba(251,191,36,0)'}])}}
-    ]
-  });
-  window.addEventListener('resize',function(){chart.resize()});
-})();
-
-/* ====== Chart 14: 活动参与排行 ====== */
-(function(){
-  var dom=document.getElementById('chart_activity_rank');
-  if(!dom) return;
-  var chart=echarts.init(dom);
-  var acts=['WasteSweep','LadderOrder','WaterOrder','CardCollection','EndlessReward','PuzzleToy','CoinRacing','CoinCollection','MiniBoardAreaScroll','FoodCollection','Balloon','MiniBoardDoor','CardPackageFrenzy','Treasure','RoadTrip','ThemeDecoBalloon','BattlePass'];
-  var players=[1,67,76,96,106,131,167,174,179,181,198,205,208,244,161,282,516];
-  var avgTimes=[90,3.1,2.1,2.3,7.4,43.1,6.2,5.5,18.9,7.7,2.9,15.2,13.5,10.1,60.2,170.1,16.0];
-  chart.setOption({
-    tooltip:Object.assign({trigger:'axis',formatter:function(p){
-      var a=p[0].axisValue;
-      var n=p[0]?p[0].value:0;
-      var idx=acts.indexOf(a);
-      var avg=idx>=0?avgTimes[idx]:0;
-      return a+'<br/>参与人数: <b style=\"color:'+C.cyan+'\">'+n+'人</b><br/>人均次数: <b style=\"color:'+C.purple+'\">'+avg+'次</b>';
-    }},tooltipStyle),
-    grid:{left:140,right:60,top:30,bottom:30},
-    xAxis:{type:'value',axisLabel:{color:C.text2},splitLine:{lineStyle:{color:'#2a2d3a'}}},
-    yAxis:{type:'category',data:acts,axisLabel:{color:C.text2,fontSize:11},axisLine:{lineStyle:{color:'#2a2d3a'}}},
-    series:[{
-      type:'bar',data:players,barWidth:14,
-      itemStyle:{color:function(p){
-        var v=p.value;
-        if(v>400) return C.accent;
-        if(v>200) return C.cyan;
-        if(v>100) return C.purple;
-        return 'rgba(108,123,255,.5)';
-      }},
-      label:{show:true,position:'right',color:C.text2,fontSize:10,formatter:function(p){
-        var idx=acts.indexOf(p.name);
-        var avg=idx>=0?avgTimes[idx]:0;
-        return p.value+'人 ('+avg+'x/人)';
-      }}
     }]
   });
   window.addEventListener('resize',function(){chart.resize()});
