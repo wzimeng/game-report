@@ -283,6 +283,21 @@
     color: var(--yellow);
   }
 
+  /* Collapsible card */
+  details.collapsible {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  details.collapsible summary {
+    list-style: none;
+    outline: none;
+  }
+  details.collapsible summary::-webkit-details-marker { display: none; }
+  details.collapsible[open] summary span { display: inline-block; transform: rotate(180deg); }
+
   /* Footer */
   .report-footer {
     text-align: center;
@@ -354,9 +369,9 @@
     </div>
   </div>
 
-  <!-- 活动说明 -->
-  <div class="card">
-    <div class="card-title">活动说明</div>
+  <!-- 活动说明（可折叠） -->
+  <details class="card collapsible">
+    <summary class="card-title" style="cursor:pointer;user-select:none;">活动说明 <span style="font-size:12px;color:var(--text2);font-weight:400;margin-left:6px">点击展开 ▾</span></summary>
     <div style="overflow-x:auto">
     <table class="data-table" style="margin-top:0">
       <colgroup>
@@ -502,7 +517,7 @@
       </tbody>
     </table>
     </div>
-  </div>
+  </details>
 
 </section>
 
@@ -544,7 +559,7 @@
         <!-- 水滴订单 -->
         <tr class="group-row"><td colspan="10"><span style="color:#fbbf24">●</span> 水滴订单（Lv.12）</td></tr>
         <tr>
-          <td>6/7 水滴+1+2</td>
+          <td>6/7 水滴 & 1+2</td>
           <td class="num">$580</td>
           <td class="num">$0.30</td>
           <td class="num">$13.50</td>
@@ -556,7 +571,7 @@
           <td class="num highlight">+$0.07</td>
         </tr>
         <tr>
-          <td>6/14 水滴+1+2</td>
+          <td>6/14 水滴 & 1+2</td>
           <td class="num">$1,107</td>
           <td class="num">$0.43</td>
           <td class="num">$13.83</td>
@@ -568,7 +583,7 @@
           <td class="num highlight">+$0.08</td>
         </tr>
         <tr>
-          <td>6/21 水滴+礼包链</td>
+          <td>6/21 水滴 & 礼包链</td>
           <td class="num">$1,487</td>
           <td class="num">$0.46</td>
           <td class="num">$12.39</td>
@@ -580,7 +595,7 @@
           <td class="num highlight">+$0.06</td>
         </tr>
         <tr>
-          <td>6/28 水滴+1+2</td>
+          <td>6/28 水滴 & 1+2</td>
           <td class="num">$2,493</td>
           <td class="num">$0.62</td>
           <td class="num">$14.41</td>
@@ -594,7 +609,7 @@
         <!-- 限时订单 -->
         <tr class="group-row"><td colspan="10"><span style="color:#f87171">●</span> 限时订单（Lv.12）</td></tr>
         <tr>
-          <td>6/10 限订+礼包链</td>
+          <td>6/10 限订 & 礼包链</td>
           <td class="num">$938</td>
           <td class="num">$0.50</td>
           <td class="num">$11.72</td>
@@ -606,7 +621,7 @@
           <td class="num highlight">+$0.21</td>
         </tr>
         <tr>
-          <td>6/17 限订+1+2</td>
+          <td>6/17 限订 & 1+2</td>
           <td class="num">$1,584</td>
           <td class="num">$0.60</td>
           <td class="num">$16.85</td>
@@ -618,7 +633,7 @@
           <td class="num highlight">+$0.15</td>
         </tr>
         <tr>
-          <td>6/24 限订+1+2 <span class="badge badge-red">难度翻倍</span></td>
+          <td>6/24 限订 & 1+2 <span class="badge badge-red">难度翻倍</span></td>
           <td class="num">$1,746</td>
           <td class="num">$0.50</td>
           <td class="num">$12.38</td>
@@ -632,7 +647,7 @@
         <!-- 卡包狂热 -->
         <tr class="group-row"><td colspan="10"><span style="color:#ff6b9d">●</span> 卡包狂热（Lv.7）</td></tr>
         <tr>
-          <td>6/12 卡包+三合一</td>
+          <td>6/12 卡包 & 三合一</td>
           <td class="num">$966</td>
           <td class="num">$0.45</td>
           <td class="num">$13.41</td>
@@ -644,7 +659,7 @@
           <td class="num highlight">+$0.16</td>
         </tr>
         <tr>
-          <td>6/19 卡包+礼包链</td>
+          <td>6/19 卡包 & 礼包链</td>
           <td class="num">$1,415</td>
           <td class="num">$0.50</td>
           <td class="num">$11.89</td>
@@ -656,7 +671,7 @@
           <td class="num highlight">+$0.05</td>
         </tr>
         <tr>
-          <td>6/26 卡包+三合一 <span class="badge badge-yellow">飞镖</span></td>
+          <td>6/26 卡包 & 三合一 <span class="badge badge-yellow">飞镖</span></td>
           <td class="num">$1,878</td>
           <td class="num">$0.56</td>
           <td class="num">$14.01</td>
@@ -670,7 +685,7 @@
         <!-- 无尽奖励 & 限时订单链 -->
         <tr class="group-row"><td colspan="10"><span style="color:#22d3ee">●</span> 无尽奖励 &amp; <span style="color:#a78bfa">●</span> 限时订单链（Lv.12） <span class="badge badge-yellow">新活动</span></td></tr>
         <tr>
-          <td><span style="color:#22d3ee">●</span> 6/20 无尽+礼包链</td>
+          <td><span style="color:#22d3ee">●</span> 6/20 无尽 & 礼包链</td>
           <td class="num">$1,350</td>
           <td class="num">$0.47</td>
           <td class="num">$11.54</td>
@@ -682,7 +697,7 @@
           <td class="num">+$0.02</td>
         </tr>
         <tr>
-          <td><span style="color:#a78bfa">●</span> 6/22 限链+三合一 <span class="badge badge-yellow">飞镖</span></td>
+          <td><span style="color:#a78bfa">●</span> 6/22 限链 & 三合一 <span class="badge badge-yellow">飞镖</span></td>
           <td class="num">$1,534</td>
           <td class="num">$0.45</td>
           <td class="num">$12.89</td>
