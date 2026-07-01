@@ -101,6 +101,7 @@ table.data .num{text-align:right;font-variant-numeric:tabular-nums}
     <li><a href="#s6">维度五：活动触发 — 首付前60分钟在做什么？</a></li>
     <li><a href="#s7">维度六：活动参与 × 留存 — 首日付费者的后续生命周期</a></li>
     <li><a href="#s8">综合结论与运营建议</a></li>
+    <li><a href="#s9">专题：6/28 首日付费金额为什么高？</a></li>
   </ol>
 </div>
 
@@ -469,8 +470,126 @@ table.data .num{text-align:right;font-variant-numeric:tabular-nums}
 </div>
 </div>
 
+<!-- ============================================ -->
+<!-- Section 9: 6/28 专题 -->
+<!-- ============================================ -->
+<div class="section" id="s9">
+<h2 class="section-title">9. 专题：6/28 首日付费金额为什么高？</h2>
+
+<div class="card-grid">
+  <div class="stat-card">
+    <div class="label">6/28 新增用户</div>
+    <div class="value" style="color:var(--red)">940</div>
+    <div class="sub">近期均值 648 · <span class="hl-red">1.45x</span></div>
+  </div>
+  <div class="stat-card">
+    <div class="label">6/28 D0付费人数</div>
+    <div class="value" style="color:var(--orange)">37</div>
+    <div class="sub">近期均值 15 · <span class="hl-red">2.5x</span></div>
+  </div>
+  <div class="stat-card">
+    <div class="label">6/28 D0总收入</div>
+    <div class="value" style="color:var(--green)">$629</div>
+    <div class="sub">近期均值 $175 · <span class="hl-red">3.6x</span></div>
+  </div>
+  <div class="stat-card">
+    <div class="label">6/28 ARPPU</div>
+    <div class="value" style="color:var(--cyan)">$17.0</div>
+    <div class="sub">近期均值 $10.6 · 1.6x</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">6/28 D0付费率</div>
+    <div class="value" style="color:var(--purple)">3.9%</div>
+    <div class="sub">近期均值 2.3% · 1.7x</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">6/28 人均订单数</div>
+    <div class="value">2.35</div>
+    <div class="sub">近期均值 1.6 · 1.5x</div>
+  </div>
+</div>
+
+<div class="chart-row">
+  <div class="chart-box">
+    <div class="chart-title">每日 D0 付费收入趋势</div>
+    <div class="chart-sub">6/28 明显异常高峰</div>
+    <div id="chart_daily_d0" class="chart"></div>
+  </div>
+  <div class="chart-box">
+    <div class="chart-title">每日新增用户数趋势</div>
+    <div class="chart-sub">6/28 新增 940 人为近期最高</div>
+    <div id="chart_daily_new" class="chart"></div>
+  </div>
+</div>
+
+<div class="chart-box">
+  <div class="chart-title">6/28 vs 6/21 vs 6/14 — D0 付费类型对比</div>
+  <div class="chart-sub">6/28 的 BattlePassTwo 和 Shop 的付费人数远超对照日</div>
+  <div id="chart_compare_days" class="chart-tall"></div>
+</div>
+
+<div class="scroll-wrap">
+<table class="data">
+  <thead>
+    <tr><th>指标</th><th class="num">6/14</th><th class="num">6/21</th><th class="num">6/28</th><th>6/28 解读</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>新增用户</td><td class="num">827</td><td class="num">831</td><td class="num"><span class="hl-red">940</span></td><td>近期峰值，可能有买量波次</td></tr>
+    <tr><td>D0 付费人数</td><td class="num">19</td><td class="num">26</td><td class="num"><span class="hl-red">37</span></td><td>全月最高</td></tr>
+    <tr><td>D0 订单数</td><td class="num">36</td><td class="num">40</td><td class="num"><span class="hl-red">87</span></td><td>人均 2.35 单，复购意愿强</td></tr>
+    <tr><td>D0 收入</td><td class="num">$325</td><td class="num">$357</td><td class="num"><span class="hl-red">$629</span></td><td>是 6/14 的 1.9 倍</td></tr>
+    <tr><td>ARPPU</td><td class="num">$17.14</td><td class="num">$13.75</td><td class="num"><span class="hl">$17.00</span></td><td>头部鲸鱼拉高</td></tr>
+    <tr><td>BattlePass 付费者</td><td class="num">9</td><td class="num">10</td><td class="num"><span class="hl-red">21</span></td><td>2x 于对照日</td></tr>
+    <tr><td>Shop 付费者</td><td class="num">8</td><td class="num">8</td><td class="num"><span class="hl-red">18</span></td><td>2.25x 于对照日</td></tr>
+    <tr><td>当天开放活动</td><td class="num">3 个</td><td class="num">4 个</td><td class="num"><span class="hl">5 个</span></td><td>含 WaterOrder 单日活动</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="chart-box">
+  <div class="chart-title">6/28 D0 大 R 玩家 TOP10</div>
+  <div class="chart-sub">前 2 名贡献 $204，占当日 D0 收入 32.4%</div>
+  <div id="chart_whale" class="chart-tall"></div>
+</div>
+
+<div class="scroll-wrap">
+<table class="data">
+  <thead>
+    <tr><th>#</th><th>账号ID</th><th class="num">订单数</th><th class="num">D0总付$</th><th class="num">最大单笔$</th><th class="num">最高等级</th><th>购买类型</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>1</td><td><code>1243581589</code></td><td class="num">12</td><td class="num"><span class="hl-red">$111.88</span></td><td class="num">$19.99</td><td class="num">Lv20</td><td>Shop, BP, LevelPack, IceBreak, DailyPack, MBDoor</td></tr>
+    <tr><td>2</td><td><code>1230889622</code></td><td class="num">12</td><td class="num"><span class="hl-red">$91.88</span></td><td class="num">$9.99</td><td class="num">Lv19</td><td>Shop, LevelPack, BP, MBDoor, DailyPack, EnergyPack</td></tr>
+    <tr><td>3</td><td><code>1194949017</code></td><td class="num">4</td><td class="num">$51.96</td><td class="num">$19.99</td><td class="num">Lv14</td><td>BP, GiftOnAddOne, EnergyPack, MBDoor</td></tr>
+    <tr><td>4</td><td><code>1278367563</code></td><td class="num">5</td><td class="num">$41.95</td><td class="num">$9.99</td><td class="num">Lv7</td><td>DailyPack, GiftOnAddOne, Shop, BP</td></tr>
+    <tr><td>5</td><td><code>1187417205</code></td><td class="num">4</td><td class="num">$29.96</td><td class="num">$9.99</td><td class="num">Lv11</td><td>BP, LevelPack, MBDoor, GiftOnAddOne</td></tr>
+    <tr><td>6</td><td><code>1278322696</code></td><td class="num">3</td><td class="num">$24.97</td><td class="num">$9.99</td><td class="num">Lv14</td><td>EnergyPack, Shop, LevelPack</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="warn-box">
+  <h4>🔍 6/28 高付费的三重叠加效应</h4>
+  <ul>
+    <li><strong>① 新增量大（1.45x）</strong>：6/28 新增 940 人，是 6/20~6/27 均值 648 的 1.45 倍，可能有一波买量投放。用户池扩大 → D0 付费基数自然放大</li>
+    <li><strong>② 活动组合是全月最佳之一</strong>：当天同时开放 <span class="hl">BattlePass + CoinCollection + MiniBoardDoor（末日）+ WaterOrder（单日）+ 气球</span>，四重刺激叠加。37/37 付费者全部参与了战令，28 人参与了金币收集，MBDoor 末日制造紧迫感</li>
+    <li><strong>③ 2 条鲸鱼玩家</strong>：<span class="hl-red">#1243581589（$111.88）和 #1230889622（$91.88）合计贡献 $204</span>，占当日 D0 收入的 32.4%。两人均首日达到 Lv19-20，购买 6 种商品 × 12 笔订单，属于极端高消费者</li>
+    <li>📌 扣除鲸鱼后：剩余 35 人贡献 $425，ARPPU $12.1 → 仍高于近期均值 $10.6，说明<strong>活动组合效应独立于鲸鱼仍然成立</strong></li>
+  </ul>
+</div>
+
+<div class="insight-box">
+  <h4>💡 可复制的经验</h4>
+  <ul>
+    <li><strong>活动组合设计</strong>：战令 + 收集类 + 棋盘末日 + 单日活动 的组合能最大化首日付费转化，可考虑在高买量日刻意安排类似组合</li>
+    <li><strong>MiniBoardDoor 末日效应</strong>：棋盘活动最后一天 → 紧迫感 → 14/37 付费者参与。限时即将结束的感知能有效推动付费决策</li>
+    <li><strong>鲸鱼可遇不可求</strong>：2 条鲸鱼贡献 32% 收入，但这种高LTV用户不可预测；真正可控的杠杆是买量节奏 × 活动排期的协同</li>
+  </ul>
+</div>
+</div>
+
 <div class="footer">
-  Merge Hope 首日付费看板 · 数据范围 2026-06-06 ~ 2026-06-25 · 自动生成于 2026-06-30
+  Merge Hope 首日付费看板 · 数据范围 2026-06-06 ~ 2026-06-30 · 自动生成于 2026-07-01
 </div>
 
 </div>
@@ -748,7 +867,77 @@ c11.setOption({
 
 // ===== 窗口 resize =====
 window.addEventListener('resize', function() {
-  [c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11].forEach(c => c.resize());
+  [c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15].forEach(c => { if(c) c.resize(); });
+});
+
+// ===== Section 9: 每日D0付费收入 =====
+const dailyDates = ['6/6','6/7','6/8','6/9','6/10','6/11','6/12','6/13','6/14','6/15','6/16','6/17','6/18','6/19','6/20','6/21','6/22','6/23','6/24','6/25','6/26','6/27','6/28','6/29','6/30'];
+const dailyD0Rev = [162.74,410.50,151.75,135.78,558.19,85.88,328.66,323.62,325.64,146.72,126.79,172.80,354.58,219.69,100.87,357.60,120.85,276.58,111.82,275.74,189.72,134.80,629.13,240.74,221.71];
+const dailyD0Payers = [15,27,14,16,36,10,22,22,19,12,11,15,24,26,10,26,11,18,13,18,17,17,37,17,16];
+const c12 = echarts.init(document.getElementById('chart_daily_d0'));
+c12.setOption({
+  ...darkTheme,
+  tooltip: { trigger: 'axis', formatter: function(p) { return p[0].name + '<br/>D0收入: $' + p[0].value + '<br/>D0付费人: ' + dailyD0Payers[p[0].dataIndex]; } },
+  xAxis: { type: 'category', data: dailyDates, axisLabel: { color: '#8b8fa3', fontSize: 11 } },
+  yAxis: { type: 'value', axisLabel: { formatter: '${value}' }, splitLine: { lineStyle: { color: '#2a2d3a' } } },
+  series: [{
+    type: 'bar',
+    data: dailyD0Rev.map((v,i) => ({ value: v, itemStyle: { color: dailyDates[i] === '6/28' ? '#f87171' : '#4b5563' } })),
+    barWidth: '55%',
+    markLine: { data: [{ type: 'average', label: { formatter: '均值 ${value}', color: '#fbbf24' }, lineStyle: { color: '#fbbf24', type: 'dashed' } }], symbol: 'none' }
+  }]
+});
+
+// ===== Section 9: 每日新增 =====
+const dailyNew = [1283,1356,806,591,727,476,739,823,827,626,650,633,701,683,593,831,778,690,683,529,574,639,940,732,807];
+const c13 = echarts.init(document.getElementById('chart_daily_new'));
+c13.setOption({
+  ...darkTheme,
+  tooltip: { trigger: 'axis' },
+  xAxis: { type: 'category', data: dailyDates, axisLabel: { color: '#8b8fa3', fontSize: 11 } },
+  yAxis: { type: 'value', splitLine: { lineStyle: { color: '#2a2d3a' } } },
+  series: [{
+    type: 'bar',
+    data: dailyNew.map((v,i) => ({ value: v, itemStyle: { color: dailyDates[i] === '6/28' ? '#f87171' : '#4b5563' } })),
+    barWidth: '55%',
+    markLine: { data: [{ type: 'average', label: { formatter: '均值 {value}', color: '#22d3ee' }, lineStyle: { color: '#22d3ee', type: 'dashed' } }], symbol: 'none' }
+  }]
+});
+
+// ===== Section 9: 3日对比 =====
+const compTypes = ['BP','Shop','DailyPack','LevelPack','IceBreak','EnergyPack','MBDoor','GiftOn1+1'];
+const c14 = echarts.init(document.getElementById('chart_compare_days'));
+c14.setOption({
+  ...darkTheme,
+  tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+  legend: { data: ['6/14', '6/21', '6/28'], textStyle: { color: '#8b8fa3' }, top: 10 },
+  grid: { top: 50, right: 30, bottom: 40, left: 120 },
+  xAxis: { type: 'value', splitLine: { lineStyle: { color: '#2a2d3a' } } },
+  yAxis: { type: 'category', data: compTypes.slice().reverse(), axisLabel: { color: '#e4e6eb', fontSize: 12 } },
+  series: [
+    { name: '6/14', type: 'bar', data: [9,8,1,0,1,0,0,4].reverse(), itemStyle: { color: '#8b8fa3' }, barGap: '10%' },
+    { name: '6/21', type: 'bar', data: [10,8,3,2,6,2,1,0].reverse(), itemStyle: { color: '#6c7bff' } },
+    { name: '6/28', type: 'bar', data: [21,18,6,6,4,5,6,3].reverse(), itemStyle: { color: '#f87171' }, label: { show: true, position: 'right', color: '#f87171', fontSize: 11 } }
+  ]
+});
+
+// ===== Section 9: 鲸鱼TOP10 =====
+const whaleNames = ['#1243..589','#1230..622','#1194..017','#1278..563','#1187..205','#1278..696','#1132..903','#1278..719','#1242..315','#1242..600'];
+const whaleAmounts = [111.88,91.88,51.96,41.95,29.96,24.97,19.98,16.98,16.98,14.98];
+const c15 = echarts.init(document.getElementById('chart_whale'));
+c15.setOption({
+  ...darkTheme,
+  tooltip: { trigger: 'axis', formatter: function(p) { return whaleNames[whaleNames.length-1-p[0].dataIndex] + ': $' + p[0].value; } },
+  grid: { top: 20, right: 40, bottom: 30, left: 120 },
+  xAxis: { type: 'value', axisLabel: { formatter: '${value}' }, splitLine: { lineStyle: { color: '#2a2d3a' } } },
+  yAxis: { type: 'category', data: whaleNames.slice().reverse(), axisLabel: { color: '#e4e6eb', fontSize: 12 } },
+  series: [{
+    type: 'bar',
+    data: whaleAmounts.slice().reverse().map((v,i) => ({ value: v, itemStyle: { color: i >= whaleAmounts.length-2 ? '#f87171' : (i >= whaleAmounts.length-3 ? '#fbbf24' : '#4b5563') } })),
+    barWidth: '55%',
+    label: { show: true, position: 'right', color: '#e4e6eb', fontSize: 12, formatter: '${c}' },
+    markLine: { data: [{ xAxis: 204, label: { formatter: '鲸鱼线\nTOP2合计$204\n(占32.4%)', color: '#f87171', fontSize: 11 }, lineStyle: { color: '#f87171', type: 'dashed' } }], symbol: 'none' }
+  }]
 });
 </script>
 </body>
