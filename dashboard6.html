@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>最终汇报看板 — Merge Hope 活动与礼包调整效果</title>
+<title>Merge Hope 活动与礼包汇报</title>
 <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
 <style>
   :root {
@@ -226,7 +226,7 @@
   /* badge */
   .badge {
     display: inline-block; padding: 2px 8px; border-radius: 4px;
-    font-size: 11px; font-weight: 600;
+    font-size: 11px; font-weight: 600; white-space: nowrap;
   }
   .badge-red { background: rgba(248,113,113,0.15); color: var(--red); }
   .badge-green { background: rgba(52,211,153,0.15); color: var(--green); }
@@ -321,8 +321,8 @@
 
 <!-- Header -->
 <div class="report-header">
-  <h1>Merge Hope 活动与礼包调整效果汇报</h1>
-  <p class="subtitle">分析周期 2026/06/06 – 2026/06/29 · UTC-4 · 最终看板</p>
+  <h1>Merge Hope 活动与礼包汇报</h1>
+  <p class="subtitle">分析周期 2026/06/06 – 2026/06/29 · UTC-4</p>
   <div class="meta">
     <span>📅 分析周期 24 天</span>
     <span>🎯 难度调整节点 6/19 起</span>
@@ -332,10 +332,10 @@
 
 <!-- 章节导航 -->
 <nav style="position:sticky;top:0;z-index:100;background:var(--bg);border-bottom:1px solid var(--border);padding:10px 0;">
-  <div style="max-width:1200px;margin:0 auto;display:flex;gap:24px;padding:0 20px;font-size:14px;font-weight:600;">
+  <div style="max-width:1200px;margin:0 auto;display:flex;justify-content:center;gap:40px;padding:0 20px;font-size:14px;font-weight:600;">
     <a href="#ch1" style="color:var(--text2);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text2)'">第一章 · 活动排期总览</a>
     <a href="#ch2" style="color:var(--text2);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text2)'">第二章 · 单日活动效果对比</a>
-    <a href="#ch3" style="color:var(--text2);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text2)'">第三章 · 三日和四日活动完成情况</a>
+    <a href="#ch3" style="color:var(--text2);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text2)'">第三章 · 短期活动完成情况</a>
     <a href="#ch4" style="color:var(--text2);text-decoration:none;transition:color .15s;" onmouseover="this.style.color='var(--accent)'" onmouseout="this.style.color='var(--text2)'">第四章 · 首日付费行为分析</a>
   </div>
 </nav>
@@ -644,7 +644,7 @@
           <td class="num highlight">+$0.15</td>
         </tr>
         <tr>
-          <td>6/24 限订 & 1+2 <span class="badge badge-red">难度翻倍</span> <span class="badge badge-yellow">飞镖</span></td>
+          <td style="white-space:nowrap;">6/24 限订 & 1+2 <span class="badge badge-red">难度翻倍</span> <span class="badge badge-yellow">飞镖</span></td>
           <td class="num">$1,746</td>
           <td class="num">$0.50</td>
           <td class="num">$12.38</td>
@@ -682,7 +682,7 @@
           <td class="num highlight">+$0.05</td>
         </tr>
         <tr>
-          <td>6/26 卡包 & 三合一 <span class="badge badge-yellow">飞镖</span></td>
+          <td style="white-space:nowrap;">6/26 卡包 & 三合一 <span class="badge badge-yellow">飞镖</span></td>
           <td class="num">$1,878</td>
           <td class="num">$0.56</td>
           <td class="num">$14.01</td>
@@ -722,7 +722,7 @@
         <!-- 限时订单链 -->
         <tr class="group-row"><td colspan="10"><span style="color:#a78bfa">●</span> 限时订单链（Lv.12）</td></tr>
         <tr>
-          <td>6/22 限链 & 三合一 <span class="badge badge-yellow">飞镖</span></td>
+          <td style="white-space:nowrap;">6/22 限链 & 三合一 <span class="badge badge-yellow">飞镖</span></td>
           <td class="num">$1,534</td>
           <td class="num">$0.45</td>
           <td class="num">$12.89</td>
@@ -746,9 +746,9 @@
 
 </section>
 
-<!-- ========== 第三章 · 三日和四日活动完成情况 ========== -->
+<!-- ========== 第三章 · 短期活动完成情况 ========== -->
 <section class="chapter" id="ch3">
-  <div class="chapter-title"><span class="chapter-num">第三章</span> 三日和四日活动完成情况</div>
+  <div class="chapter-title"><span class="chapter-num">第三章</span> 短期活动完成情况</div>
 
   <!-- 三日/四日活动合并对比表 -->
   <div class="card">
@@ -987,7 +987,7 @@
 
 <!-- Footer -->
 <div class="report-footer">
-  <p>Merge Hope 活动与礼包调整效果汇报 · 分析周期 2026/06/06 – 2026/06/29 (UTC-4)</p>
+  <p>Merge Hope 活动与礼包汇报 · 分析周期 2026/06/06 – 2026/06/29 (UTC-4)</p>
   <p style="margin-top:6px;">数据来源：activity_schedule_full.json · 全服及Level≥12队列数据</p>
 </div>
 
