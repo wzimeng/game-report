@@ -102,6 +102,7 @@ table.data .num{text-align:right;font-variant-numeric:tabular-nums}
     <li><a href="#s7">维度六：活动参与 × 留存 — 首日付费者的后续生命周期</a></li>
     <li><a href="#s8">综合结论与运营建议</a></li>
     <li><a href="#s9">专题：6/28 首日付费金额为什么高？</a></li>
+    <li><a href="#s10">周期性分析：星期几 × 新增 × 付费的关系</a></li>
   </ol>
 </div>
 
@@ -691,6 +692,124 @@ table.data .num{text-align:right;font-variant-numeric:tabular-nums}
 
 </div>
 
+<!-- ===== Section 10: 周期性分析 ===== -->
+<div class="section" id="s10">
+<h2 class="section-title">10. 周期性分析：星期几 × 新增 × 付费的关系</h2>
+<p class="chart-sub">首日付费高是否有固定节奏？新增用户量和收入到底有多大关系？</p>
+
+<div class="card-grid">
+<div class="stat-card">
+  <div class="label">周日平均D0收入</div>
+  <div class="value" style="color:#fbbf24">$430.72</div>
+  <div class="sub">全周最高，是周一的 2.6x</div>
+</div>
+<div class="stat-card">
+  <div class="label">周一平均D0收入</div>
+  <div class="value" style="color:#8b8fa3">$165.01</div>
+  <div class="sub">全周最低</div>
+</div>
+<div class="stat-card">
+  <div class="label">周末/工作日 收入比</div>
+  <div class="value" style="color:#22d3ee">1.40x</div>
+  <div class="sub">周末8天均$306 vs 工作日$219</div>
+</div>
+<div class="stat-card">
+  <div class="label">新增 vs 收入 相关性</div>
+  <div class="value" style="color:#f87171">r=0.39</div>
+  <div class="sub">弱相关 — 人多≠钱多</div>
+</div>
+<div class="stat-card">
+  <div class="label">付费人 vs 收入 相关性</div>
+  <div class="value" style="color:#34d399">r=0.94</div>
+  <div class="sub">强正相关 — 转化率才是关键</div>
+</div>
+<div class="stat-card">
+  <div class="label">新增 vs 付费率 相关性</div>
+  <div class="value" style="color:#f87171">r=-0.21</div>
+  <div class="sub">⚠️ 负相关 — 拉新多反而稀释</div>
+</div>
+</div>
+
+<div class="chart-row">
+<div class="chart-box">
+  <div class="chart-title">星期几 × D0 平均收入</div>
+  <div class="chart-sub">周日一枝独秀，周一最低迷</div>
+  <div id="chart_dow_rev" class="chart"></div>
+</div>
+<div class="chart-box">
+  <div class="chart-title">星期几 × 平均新增 & 付费率</div>
+  <div class="chart-sub">周六新增最多但付费率最低 → 周六引流、周日收割</div>
+  <div id="chart_dow_new" class="chart"></div>
+</div>
+</div>
+
+<div class="chart-box">
+  <div class="chart-title">每日 D0 收入 × 新增用户 散点图</div>
+  <div class="chart-sub">新增量和收入不是线性关系：6/10 新增仅727却创收$558（付费率5.0%最高）</div>
+  <div id="chart_scatter" class="chart"></div>
+</div>
+
+<div class="chart-box">
+  <div class="chart-title">每日 D0 付费率趋势</div>
+  <div class="chart-sub">付费率波动大（1.2%~5.0%），与新增量负相关 — 精准投放比放量更重要</div>
+  <div id="chart_payrate_trend" class="chart"></div>
+</div>
+
+<div class="scroll-wrap">
+<table class="data">
+  <thead>
+    <tr><th>日期</th><th>星期</th><th class="num">新增</th><th class="num">D0付费人</th><th class="num">付费率</th><th class="num">D0收入</th><th class="num">ARPPU</th><th>标注</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>6/6</td><td>周五</td><td class="num">1283</td><td class="num">15</td><td class="num">1.17%</td><td class="num">$162.74</td><td class="num">$10.85</td><td></td></tr>
+    <tr><td>6/7</td><td><span class="hl">周六</span></td><td class="num"><span class="hl-cyan">1356</span></td><td class="num">27</td><td class="num">1.99%</td><td class="num"><span class="hl">$410.50</span></td><td class="num">$15.20</td><td>★ 高收入</td></tr>
+    <tr><td>6/8</td><td>周日</td><td class="num">806</td><td class="num">14</td><td class="num">1.74%</td><td class="num">$151.75</td><td class="num">$10.84</td><td></td></tr>
+    <tr><td>6/9</td><td>周一</td><td class="num">591</td><td class="num">16</td><td class="num">2.71%</td><td class="num">$135.78</td><td class="num">$8.49</td><td></td></tr>
+    <tr><td>6/10</td><td>周二</td><td class="num">727</td><td class="num"><span class="hl-red">36</span></td><td class="num"><span class="hl-red">4.95%</span></td><td class="num"><span class="hl-red">$558.19</span></td><td class="num">$15.51</td><td>★ 付费率最高</td></tr>
+    <tr><td>6/11</td><td>周三</td><td class="num">476</td><td class="num">10</td><td class="num">2.10%</td><td class="num">$85.88</td><td class="num">$8.59</td><td></td></tr>
+    <tr><td>6/12</td><td>周四</td><td class="num">739</td><td class="num">22</td><td class="num">2.98%</td><td class="num">$328.66</td><td class="num">$14.94</td><td></td></tr>
+    <tr><td>6/13</td><td>周五</td><td class="num">823</td><td class="num">22</td><td class="num">2.67%</td><td class="num">$323.62</td><td class="num">$14.71</td><td></td></tr>
+    <tr><td>6/14</td><td><span class="hl">周六</span></td><td class="num">827</td><td class="num">19</td><td class="num">2.30%</td><td class="num">$325.64</td><td class="num">$17.14</td><td></td></tr>
+    <tr><td>6/15</td><td>周日</td><td class="num">626</td><td class="num">12</td><td class="num">1.92%</td><td class="num">$146.72</td><td class="num">$12.23</td><td></td></tr>
+    <tr><td>6/16</td><td>周一</td><td class="num">650</td><td class="num">11</td><td class="num">1.69%</td><td class="num">$126.79</td><td class="num">$11.53</td><td></td></tr>
+    <tr><td>6/17</td><td>周二</td><td class="num">633</td><td class="num">15</td><td class="num">2.37%</td><td class="num">$172.80</td><td class="num">$11.52</td><td></td></tr>
+    <tr><td>6/18</td><td>周三</td><td class="num">701</td><td class="num">24</td><td class="num">3.42%</td><td class="num"><span class="hl">$354.58</span></td><td class="num">$14.77</td><td>★ 高收入</td></tr>
+    <tr><td>6/19</td><td>周四</td><td class="num">683</td><td class="num">26</td><td class="num">3.81%</td><td class="num">$219.69</td><td class="num">$8.45</td><td></td></tr>
+    <tr><td>6/20</td><td>周五</td><td class="num">593</td><td class="num">10</td><td class="num">1.69%</td><td class="num">$100.87</td><td class="num">$10.09</td><td></td></tr>
+    <tr><td>6/21</td><td><span class="hl">周六</span></td><td class="num">831</td><td class="num">26</td><td class="num">3.13%</td><td class="num"><span class="hl">$357.60</span></td><td class="num">$13.75</td><td>★ 高收入</td></tr>
+    <tr><td>6/22</td><td>周日</td><td class="num">778</td><td class="num">11</td><td class="num">1.41%</td><td class="num">$120.85</td><td class="num">$10.99</td><td></td></tr>
+    <tr><td>6/23</td><td>周一</td><td class="num">690</td><td class="num">18</td><td class="num">2.61%</td><td class="num">$276.58</td><td class="num">$15.37</td><td></td></tr>
+    <tr><td>6/24</td><td>周二</td><td class="num">683</td><td class="num">13</td><td class="num">1.90%</td><td class="num">$111.82</td><td class="num">$8.60</td><td></td></tr>
+    <tr><td>6/25</td><td>周三</td><td class="num">529</td><td class="num">18</td><td class="num">3.40%</td><td class="num">$275.74</td><td class="num">$15.32</td><td></td></tr>
+    <tr><td>6/26</td><td>周四</td><td class="num">574</td><td class="num">17</td><td class="num">2.96%</td><td class="num">$189.72</td><td class="num">$11.16</td><td></td></tr>
+    <tr><td>6/27</td><td>周五</td><td class="num">639</td><td class="num">17</td><td class="num">2.66%</td><td class="num">$134.80</td><td class="num">$7.93</td><td></td></tr>
+    <tr><td>6/28</td><td><span class="hl">周六</span></td><td class="num"><span class="hl-red">940</span></td><td class="num"><span class="hl-red">37</span></td><td class="num"><span class="hl-red">3.94%</span></td><td class="num"><span class="hl-red">$629.13</span></td><td class="num">$17.00</td><td>★ 收入最高</td></tr>
+    <tr><td>6/29</td><td>周日</td><td class="num">732</td><td class="num">17</td><td class="num">2.32%</td><td class="num">$240.74</td><td class="num">$14.16</td><td></td></tr>
+    <tr><td>6/30</td><td>周一</td><td class="num">807</td><td class="num">16</td><td class="num">1.98%</td><td class="num">$221.71</td><td class="num">$13.86</td><td></td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="warn-box">
+  <h4>⚠️ 关键发现：新增量≠收入</h4>
+  <ul>
+    <li><strong>新增 vs 收入相关性仅 r=0.39</strong>：拉来更多人并不直接带来更多首日收入。6/6 新增 1283 但收入仅 $162；6/10 新增仅 727 却收入 $558</li>
+    <li><strong>新增 vs 付费率为负相关 (r=-0.21)</strong>：大量拉新可能引入低质量用户，反而稀释付费率</li>
+    <li><strong>付费人数 vs 收入高度正相关 (r=0.94)</strong>：决定收入的不是来了多少人，而是有多少人愿意掏钱 — 取决于当天的活动和内容</li>
+  </ul>
+</div>
+
+<div class="insight-box">
+  <h4>💡 运营节奏建议</h4>
+  <ul>
+    <li><strong>「周六引流、周六/日收割」</strong>：周六平均新增 835（全周最高）但付费率仅 1.92%；周日新增 988 + 付费率 2.76% → 将最强活动组合安排在周六/日</li>
+    <li><strong>周一是低谷</strong>：平均收入 $165、付费率 1.84% → 适合做维护、版本更新，不适合推活动</li>
+    <li><strong>精准 > 放量</strong>：6/10 证明中等新增 + 高付费率 = 高收入。投放策略应关注用户质量而非纯量</li>
+    <li><strong>6/10 值得深挖</strong>：当天付费率 5.0% 是全月最高，36 人首日付费 — 那天的活动组合和投放渠道值得复盘</li>
+  </ul>
+</div>
+</div>
+
 <div class="footer">
   Merge Hope 首日付费看板 · 数据范围 2026-06-06 ~ 2026-06-30 · 自动生成于 2026-07-01
 </div>
@@ -970,7 +1089,7 @@ c11.setOption({
 
 // ===== 窗口 resize =====
 window.addEventListener('resize', function() {
-  [c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c18,c19].forEach(c => { if(c) c.resize(); });
+  [c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11,c12,c13,c14,c15,c16,c17,c18,c19,c20,c21,c22,c23].forEach(c => { if(c) c.resize(); });
 });
 
 // ===== Section 9: 每日D0付费收入 =====
@@ -1117,6 +1236,84 @@ c19.setOption({
     label: { color: '#e4e6eb', fontSize: 13, formatter: '{b}\n{c}人' },
     emphasis: { label: { fontSize: 16 } }
   }]
+});
+
+// ===== Section 10: 星期几 × D0收入 =====
+const dowNames = ['周一','周二','周三','周四','周五','周六','周日'];
+const dowRevAvg = [165.01,190.22,280.94,238.73,246.02,180.51,430.72];
+const dowColors = dowRevAvg.map(v => v > 400 ? '#f87171' : v > 250 ? '#fbbf24' : v > 200 ? '#22d3ee' : '#4b5563');
+const c20 = echarts.init(document.getElementById('chart_dow_rev'));
+c20.setOption({
+  ...darkTheme,
+  tooltip: { trigger: 'axis', formatter: function(p) { return p[0].name + '<br/>平均D0收入: $' + p[0].value; } },
+  xAxis: { type: 'category', data: dowNames, axisLabel: { color: '#8b8fa3' } },
+  yAxis: { type: 'value', axisLabel: { formatter: '${value}' }, splitLine: { lineStyle: { color: '#2a2d3a' } } },
+  series: [{
+    type: 'bar',
+    data: dowRevAvg.map(function(v, i) { return { value: v, itemStyle: { color: dowColors[i] } }; }),
+    barWidth: '50%',
+    label: { show: true, position: 'top', color: '#e4e6eb', fontSize: 12, formatter: '${c}' },
+    markLine: { data: [{ type: 'average', label: { formatter: '均值 ${value}', color: '#6c7bff' }, lineStyle: { color: '#6c7bff', type: 'dashed' } }], symbol: 'none' }
+  }]
+});
+
+// ===== Section 10: 星期几 × 新增 & 付费率 =====
+const dowNew = [735.5,684.5,681.0,568.7,665.3,834.5,988.5];
+const dowPayRate = [1.84,2.23,3.13,3.05,3.26,1.92,2.76];
+const c21 = echarts.init(document.getElementById('chart_dow_new'));
+c21.setOption({
+  ...darkTheme,
+  tooltip: { trigger: 'axis', formatter: function(p) { return p[0].name + '<br/>平均新增: ' + p[0].value + '人<br/>付费率: ' + p[1].value + '%'; } },
+  legend: { data: ['平均新增', '付费率'], textStyle: { color: '#8b8fa3' }, top: 5 },
+  xAxis: { type: 'category', data: dowNames, axisLabel: { color: '#8b8fa3' } },
+  yAxis: [
+    { type: 'value', name: '新增', splitLine: { lineStyle: { color: '#2a2d3a' } } },
+    { type: 'value', name: '付费率', axisLabel: { formatter: '{value}%' }, splitLine: { show: false } }
+  ],
+  series: [
+    { name: '平均新增', type: 'bar', data: dowNew, itemStyle: { color: '#6c7bff' }, barWidth: '40%', label: { show: true, position: 'top', color: '#8b8fa3', fontSize: 10, formatter: function(p) { return Math.round(p.value); } } },
+    { name: '付费率', type: 'line', yAxisIndex: 1, data: dowPayRate, lineStyle: { width: 3, color: '#fbbf24' }, itemStyle: { color: '#fbbf24' }, symbol: 'circle', symbolSize: 8, label: { show: true, position: 'top', color: '#fbbf24', fontSize: 11, formatter: '{c}%' } }
+  ]
+});
+
+// ===== Section 10: 散点图 新增 vs D0收入 =====
+const scatterDates = ['6/6','6/7','6/8','6/9','6/10','6/11','6/12','6/13','6/14','6/15','6/16','6/17','6/18','6/19','6/20','6/21','6/22','6/23','6/24','6/25','6/26','6/27','6/28','6/29','6/30'];
+const scatterNew = [1283,1356,806,591,727,476,739,823,827,626,650,633,701,683,593,831,778,690,683,529,574,639,940,732,807];
+const scatterRev = [162.74,410.50,151.75,135.78,558.19,85.88,328.66,323.62,325.64,146.72,126.79,172.80,354.58,219.69,100.87,357.60,120.85,276.58,111.82,275.74,189.72,134.80,629.13,240.74,221.71];
+const scatterPayRate = [1.17,1.99,1.74,2.71,4.95,2.10,2.98,2.67,2.30,1.92,1.69,2.37,3.42,3.81,1.69,3.13,1.41,2.61,1.90,3.40,2.96,2.66,3.94,2.32,1.98];
+const c22 = echarts.init(document.getElementById('chart_scatter'));
+c22.setOption({
+  ...darkTheme,
+  tooltip: { trigger: 'item', formatter: function(p) { var i = p.dataIndex; return scatterDates[i] + '<br/>新增: ' + scatterNew[i] + '<br/>D0收入: $' + scatterRev[i] + '<br/>付费率: ' + scatterPayRate[i] + '%'; } },
+  xAxis: { type: 'value', name: '新增用户', nameTextStyle: { color: '#8b8fa3' }, splitLine: { lineStyle: { color: '#2a2d3a' } } },
+  yAxis: { type: 'value', name: 'D0收入 ($)', nameTextStyle: { color: '#8b8fa3' }, axisLabel: { formatter: '${value}' }, splitLine: { lineStyle: { color: '#2a2d3a' } } },
+  series: [{
+    type: 'scatter',
+    data: scatterNew.map(function(n, i) { return { value: [n, scatterRev[i]], symbolSize: Math.max(scatterPayRate[i] * 5, 8), itemStyle: { color: scatterRev[i] > 350 ? '#f87171' : '#6c7bff', opacity: 0.8 } }; }),
+    label: { show: false }
+  }, {
+    type: 'scatter',
+    data: [[727, 558.19], [940, 629.13]],
+    symbolSize: 0,
+    label: { show: true, formatter: function(p) { return p.value[0] === 727 ? '6/10\n付费率5.0%' : '6/28\n鲸鱼+活动'; }, color: '#f87171', fontSize: 11, position: 'right' }
+  }]
+});
+
+// ===== Section 10: 付费率趋势 =====
+const c23 = echarts.init(document.getElementById('chart_payrate_trend'));
+c23.setOption({
+  ...darkTheme,
+  tooltip: { trigger: 'axis', formatter: function(p) { return scatterDates[p[0].dataIndex] + '<br/>付费率: ' + p[0].value + '%<br/>新增: ' + scatterNew[p[0].dataIndex]; } },
+  legend: { data: ['付费率', '新增用户'], textStyle: { color: '#8b8fa3' }, top: 5 },
+  xAxis: { type: 'category', data: scatterDates, axisLabel: { color: '#8b8fa3', fontSize: 11 } },
+  yAxis: [
+    { type: 'value', name: '付费率', axisLabel: { formatter: '{value}%' }, splitLine: { lineStyle: { color: '#2a2d3a' } }, min: 0, max: 6 },
+    { type: 'value', name: '新增', splitLine: { show: false } }
+  ],
+  series: [
+    { name: '付费率', type: 'line', data: scatterPayRate, lineStyle: { width: 3, color: '#fbbf24' }, itemStyle: { color: '#fbbf24' }, symbol: 'circle', symbolSize: 6, areaStyle: { color: 'rgba(251,191,36,0.08)' }, markLine: { data: [{ type: 'average', label: { formatter: '均值 {value}%', color: '#fbbf24' }, lineStyle: { color: '#fbbf24', type: 'dashed' } }], symbol: 'none' } },
+    { name: '新增用户', type: 'bar', yAxisIndex: 1, data: scatterNew, itemStyle: { color: 'rgba(108,123,255,0.3)' }, barWidth: '40%' }
+  ]
 });
 </script>
 </body>
