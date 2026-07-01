@@ -910,11 +910,11 @@
   <!-- 商品类别分布 + 金额档位分布 -->
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
     <div class="card">
-      <div class="card-title">首付商品类别分布 <span style="color:var(--text2);font-size:12px;font-weight:400;">（674人首付 · 按类型）</span></div>
+      <div class="card-title">首付商品类别分布 <span style="color:var(--text2);font-size:12px;font-weight:400;">（475人首付 · 按类型）</span></div>
       <div id="ch4CategoryChart" class="chart-box" style="height:360px;"></div>
     </div>
     <div class="card">
-      <div class="card-title">首付金额档位分布 <span style="color:var(--text2);font-size:12px;font-weight:400;">（674人首付 · 按金额）</span></div>
+      <div class="card-title">首付金额档位分布 <span style="color:var(--text2);font-size:12px;font-weight:400;">（475人首付 · 按金额）</span></div>
       <div id="ch4AmountChart" class="chart-box" style="height:360px;"></div>
     </div>
   </div>
@@ -1328,16 +1328,15 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
       label: { show: true, color: THEME.textColor, fontSize: 11, formatter: '{b}\n{d}%' },
       labelLine: { lineStyle: { color: THEME.textColor2 } },
       data: [
-        { value: 289, name: '商城直购', itemStyle: { color: '#6c7bff' } },
-        { value: 88, name: '等级礼包', itemStyle: { color: '#a78bfa' } },
-        { value: 73, name: '每日礼包', itemStyle: { color: '#22d3ee' } },
-        { value: 51, name: '体力礼包', itemStyle: { color: '#f87171' } },
-        { value: 47, name: '破冰礼包', itemStyle: { color: '#fbbf24' } },
-        { value: 43, name: '棋盘门', itemStyle: { color: '#34d399' } },
-        { value: 35, name: '棋盘区域', itemStyle: { color: '#fb923c' } },
-        { value: 28, name: '连锁礼包', itemStyle: { color: '#818cf8' } },
-        { value: 18, name: '1+1礼包', itemStyle: { color: '#f472b6' } },
-        { value: 2, name: '3合1礼包', itemStyle: { color: '#94a3b8' } }
+        { value: 180, name: '商城直购', itemStyle: { color: '#6c7bff' } },
+        { value: 168, name: '战令', itemStyle: { color: '#a78bfa' } },
+        { value: 48, name: '破冰礼包', itemStyle: { color: '#fbbf24' } },
+        { value: 26, name: '等级礼包', itemStyle: { color: '#22d3ee' } },
+        { value: 20, name: '每日礼包', itemStyle: { color: '#f87171' } },
+        { value: 12, name: '体力礼包', itemStyle: { color: '#34d399' } },
+        { value: 11, name: '连锁礼包', itemStyle: { color: '#818cf8' } },
+        { value: 8, name: '1+1礼包', itemStyle: { color: '#f472b6' } },
+        { value: 2, name: '棋盘区域', itemStyle: { color: '#fb923c' } }
       ]
     }]
   }));
@@ -1359,11 +1358,13 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
       label: { show: true, color: THEME.textColor, fontSize: 11, formatter: '{b}\n{d}%' },
       labelLine: { lineStyle: { color: THEME.textColor2 } },
       data: [
-        { value: 193, name: '$1.99', itemStyle: { color: '#34d399' } },
-        { value: 173, name: '$2.99~$4.99', itemStyle: { color: '#22d3ee' } },
-        { value: 137, name: '$6.99', itemStyle: { color: '#58a6ff' } },
-        { value: 131, name: '$9.99', itemStyle: { color: '#fbbf24' } },
-        { value: 40, name: '$14.99+', itemStyle: { color: '#f87171' } }
+        { value: 204, name: '$9.99', itemStyle: { color: '#6c7bff' } },
+        { value: 124, name: '$4.99', itemStyle: { color: '#22d3ee' } },
+        { value: 106, name: '$1.99', itemStyle: { color: '#34d399' } },
+        { value: 15, name: '$6.99', itemStyle: { color: '#fbbf24' } },
+        { value: 12, name: '$19.99', itemStyle: { color: '#f87171' } },
+        { value: 11, name: '$14.99', itemStyle: { color: '#a78bfa' } },
+        { value: 3, name: '其他', itemStyle: { color: '#94a3b8' } }
       ]
     }]
   }));
