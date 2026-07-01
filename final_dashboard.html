@@ -1121,14 +1121,13 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
   var chart = makeChart(dom);
 
   var labels = [
-    '6/7\n水滴','6/14\n水滴','6/21\n水滴','6/28\n水滴',
-    '6/10\n限订','6/17\n限订','6/24\n限订',
-    '6/12\n卡包','6/19\n卡包','6/26\n卡包',
-    '6/20\n无尽','6/22\n限链','6/27\n无尽'
+    '6/7\n水滴','6/10\n限订','6/12\n卡包','6/14\n水滴',
+    '6/17\n限订','6/19\n卡包','6/20\n无尽','6/21\n水滴',
+    '6/22\n限链','6/24\n限订','6/26\n卡包','6/27\n无尽','6/28\n水滴'
   ];
-  var actRev =  [580,1107,1487,2493, 938,1584,1746, 966,1415,1878, 1350,1534,1371];
-  var baseRev = [408, 882,1371,1313, 551,1259,1313, 551,1259,1313, 1259,1371,1313];
-  var colors =  ['#fbbf24','#fbbf24','#fbbf24','#fbbf24','#f87171','#f87171','#f87171','#ff6b9d','#ff6b9d','#ff6b9d','#22d3ee','#a78bfa','#22d3ee'];
+  var actRev =  [580,938,966,1107, 1584,1415,1350,1487, 1534,1746,1878,1371,2493];
+  var baseRev = [408,551,551, 882, 1259,1259,1259,1371, 1371,1313,1313,1313,1313];
+  var colors =  ['#fbbf24','#f87171','#ff6b9d','#fbbf24','#f87171','#ff6b9d','#22d3ee','#fbbf24','#a78bfa','#f87171','#ff6b9d','#22d3ee','#fbbf24'];
 
   chart.setOption(Object.assign(baseOption({ grid: { left: 50, right: 30, top: 60, bottom: 70 } }), {
     tooltip: {
@@ -1149,13 +1148,15 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
     series: [
       {
         name: '对照日流水', type: 'bar', stack: 'rev', barWidth: 32,
-        data: baseRev.map(function(v){ return { value: v, itemStyle: { color: 'rgba(255,255,255,0.08)' } }; }),
+        data: baseRev.map(function(v){ return { value: v, itemStyle: { color: 'rgba(139,143,163,0.35)' } }; }),
+        itemStyle: { color: 'rgba(139,143,163,0.35)' }
       },
       {
         name: '活动日增量', type: 'bar', stack: 'rev',
         data: actRev.map(function(v, i){
           return { value: v - baseRev[i], itemStyle: { color: colors[i] } };
         }),
+        itemStyle: { color: '#34d399' },
         label: {
           show: true, position: 'top', fontSize: 11, fontWeight: 700, color: THEME.textColor,
           formatter: function(p) {
