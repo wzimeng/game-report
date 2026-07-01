@@ -85,6 +85,7 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
     <li><a href="#s2">付费路径分析</a></li>
     <li><a href="#s3">资源存量对比</a></li>
     <li><a href="#s4">高付费流失玩家个案分析</a></li>
+    <li><a href="#s4b">末次登录分布与活动参与分析</a></li>
     <li><a href="#s5">综合洞察与建议</a></li>
     <li><a href="#s6">附录</a></li>
   </ol>
@@ -446,6 +447,82 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
   </div>
 </div>
 
+<!-- ==================== Section 4b: 末次登录分布与活动参与 ==================== -->
+<div id="s4b" class="section">
+  <h2 class="section-title">4.5 末次登录分布与活动参与分析</h2>
+
+  <div class="chart-row">
+    <div class="chart-box">
+      <div class="chart-title">流失玩家末次登录日期分布</div>
+      <div class="chart-sub">519名流失付费玩家 | 按末次登录日期统计人数与人均充值</div>
+      <div id="chart_last_login" class="chart-tall"></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">流失玩家活动参与排行</div>
+      <div class="chart-sub">按参与人数排序 | 标注人均互动次数 | 共18种活动类型</div>
+      <div id="chart_activity_rank" class="chart-tall"></div>
+    </div>
+  </div>
+
+  <div class="chart-box full">
+    <div class="chart-title">TOP20 高付费流失玩家 — 活动参与画像</div>
+    <div class="chart-sub">每行为一个玩家 | 气泡大小=事件次数 | 颜色=活动天数 | 展示每人参与的活动类型分布</div>
+    <div id="chart_top20_heatmap" class="chart" style="height:520px"></div>
+  </div>
+
+  <div class="chart-box full">
+    <div class="chart-title">TOP20 高付费流失玩家 — 付费渠道明细</div>
+    <div class="chart-sub">按累计充值降序 | 展示每人的付费渠道构成和末次付费信息</div>
+    <div class="scroll-wrap">
+      <table class="data">
+        <thead><tr><th>排名</th><th>UID</th><th>等级</th><th>总充值</th><th>笔数</th><th>登录天</th><th>参与活动数</th><th>主要付费渠道（TOP3）</th><th>末次付费</th></tr></thead>
+        <tbody>
+          <tr class="row-highlight"><td>1</td><td>1276366571</td><td>Lv34</td><td class="hl">$259</td><td>25</td><td>6</td><td>11种</td><td>DailyPack($77), ChainPack($60), LevelPack($55)</td><td>06-22 ThreeInOnePack $24.99</td></tr>
+          <tr class="row-highlight"><td>2</td><td>1275253906</td><td>Lv29</td><td class="hl">$242</td><td>21</td><td>2</td><td>6种</td><td>Shop($100), LevelPack($60), ThreeInOnePack($30)</td><td>06-13 LevelPack $4.99</td></tr>
+          <tr class="row-highlight"><td>3</td><td>1274741744</td><td>Lv29</td><td class="hl">$179</td><td>19</td><td>4</td><td>8种</td><td>DailyPack($55), Shop($35), LevelPack($35)</td><td>06-12 LevelPack $4.99</td></tr>
+          <tr><td>4</td><td>1275370951</td><td>Lv29</td><td>$165</td><td>16</td><td>6</td><td>7种</td><td>DailyPack($70), Shop($30), LevelPack($25)</td><td>06-17 Shop $9.99</td></tr>
+          <tr><td>5</td><td>1275460919</td><td>Lv26</td><td>$159</td><td>19</td><td>8</td><td>14种</td><td>LevelPack($45), Shop($30), DailyPack($30)</td><td>06-27 LevelPack $4.99</td></tr>
+          <tr><td>6</td><td>1231790432</td><td>Lv23</td><td>$159</td><td>21</td><td>7</td><td>9种</td><td>DailyPack($55), LevelPack($40), ThreeInOnePack($25)</td><td>06-13 LevelPack $4.99</td></tr>
+          <tr><td>7</td><td>1274803930</td><td>Lv29</td><td>$154</td><td>23</td><td>8</td><td>11种</td><td>LevelPack($65), DailyPack($50), BattlePassTwo($10)</td><td>06-16 DailyPack $9.99</td></tr>
+          <tr><td>8</td><td>1275496743</td><td>Lv33</td><td>$141</td><td>19</td><td>9</td><td>13种</td><td>DailyPack($72), LevelPack($40), BattlePassTwo($12)</td><td>06-21 DailyPack $14.99</td></tr>
+          <tr><td>9</td><td>1274887830</td><td>Lv21</td><td>$133</td><td>14</td><td>7</td><td>11种</td><td>Shop($40), DailyPack($24), GiftOnAddOne($20)</td><td>06-17 DailyPack $6.99</td></tr>
+          <tr><td>10</td><td>1274308195</td><td>Lv18</td><td>$122</td><td>6</td><td>5</td><td>9种</td><td>Shop($100), BattlePassTwo($10), MiniBoardAreaScroll($7)</td><td>06-14 Shop $39.99</td></tr>
+          <tr><td>11</td><td>1179120013</td><td>Lv30</td><td>$115</td><td>10</td><td>10</td><td>15种</td><td>GiftOnAddOne($25), Shop($20), ThreeInOnePack($20)</td><td>06-21 DailyPack $9.99</td></tr>
+          <tr><td>12</td><td>1247099101</td><td>Lv29</td><td>$102</td><td>16</td><td>10</td><td>13种</td><td>LevelPack($45), DailyPack($40), MiniBoardDoor($7)</td><td>06-26 LevelPack $4.99</td></tr>
+          <tr><td>13</td><td>1275746813</td><td>Lv2</td><td>$100</td><td>1</td><td>2</td><td>2种</td><td>Shop($100)</td><td>06-14 Shop $99.99</td></tr>
+          <tr><td>14</td><td>1268722417</td><td>Lv16</td><td>$100</td><td>10</td><td>7</td><td>7种</td><td>Shop($90), GiftOnAddOne($10)</td><td>06-24 GiftOnAddOne $9.99</td></tr>
+          <tr><td>15</td><td>1146121791</td><td>Lv8</td><td>$94</td><td>12</td><td>2</td><td>4种</td><td>Shop($45), ChainPack($17), BattlePassTwo($10)</td><td>06-09 ChainPack $4.99</td></tr>
+          <tr><td>16</td><td>1274912131</td><td>Lv26</td><td>$89</td><td>10</td><td>15</td><td>17种</td><td>Shop($40), IceBreak($10), BattlePassTwo($10)</td><td>06-27 ThemeDecoBalloon $4.99</td></tr>
+          <tr><td>17</td><td>1276549662</td><td>Lv25</td><td>$87</td><td>15</td><td>7</td><td>9种</td><td>LevelPack($25), EnergyPack($14), BattlePassTwo($12)</td><td>06-24 GiftOnAddOne $9.99</td></tr>
+          <tr><td>18</td><td>1274856303</td><td>Lv16</td><td>$84</td><td>9</td><td>1</td><td>5种</td><td>DailyPack($25), Shop($20), IceBreak($10)</td><td>06-10 DailyPack $14.99</td></tr>
+          <tr><td>19</td><td>1276069291</td><td>Lv24</td><td>$82</td><td>10</td><td>5</td><td>9种</td><td>DailyPack($20), GiftOnAddOne($15), BattlePassTwo($10)</td><td>06-20 MiniBoardDoor $6.99</td></tr>
+          <tr><td>20</td><td>1275398313</td><td>Lv25</td><td>$82</td><td>12</td><td>8</td><td>13种</td><td>LevelPack($35), GiftOnAddOne($15), DailyPack($10)</td><td>06-20 LevelPack $4.99</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  <div class="warn-box">
+    <h4>⚠️ 末次登录趋势发现</h4>
+    <ul>
+      <li><b>6/24-28 集中流失</b>：最后5天流失243人（占47%），其中6/28最多75人。6/24出现流失加速拐点（37人），人均充值$492，说明活动周期结束后大规模集中流失。</li>
+      <li><b>早期流失价值更高</b>：6/12-13两天虽仅22人流失，但人均充值$587-$689，为全时段最高，说明高付费玩家反而更早离开。</li>
+      <li><b>末期流失等级更高</b>：6/24后流失玩家平均等级13.5-15.1，高于早期（Lv4-10），表明这批是度过新手期但在中后期内容匮乏时流失的。</li>
+    </ul>
+  </div>
+
+  <div class="insight-box">
+    <h4>💡 活动参与分析</h4>
+    <ul>
+      <li><b>BattlePass几乎全覆盖</b>：516/519（99.4%）流失玩家参与了BattlePass，人均互动16次。这说明BattlePass不是留存杠杆 — 即使参与也无法阻止流失。</li>
+      <li><b>ThemeDecoBalloon参与深度极高</b>：282人参与，人均170次交互 — 这是最"沉浸"的活动，但依然流失。TOP20高付费玩家中，11人参与了该活动，其中最高的玩家（UID 1276366571）互动达2177次。</li>
+      <li><b>RoadTrip/PuzzleToy是另一类深度活动</b>：参与者虽少（131-161人），但人均互动43-60次，说明吸引特定类型玩家投入大量时间。</li>
+      <li><b>低参与活动值得关注</b>：LadderOrder(67人)、WaterOrder(76人)的参与率仅13-15%，可能是活动设计或入口曝光的问题。</li>
+      <li><b>TOP20个案规律</b>：活动参与种类与登录天数正相关 — 登录15天的玩家参与17种活动，仅登录1-2天的玩家仅参与2-5种。尝试了更多活动类型的玩家留存更久但最终仍流失，暗示问题在核心循环而非内容数量。</li>
+    </ul>
+  </div>
+</div>
+
 <!-- ==================== Section 5: 综合洞察与建议 ==================== -->
 <div id="s5" class="section">
   <h2 class="section-title">5. 综合洞察与建议</h2>
@@ -458,6 +535,9 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
       <li><b>付费未解决痛点</b>：42%的流失玩家在最后一次付费当天即停止登录，说明付费并未改善体验</li>
       <li><b>体力过剩悖论</b>：流失玩家体力显著高于活跃玩家（中位数53 vs 2），说明问题不在资源不足而在无法有效消耗</li>
       <li><b>高付费用户快速流失</b>：TOP20 流失玩家中有多人2-3天内完成大量充值后离开，短期付费密度极高但留存极差</li>
+      <li><b>末期集中流失</b>：6/24-28五天流失243人（占47%），疑似与活动周期结束或内容耗尽相关</li>
+      <li><b>BattlePass不是留存杠杆</b>：99.4%的流失玩家参与了BattlePass但仍离开，说明该活动无法阻止流失</li>
+      <li><b>活动深度≠留存</b>：ThemeDecoBalloon人均170次互动，最深度的活动参与者同样流失，问题在核心循环而非内容量</li>
     </ol>
   </div>
 
@@ -1111,6 +1191,273 @@ const tooltipStyle={backgroundColor:'#1a1d28',borderColor:'#2a2d3a',textStyle:{c
       {name:'活跃',type:'bar',data:activeData,barWidth:20,
        itemStyle:{color:C.green},label:{show:true,position:'top',color:C.green,fontSize:10}}
     ]
+  });
+  window.addEventListener('resize',function(){chart.resize()});
+})();
+
+/* ====== Chart 13: 末次登录日期分布 ====== */
+(function(){
+  var dom=document.getElementById('chart_last_login');
+  if(!dom)return;
+  var chart=echarts.init(dom);
+  var dates=['06-06','06-07','06-08','06-09','06-10','06-11','06-12','06-13','06-14','06-15','06-16','06-17','06-18','06-19','06-20','06-21','06-22','06-23','06-24','06-25','06-26','06-27','06-28'];
+  var players=[1,5,12,11,13,9,7,15,13,23,20,15,21,22,20,21,25,20,37,33,46,52,75];
+  var avgRev=[15,34,29,67,61,67,689,587,52,133,257,643,378,134,215,464,166,469,492,259,311,462,293];
+  chart.setOption({
+    tooltip:Object.assign({trigger:'axis',formatter:function(p){
+      return p[0].axisValue+'<br/>'+
+        '<span style="color:'+C.red+'">●</span> 流失人数: <b>'+p[0].value+'</b>人<br/>'+
+        (p[1]?'<span style="color:'+C.orange+'">●</span> 人均充值: <b>$'+p[1].value+'</b>':'');
+    }},tooltipStyle),
+    legend:{data:['流失人数','人均充值($)'],textStyle:{color:'#e4e6eb'},top:6},
+    grid:{left:55,right:55,top:50,bottom:50},
+    xAxis:{type:'category',data:dates,axisLabel:{color:C.text2,rotate:45,fontSize:10},axisLine:{lineStyle:{color:'#2a2d3a'}}},
+    yAxis:[
+      {type:'value',name:'人数',nameTextStyle:{color:C.text2},axisLabel:{color:C.text2},splitLine:{lineStyle:{color:'#2a2d3a'}}},
+      {type:'value',name:'人均充值($)',nameTextStyle:{color:C.text2},axisLabel:{color:C.text2,formatter:'${value}'},splitLine:{show:false}}
+    ],
+    series:[
+      {name:'流失人数',type:'bar',data:players,barWidth:14,
+       itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:C.red},{offset:1,color:'rgba(248,113,113,.3)'}])},
+       markArea:{silent:true,data:[[{xAxis:'06-24',itemStyle:{color:'rgba(248,113,113,.06)'}},{xAxis:'06-28'}]]}},
+      {name:'人均充值($)',type:'line',yAxisIndex:1,data:avgRev,smooth:true,
+       lineStyle:{color:C.orange,width:2},symbol:'circle',symbolSize:4,
+       itemStyle:{color:C.orange},areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(251,191,36,.15)'},{offset:1,color:'rgba(251,191,36,0)'}])}}
+    ]
+  });
+  window.addEventListener('resize',function(){chart.resize()});
+})();
+
+/* ====== Chart 14: 活动参与排行 ====== */
+(function(){
+  var dom=document.getElementById('chart_activity_rank');
+  if(!dom)return;
+  var chart=echarts.init(dom);
+  var acts=['BattlePass','ThemeDecoBalloon','Treasure','CardPackFrenzy','MiniBoardDoor','Balloon','FoodCollection','MiniBoardScroll','CoinCollection','CoinRacing','RoadTrip','LimitedOrder','PuzzleToy','EndlessReward','CardCollection','WaterOrder','LadderOrder','WasteSweep'];
+  var players=[516,282,244,208,205,198,181,179,174,167,161,139,131,106,96,76,67,1];
+  var avgEvents=[16,170,10,14,15,3,8,19,6,6,60,1,43,7,2,2,3,90];
+  chart.setOption({
+    tooltip:Object.assign({trigger:'axis',formatter:function(p){
+      return p[0].name+'<br/>'+
+        '<span style="color:'+C.cyan+'">●</span> 参与人数: <b>'+p[0].value+'</b>人<br/>'+
+        '<span style="color:'+C.purple+'">●</span> 人均互动: <b>'+p[1].value+'</b>次';
+    }},tooltipStyle),
+    legend:{data:['参与人数','人均互动次数'],textStyle:{color:'#e4e6eb'},top:6},
+    grid:{left:120,right:55,top:50,bottom:30},
+    yAxis:{type:'category',data:acts.slice().reverse(),axisLabel:{color:C.text2,fontSize:10},axisLine:{lineStyle:{color:'#2a2d3a'}}},
+    xAxis:[
+      {type:'value',name:'参与人数',nameTextStyle:{color:C.text2},axisLabel:{color:C.text2},splitLine:{lineStyle:{color:'#2a2d3a'}}},
+      {type:'value',name:'人均互动',nameTextStyle:{color:C.text2},axisLabel:{color:C.text2},splitLine:{show:false}}
+    ],
+    series:[
+      {name:'参与人数',type:'bar',data:players.slice().reverse(),barWidth:12,
+       itemStyle:{color:new echarts.graphic.LinearGradient(1,0,0,0,[{offset:0,color:C.cyan},{offset:1,color:'rgba(34,211,238,.3)'}])}},
+      {name:'人均互动次数',type:'bar',xAxisIndex:1,data:avgEvents.slice().reverse(),barWidth:8,barGap:'60%',
+       itemStyle:{color:C.purple}}
+    ]
+  });
+  window.addEventListener('resize',function(){chart.resize()});
+})();
+
+/* ====== Chart 15: TOP20活动参与热力图 ====== */
+(function(){
+  var dom=document.getElementById('chart_top20_heatmap');
+  if(!dom)return;
+  var chart=echarts.init(dom);
+  var uids=['1276366571\n$259','1275253906\n$242','1274741744\n$179','1275370951\n$165','1275460919\n$159','1231790432\n$159','1274803930\n$154','1275496743\n$141','1274887830\n$133','1274308195\n$122','1179120013\n$115','1247099101\n$102','1275746813\n$100','1268722417\n$100','1146121791\n$94','1274912131\n$89','1276549662\n$87','1274856303\n$84','1276069291\n$82','1275398313\n$82'];
+  var actTypes=['BattlePass','ThemeDeco','PuzzleToy','RoadTrip','CardPack','MiniBoard','Treasure','CoinRace','CoinColl','Balloon','FoodColl','MiniBDoor','EndlessRw','LimitedOr','CardColl','LadderOr','WaterOr'];
+  // data: [actIdx, uidIdx, eventCount] - from Q22
+  var rawData=[
+    // 1276366571
+    [0,0,36],[1,0,2177],[3,0,116],[4,0,48],[6,0,38],[8,0,2],[9,0,3],[11,0,3],[13,0,13],[14,0,6],[16,0,1],
+    // 1275253906
+    [0,1,23],[4,1,27],[5,1,27],[6,1,5],[7,1,3],[10,1,4],
+    // 1274741744
+    [0,2,34],[2,2,91],[4,2,31],[5,2,23],[6,2,7],[7,2,5],[8,2,5],[9,2,7],
+    // 1275370951
+    [0,3,30],[5,3,8],[7,3,10],[8,3,2],[9,3,3],[11,3,3],[13,3,2],
+    // 1275460919
+    [0,4,32],[1,4,560],[3,4,79],[4,4,25],[6,4,25],[7,4,6],[8,4,5],[9,4,4],[10,4,3],[11,4,8],[12,4,12],[13,4,1],[14,4,8],[15,4,3],
+    // 1231790432
+    [0,5,27],[2,5,91],[5,5,23],[6,5,6],[7,5,3],[8,5,4],[9,5,9],[10,5,7],[11,5,4],
+    // 1274803930
+    [0,6,36],[1,6,87],[2,6,91],[4,6,17],[5,6,24],[6,6,16],[7,6,14],[8,6,3],[9,6,10],[11,6,11],[14,6,3],
+    // 1275496743
+    [0,7,29],[1,7,998],[3,7,120],[4,7,17],[5,7,10],[6,7,51],[7,7,4],[8,7,3],[9,7,3],[10,7,6],[11,7,11],[13,7,1],[14,7,1],
+    // 1274887830
+    [0,8,28],[1,8,234],[2,8,81],[4,8,28],[5,8,23],[6,8,7],[7,8,7],[8,8,10],[9,8,6],[10,8,5],[11,8,4],
+    // 1274308195
+    [0,9,24],[2,9,37],[5,9,27],[6,9,1],[8,9,6],[9,9,3],[10,9,3],[11,9,1],[14,9,4],
+    // 1179120013
+    [0,10,20],[1,10,500],[3,10,116],[4,10,70],[5,10,9],[6,10,42],[7,10,20],[8,10,8],[9,10,2],[10,10,5],[11,10,13],[12,10,3],[13,10,5],[14,10,2],[15,10,3],
+    // 1247099101
+    [0,11,31],[1,11,922],[2,11,91],[3,11,25],[4,11,13],[5,11,16],[6,11,34],[7,11,11],[8,11,7],[9,11,9],[10,11,6],[13,11,2],[14,11,8],
+    // 1275746813
+    [0,12,1],[6,12,1],
+    // 1268722417
+    [0,13,18],[5,13,20],[7,13,6],[8,13,1],[9,13,3],[11,13,1],[13,13,1],
+    // 1146121791
+    [0,14,22],[2,14,91],[5,14,26],[8,14,5],
+    // 1274912131
+    [0,15,28],[1,15,712],[3,15,113],[4,15,26],[5,15,14],[6,15,44],[7,15,17],[8,15,4],[9,15,4],[10,15,3],[11,15,11],[12,15,10],[13,15,15],[14,15,8],[15,15,4],[16,15,2],
+    // 1276549662
+    [0,16,29],[1,16,839],[3,16,145],[6,16,11],[7,16,3],[8,16,2],[10,16,2],[13,16,2],[15,16,1],
+    // 1274856303
+    [0,17,22],[2,17,91],[5,17,27],[7,17,3],[9,17,4],
+    // 1276069291
+    [0,18,15],[1,18,801],[3,18,79],[4,18,20],[6,18,63],[7,18,6],[8,18,2],[11,18,7],[13,18,1],
+    // 1275398313
+    [0,19,23],[1,19,578],[3,19,114],[4,19,29],[5,19,8],[6,19,12],[7,19,8],[8,19,5],[9,19,4],[10,19,3],[11,19,6],[12,19,4],[13,19,2]
+  ];
+  // Transform for scatter: [x=act, y=uid, size=count]
+  var scatterData=rawData.map(function(d){return [d[0],d[1],d[2]]});
+  chart.setOption({
+    tooltip:Object.assign({formatter:function(p){
+      return uids[p.value[1]].split('\n')[0]+' → '+actTypes[p.value[0]]+'<br/>互动次数: <b>'+p.value[2]+'</b>';
+    }},tooltipStyle),
+    grid:{left:90,right:30,top:20,bottom:80},
+    xAxis:{type:'category',data:actTypes,axisLabel:{color:C.text2,rotate:45,fontSize:10},axisLine:{lineStyle:{color:'#2a2d3a'}}},
+    yAxis:{type:'category',data:uids,axisLabel:{color:C.text2,fontSize:9},axisLine:{lineStyle:{color:'#2a2d3a'}}},
+    visualMap:{show:true,min:1,max:500,calculable:false,orient:'horizontal',left:'center',bottom:10,
+      inRange:{color:['#2a2d3a','#6c7bff','#a78bfa','#f87171','#fbbf24']},
+      textStyle:{color:C.text2},text:['500+次','1次']},
+    series:[{
+      type:'scatter',data:scatterData,
+      symbolSize:function(val){var s=Math.sqrt(val[2])*2.5;return Math.max(6,Math.min(s,40))},
+      itemStyle:{borderColor:'rgba(255,255,255,.2)',borderWidth:1}
+    }]
+  });
+  window.addEventListener('resize',function(){chart.resize()});
+})();
+
+/* ====== Chart 13: 末次登录日期分布 ====== */
+(function(){
+  var dom=document.getElementById('chart_last_login');
+  if(!dom) return;
+  var chart=echarts.init(dom);
+  var dates=['6/06','6/07','6/08','6/09','6/10','6/11','6/12','6/13','6/14','6/15','6/16','6/17','6/18','6/19','6/20','6/21','6/22','6/23','6/24','6/25','6/26','6/27','6/28'];
+  var players=[1,5,12,11,13,9,7,15,13,23,20,15,21,22,20,21,25,20,37,33,46,52,75];
+  var avgRev=[15,34,29,67,61,67,689,587,52,133,257,643,378,134,215,464,166,469,492,259,311,462,293];
+  chart.setOption({
+    tooltip:Object.assign({trigger:'axis',formatter:function(p){
+      var d=p[0].axisValue;
+      var n=p[0]?p[0].value:0;
+      var r=p[1]?p[1].value:0;
+      return d+'<br/>流失人数: <b style=\"color:'+C.red+'\">'+n+'人</b><br/>人均充值: <b style=\"color:'+C.orange+'\">$'+r+'</b>';
+    }},tooltipStyle),
+    legend:{data:['流失人数','人均充值'],textStyle:{color:'#e4e6eb'},top:6},
+    grid:{left:50,right:50,top:45,bottom:55},
+    xAxis:{type:'category',data:dates,axisLabel:{color:C.text2,rotate:45,fontSize:10},axisLine:{lineStyle:{color:'#2a2d3a'}}},
+    yAxis:[
+      {type:'value',name:'人数',nameTextStyle:{color:C.text2},axisLabel:{color:C.text2},splitLine:{lineStyle:{color:'#2a2d3a'}}},
+      {type:'value',name:'人均充值$',nameTextStyle:{color:C.text2},axisLabel:{color:C.text2,formatter:'${value}'},splitLine:{show:false}}
+    ],
+    series:[
+      {name:'流失人数',type:'bar',data:players,barWidth:12,
+       itemStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:C.red},{offset:1,color:'rgba(248,113,113,.3)'}])},
+       label:{show:false}},
+      {name:'人均充值',type:'line',yAxisIndex:1,data:avgRev,smooth:true,
+       lineStyle:{color:C.orange,width:2},symbol:'circle',symbolSize:4,
+       itemStyle:{color:C.orange},areaStyle:{color:new echarts.graphic.LinearGradient(0,0,0,1,[{offset:0,color:'rgba(251,191,36,.2)'},{offset:1,color:'rgba(251,191,36,0)'}])}}
+    ]
+  });
+  window.addEventListener('resize',function(){chart.resize()});
+})();
+
+/* ====== Chart 14: 活动参与排行 ====== */
+(function(){
+  var dom=document.getElementById('chart_activity_rank');
+  if(!dom) return;
+  var chart=echarts.init(dom);
+  var acts=['WasteSweep','LadderOrder','WaterOrder','CardCollection','EndlessReward','PuzzleToy','CoinRacing','CoinCollection','MiniBoardAreaScroll','FoodCollection','Balloon','MiniBoardDoor','CardPackageFrenzy','Treasure','RoadTrip','ThemeDecoBalloon','BattlePass'];
+  var players=[1,67,76,96,106,131,167,174,179,181,198,205,208,244,161,282,516];
+  var avgTimes=[90,3.1,2.1,2.3,7.4,43.1,6.2,5.5,18.9,7.7,2.9,15.2,13.5,10.1,60.2,170.1,16.0];
+  chart.setOption({
+    tooltip:Object.assign({trigger:'axis',formatter:function(p){
+      var a=p[0].axisValue;
+      var n=p[0]?p[0].value:0;
+      var idx=acts.indexOf(a);
+      var avg=idx>=0?avgTimes[idx]:0;
+      return a+'<br/>参与人数: <b style=\"color:'+C.cyan+'\">'+n+'人</b><br/>人均次数: <b style=\"color:'+C.purple+'\">'+avg+'次</b>';
+    }},tooltipStyle),
+    grid:{left:140,right:60,top:30,bottom:30},
+    xAxis:{type:'value',axisLabel:{color:C.text2},splitLine:{lineStyle:{color:'#2a2d3a'}}},
+    yAxis:{type:'category',data:acts,axisLabel:{color:C.text2,fontSize:11},axisLine:{lineStyle:{color:'#2a2d3a'}}},
+    series:[{
+      type:'bar',data:players,barWidth:14,
+      itemStyle:{color:function(p){
+        var v=p.value;
+        if(v>400) return C.accent;
+        if(v>200) return C.cyan;
+        if(v>100) return C.purple;
+        return 'rgba(108,123,255,.5)';
+      }},
+      label:{show:true,position:'right',color:C.text2,fontSize:10,formatter:function(p){
+        var idx=acts.indexOf(p.name);
+        var avg=idx>=0?avgTimes[idx]:0;
+        return p.value+'人 ('+avg+'x/人)';
+      }}
+    }]
+  });
+  window.addEventListener('resize',function(){chart.resize()});
+})();
+
+/* ====== Chart 15: TOP20活动参与热力图 ====== */
+(function(){
+  var dom=document.getElementById('chart_top20_heatmap');
+  if(!dom) return;
+  var chart=echarts.init(dom);
+  var actTypes=['BP','Balloon','CardPkg','CardColl','CoinColl','CoinRace','Endless','FoodColl','Ladder','Limited','MBDoor','MBScroll','PuzzleToy','RoadTrip','ThemeBalloon','Treasure','WaterOrd'];
+  var uids=['#1 $259','#2 $242','#3 $179','#4 $165','#5 $159','#6 $159','#7 $154','#8 $141','#9 $133','#10 $122','#11 $115','#12 $102','#13 $100','#14 $100','#15 $94','#16 $89','#17 $87','#18 $84','#19 $82','#20 $82'];
+  var raw=[
+    [0,0,34],[2,0,48],[4,0,20],[6,0,3],[9,0,7],[11,0,32],[12,0,0],[13,0,116],[14,0,2177],[15,0,27],
+    [0,1,23],[2,1,27],[5,1,0],[11,1,27],[15,1,9],[9,1,9],
+    [0,2,34],[2,2,31],[5,2,18],[7,2,0],[10,2,7],[11,2,18],[12,2,91],[15,2,11],[1,2,2],[4,2,4],
+    [0,3,30],[5,3,8],[6,3,0],[7,3,10],[9,3,2],[11,3,0],[3,3,1],[1,3,1],
+    [0,4,32],[1,4,5],[2,4,29],[4,4,7],[5,4,10],[7,4,16],[8,4,1],[10,4,7],[11,4,17],[13,4,79],[14,4,560],[15,4,10],[16,4,1],[3,4,3],
+    [0,5,27],[4,5,8],[7,5,0],[10,5,6],[11,5,23],[12,5,91],[15,5,13],[6,5,6],
+    [0,6,36],[1,6,3],[2,6,20],[4,6,5],[5,6,8],[7,6,14],[10,6,14],[11,6,13],[12,6,91],[14,6,87],[15,6,23],[9,6,5],
+    [0,7,38],[1,7,3],[2,7,30],[4,7,5],[5,7,6],[7,7,12],[10,7,0],[11,7,24],[13,7,120],[14,7,998],[15,7,51],[16,7,4],[3,7,4],[6,7,4],
+    [0,8,28],[1,8,4],[2,8,20],[4,8,14],[5,8,6],[7,8,7],[10,8,5],[11,8,20],[12,8,81],[14,8,234],[15,8,16],[6,8,4],
+    [0,9,24],[4,9,5],[5,9,6],[11,9,27],[12,9,37],[16,9,4],[1,9,3],
+    [0,10,36],[2,10,70],[4,10,8],[5,10,7],[7,10,8],[14,10,0],[15,10,27],[8,10,169],[3,10,500],[6,10,3],[10,10,0],
+    [0,11,31],[1,11,8],[2,11,16],[3,11,28],[4,11,7],[5,11,8],[6,11,4],[7,11,14],[10,11,24],[11,11,24],[12,11,91],[14,11,922],[15,11,24],[16,11,2],[8,11,2],
+    [0,12,1],[15,12,1],
+    [0,13,18],[1,13,1],[5,13,6],[9,13,7],[11,13,20],
+    [0,14,22],[4,14,5],[11,14,26],[12,14,91],
+    [0,15,35],[1,15,4],[2,15,15],[3,15,7],[4,15,22],[5,15,4],[6,15,4],[7,15,24],[8,15,2],[9,15,5],[10,15,10],[11,15,26],[12,15,50],[13,15,113],[14,15,712],[15,15,22],[16,15,3],
+    [0,16,29],[1,16,5],[4,16,10],[5,16,0],[7,16,17],[9,16,1],[10,16,0],[11,16,0],[13,16,145],[14,16,839],[15,16,16],[3,16,2],[6,16,4],[16,16,4],
+    [0,17,22],[4,17,3],[9,17,4],[11,17,27],[12,17,91],
+    [0,18,28],[1,18,1],[4,18,6],[6,18,4],[7,18,12],[9,18,2],[11,18,0],[13,18,79],[14,18,801],[15,18,63],[16,18,2],[10,18,3],
+    [0,19,26],[1,19,6],[2,19,29],[3,19,8],[4,19,5],[5,19,8],[7,19,11],[8,19,4],[10,19,5],[11,19,19],[13,19,114],[14,19,578],[15,19,11],[6,19,4]
+  ];
+  /* fill sparse to full grid */
+  var full=[];
+  for(var y=0;y<20;y++){for(var x=0;x<17;x++){full.push([x,y,0])}}
+  raw.forEach(function(d){
+    var idx=d[1]*17+d[0];
+    if(idx<full.length) full[idx][2]=d[2];
+  });
+  chart.setOption({
+    tooltip:Object.assign({formatter:function(p){
+      if(!p.data||p.data.length<3) return '';
+      var act=actTypes[p.data[0]];
+      var uid=uids[p.data[1]];
+      var val=p.data[2];
+      if(val===0) return uid+'<br/>'+act+': 未参与';
+      return uid+'<br/>'+act+': <b>'+val+'次</b>';
+    }},tooltipStyle),
+    grid:{left:70,right:20,top:10,bottom:80},
+    xAxis:{type:'category',data:actTypes,axisLabel:{color:C.text2,rotate:45,fontSize:9,interval:0},axisLine:{lineStyle:{color:'#2a2d3a'}},position:'bottom'},
+    yAxis:{type:'category',data:uids,axisLabel:{color:C.text2,fontSize:10},axisLine:{lineStyle:{color:'#2a2d3a'}}},
+    visualMap:{min:0,max:200,calculable:true,orient:'horizontal',left:'center',bottom:0,
+      inRange:{color:['#1a1d28','rgba(108,123,255,.3)','rgba(108,123,255,.6)',C.accent,C.cyan,C.orange,C.red]},
+      textStyle:{color:C.text2},text:['200+次','0次']},
+    series:[{
+      type:'heatmap',data:full.map(function(d){return [d[0],d[1],Math.min(d[2],200)]}),
+      emphasis:{itemStyle:{borderColor:'#fff',borderWidth:1}},
+      label:{show:false}
+    }]
   });
   window.addEventListener('resize',function(){chart.resize()});
 })();
