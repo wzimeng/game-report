@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>首日付费看板 — 付费金额相关性分析</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5/dist/echarts.min.js"></script>
+<style>
+:root{--bg:#0f1117;--card:#1a1d28;--border:#2a2d3a;--text:#e4e6eb;--text2:#8b8fa3;--accent:#6c7bff;--green:#34d399;--red:#f87171;--orange:#fbbf24;--cyan:#22d3ee;--purple:#a78bfa}
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:-apple-system,'Segoe UI','PingFang SC','Microsoft YaHei',sans-serif;line-height:1.6}
+.container{max-width:1360px;margin:0 auto;padding:32px 24px}
+h1{font-size:28px;font-weight:700;margin-bottom:6px}
+.subtitle{color:var(--text2);font-size:14px;margin-bottom:32px}
+.meta-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:32px}
+.meta-box h3{font-size:14px;color:var(--accent);margin-bottom:12px;letter-spacing:1px;text-transform:uppercase}
+.meta-table{width:100%;border-collapse:collapse;font-size:13px}
+.meta-table td{padding:6px 12px;border-bottom:1px solid var(--border)}
+.meta-table td:first-child{color:var(--text2);width:140px;white-space:nowrap}
+.toc{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px 24px;margin-bottom:32px}
+.toc h3{font-size:14px;color:var(--accent);margin-bottom:12px}
+.toc ol{padding-left:20px}
+.toc li{margin-bottom:6px;font-size:14px}
+.toc a{color:var(--text);text-decoration:none;border-bottom:1px dashed var(--border)}
+.toc a:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.section{margin-bottom:44px}
+.section-title{font-size:20px;font-weight:600;margin-bottom:20px;padding-left:12px;border-left:3px solid var(--accent)}
+.card-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:14px;margin-bottom:24px}
+.stat-card{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:18px 20px}
+.stat-card .label{font-size:12px;color:var(--text2);margin-bottom:6px}
+.stat-card .value{font-size:28px;font-weight:700}
+.stat-card .sub{font-size:12px;color:var(--text2);margin-top:4px}
+.chart-row{display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:24px}
+.chart-box{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:20px;margin-bottom:20px}
+.chart-box.full{grid-column:1/-1}
+.chart-title{font-size:15px;font-weight:600;margin-bottom:4px}
+.chart-sub{font-size:12px;color:var(--text2);margin-bottom:12px}
+.chart{width:100%;height:360px}
+.chart-sm{width:100%;height:300px}
+.chart-tall{width:100%;height:460px}
+.chart-xl{width:100%;height:520px}
+table.data{width:100%;border-collapse:collapse;font-size:13px;margin-top:12px}
+table.data th{background:rgba(108,123,255,.1);color:var(--accent);font-weight:600;padding:10px 12px;text-align:left;border-bottom:2px solid var(--border);white-space:nowrap}
+table.data td{padding:9px 12px;border-bottom:1px solid var(--border)}
+table.data tr:hover td{background:rgba(255,255,255,.03)}
+table.data .num{text-align:right;font-variant-numeric:tabular-nums}
+.scroll-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch}
+.hl{color:var(--orange);font-weight:600}
+.hl-green{color:var(--green);font-weight:600}
+.hl-red{color:var(--red);font-weight:600}
+.hl-cyan{color:var(--cyan);font-weight:600}
+.insight-box{background:linear-gradient(135deg,rgba(108,123,255,.08),rgba(167,139,250,.08));border:1px solid rgba(108,123,255,.25);border-radius:12px;padding:20px 24px;margin:20px 0;font-size:14px;line-height:1.8}
+.insight-box h4{color:var(--accent);margin-bottom:10px;font-size:15px}
+.insight-box ul{padding-left:20px}
+.insight-box li{margin-bottom:6px;font-size:14px}
+.warn-box{background:linear-gradient(135deg,rgba(248,113,113,.08),rgba(251,191,36,.08));border:1px solid rgba(248,113,113,.25);border-radius:12px;padding:20px 24px;margin:20px 0;font-size:14px;line-height:1.8}
+.warn-box h4{color:var(--red);margin-bottom:10px;font-size:15px}
+.warn-box ul{padding-left:20px}
+.warn-box li{margin-bottom:6px;font-size:14px}
+.conclusion-box{background:linear-gradient(135deg,rgba(52,211,153,.08),rgba(34,211,238,.08));border:1px solid rgba(52,211,153,.25);border-radius:12px;padding:24px 28px;margin:24px 0;font-size:14px;line-height:1.9}
+.conclusion-box h4{color:var(--green);margin-bottom:12px;font-size:16px}
+.conclusion-box ol{padding-left:20px}
+.conclusion-box li{margin-bottom:8px}
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;font-weight:500}
+.tag-high{background:rgba(248,113,113,.15);color:var(--red)}
+.tag-mid{background:rgba(251,191,36,.15);color:var(--orange)}
+.tag-low{background:rgba(52,211,153,.15);color:var(--green)}
+.back-link{display:inline-block;margin-bottom:20px;color:var(--accent);text-decoration:none;font-size:14px}
+.back-link:hover{text-decoration:underline}
+.footer{text-align:center;padding:40px 0 24px;color:var(--text2);font-size:12px;border-top:1px solid var(--border);margin-top:40px}
+@media(max-width:768px){.chart-row{grid-template-columns:1fr}.card-grid{grid-template-columns:1fr 1fr}h1{font-size:22px}.chart{height:300px}.chart-tall{height:380px}}
+</style>
+</head>
+<body>
+<div class="container">
+
+<a class="back-link" href="index.html">← 返回报告列表</a>
+
+<h1>首日付费看板</h1>
+<p class="subtitle">Merge Hope · 首日付费金额高低相关性分析 · 数据范围 2026-06-06 ~ 2026-06-25</p>
+
+<div class="meta-box">
+  <h3>分析说明</h3>
+  <table class="meta-table">
+    <tr><td>核心问题</td><td>玩家首日的付费金额高低和什么因素相关？</td></tr>
+    <tr><td>数据范围</td><td>2026-06-06 ~ 2026-06-25，排除 BattlePass（战令）付费</td></tr>
+    <tr><td>付费事件</td><td>USER_PAY（pay_type ≠ BattlePassTwo），取每位玩家首次付费</td></tr>
+    <tr><td>分析维度</td><td>付费类型、金额档位、玩家等级、付费时机、活动触发、留存表现</td></tr>
+    <tr><td>过滤条件</td><td>排除debug用户（common_debug=false或NULL）</td></tr>
+  </table>
+</div>
+
+<div class="toc">
+  <h3>目录</h3>
+  <ol>
+    <li><a href="#s1">核心指标概览</a></li>
+    <li><a href="#s2">维度一：付费类型 × 金额 — 不同商品的客单价差异</a></li>
+    <li><a href="#s3">维度二：金额档位分布 — 高/中/低消费者画像</a></li>
+    <li><a href="#s4">维度三：玩家等级 × 付费金额 — 等级越高付费越多？</a></li>
+    <li><a href="#s5">维度四：付费时机 — 入游当天 vs 之后首付的差异</a></li>
+    <li><a href="#s6">维度五：活动触发 — 首付前60分钟在做什么？</a></li>
+    <li><a href="#s7">维度六：活动参与 × 留存 — 首日付费者的后续生命周期</a></li>
+    <li><a href="#s8">综合结论与运营建议</a></li>
+  </ol>
+</div>
+
+<!-- ============================================ -->
+<!-- Section 1: 核心指标 -->
+<!-- ============================================ -->
+<div class="section" id="s1">
+<h2 class="section-title">1. 核心指标概览</h2>
+
+<div class="card-grid">
+  <div class="stat-card">
+    <div class="label">首付玩家数（排除BP）</div>
+    <div class="value" style="color:var(--accent)">674</div>
+    <div class="sub">6/6~6/25期间</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">首日(D0)即付费</div>
+    <div class="value" style="color:var(--green)">244</div>
+    <div class="sub">占比 36.2%</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">D0付费者总数</div>
+    <div class="value" style="color:var(--cyan)">336</div>
+    <div class="sub">含非首付（重复购买者）</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">首付平均金额</div>
+    <div class="value" style="color:var(--orange)">$6.69</div>
+    <div class="sub">总收入 $4,640</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">最热门首付商品</div>
+    <div class="value" style="font-size:22px;color:var(--purple)">Shop $1.99</div>
+    <div class="sub">169人 · 占比25.1%</div>
+  </div>
+  <div class="stat-card">
+    <div class="label">付费类型数</div>
+    <div class="value">10</div>
+    <div class="sub">种不同 pay_type</div>
+  </div>
+</div>
+
+<div class="insight-box">
+  <h4>📊 关键发现</h4>
+  <ul>
+    <li><span class="hl">36.2% 的首付发生在入游当天</span>（244/674），D0 + D1 两天合计占比 <span class="hl">56.8%</span>（383/674），说明首付窗口极窄</li>
+    <li>首付平均金额 $6.69，中位数集中在 <span class="hl-cyan">$1.99 ~ $6.99</span> 区间，大R（$20+）极少</li>
+    <li>Shop（商城直购）是最大的首付入口（289人·42.9%），但平均客单价仅 $5.78；而 EnergyPack 平均 $11.62、IceBreak 平均 $9.67</li>
+  </ul>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- Section 2: 付费类型 × 金额 -->
+<!-- ============================================ -->
+<div class="section" id="s2">
+<h2 class="section-title">2. 维度一：付费类型 × 金额</h2>
+
+<div class="chart-row">
+  <div class="chart-box">
+    <div class="chart-title">首付玩家数 — 按付费类型</div>
+    <div class="chart-sub">每个 pay_type 吸引了多少首付玩家</div>
+    <div id="chart_paytype_count" class="chart"></div>
+  </div>
+  <div class="chart-box">
+    <div class="chart-title">平均首付金额 — 按付费类型</div>
+    <div class="chart-sub">哪些商品的客单价更高</div>
+    <div id="chart_paytype_avg" class="chart"></div>
+  </div>
+</div>
+
+<div class="chart-box full">
+  <div class="chart-title">首付商品明细 TOP 20（类型 × 价格）</div>
+  <div class="chart-sub">具体是哪些价位的商品在驱动首付</div>
+  <div id="chart_combo_top20" class="chart-tall"></div>
+</div>
+
+<div class="scroll-wrap">
+<table class="data">
+  <thead>
+    <tr><th>付费类型</th><th>中文说明</th><th class="num">首付人数</th><th class="num">占比</th><th class="num">均价$</th><th class="num">最低$</th><th class="num">最高$</th><th class="num">总收入$</th><th>客单价定位</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Shop</td><td>商城直购</td><td class="num">289</td><td class="num">42.9%</td><td class="num">5.78</td><td class="num">1.99</td><td class="num">99.99</td><td class="num">1,670</td><td><span class="tag tag-mid">中低</span></td></tr>
+    <tr><td>LevelPack</td><td>等级礼包</td><td class="num">88</td><td class="num">13.1%</td><td class="num">4.90</td><td class="num">2.99</td><td class="num">4.99</td><td class="num">431</td><td><span class="tag tag-low">低</span></td></tr>
+    <tr><td>DailyPack</td><td>每日礼包</td><td class="num">73</td><td class="num">10.8%</td><td class="num">8.46</td><td class="num">4.99</td><td class="num">9.99</td><td class="num">617</td><td><span class="tag tag-mid">中</span></td></tr>
+    <tr><td>EnergyPack</td><td>体力礼包</td><td class="num">51</td><td class="num">7.6%</td><td class="num">11.62</td><td class="num">4.99</td><td class="num">19.99</td><td class="num">592</td><td><span class="tag tag-high">高</span></td></tr>
+    <tr><td>IceBreak</td><td>破冰礼包</td><td class="num">47</td><td class="num">7.0%</td><td class="num">9.67</td><td class="num">4.99</td><td class="num">9.99</td><td class="num">455</td><td><span class="tag tag-mid">中高</span></td></tr>
+    <tr><td>MiniBoardDoor</td><td>多层棋盘</td><td class="num">43</td><td class="num">6.4%</td><td class="num">6.99</td><td class="num">6.99</td><td class="num">6.99</td><td class="num">301</td><td><span class="tag tag-mid">中</span></td></tr>
+    <tr><td>MiniBoardAreaScroll</td><td>区域棋盘</td><td class="num">35</td><td class="num">5.2%</td><td class="num">6.99</td><td class="num">6.99</td><td class="num">6.99</td><td class="num">245</td><td><span class="tag tag-mid">中</span></td></tr>
+    <tr><td>ChainPack</td><td>连锁礼包</td><td class="num">28</td><td class="num">4.2%</td><td class="num">2.95</td><td class="num">1.99</td><td class="num">9.99</td><td class="num">83</td><td><span class="tag tag-low">低</span></td></tr>
+    <tr><td>GiftOnAddOne</td><td>1+1礼包</td><td class="num">18</td><td class="num">2.7%</td><td class="num">10.66</td><td class="num">6.99</td><td class="num">14.99</td><td class="num">192</td><td><span class="tag tag-high">高</span></td></tr>
+    <tr><td>ThreeInOnePack</td><td>3合1礼包</td><td class="num">2</td><td class="num">0.3%</td><td class="num">27.49</td><td class="num">24.99</td><td class="num">29.99</td><td class="num">55</td><td><span class="tag tag-high">极高</span></td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="insight-box">
+  <h4>🔍 付费类型对金额的影响</h4>
+  <ul>
+    <li><strong>付费类型是首日付费金额的最大决定因素</strong>。同一个 Shop 类型内部，金额跨度从 $1.99 到 $99.99；但 MiniBoardDoor、MiniBoardAreaScroll 的价格完全固定在 $6.99</li>
+    <li><span class="hl-red">高客单价类型</span>：EnergyPack（$11.62）、GiftOnAddOne（$10.66）、IceBreak（$9.67）— 这些都是<strong>功能性礼包</strong>，解决体力/破冰/1+1等即时需求</li>
+    <li><span class="hl-green">低客单价类型</span>：ChainPack（$2.95）、LevelPack（$4.90）— 这些是<strong>进度激励型礼包</strong>，价格门槛低</li>
+    <li><strong>Shop $1.99 是"入门药"</strong>：169 人选择了 $1.99 的商城首购，占全部首付的 25.1%，是绝对的破冰价格</li>
+  </ul>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- Section 3: 金额档位 -->
+<!-- ============================================ -->
+<div class="section" id="s3">
+<h2 class="section-title">3. 维度二：金额档位分布</h2>
+
+<div class="chart-row">
+  <div class="chart-box">
+    <div class="chart-title">首付金额档位分布</div>
+    <div class="chart-sub">按金额区间划分玩家群体</div>
+    <div id="chart_amount_tier" class="chart"></div>
+  </div>
+  <div class="chart-box">
+    <div class="chart-title">各档位贡献收入占比</div>
+    <div class="chart-sub">高消费玩家对收入的贡献</div>
+    <div id="chart_amount_revenue" class="chart"></div>
+  </div>
+</div>
+
+<div class="scroll-wrap">
+<table class="data">
+  <thead>
+    <tr><th>金额档位</th><th class="num">人数</th><th class="num">占比</th><th class="num">累计占比</th><th class="num">总收入$</th><th class="num">收入占比</th><th>特征</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>$1.99（微付费）</td><td class="num">193</td><td class="num">28.6%</td><td class="num">28.6%</td><td class="num">384</td><td class="num">8.3%</td><td>试探型消费，<span class="hl-green">门槛最低</span></td></tr>
+    <tr><td>$2.99 ~ $4.99（轻付费）</td><td class="num">173</td><td class="num">25.7%</td><td class="num">54.3%</td><td class="num">790</td><td class="num">17.0%</td><td>等级礼包+商城中档</td></tr>
+    <tr><td>$6.99（中付费）</td><td class="num">137</td><td class="num">20.3%</td><td class="num">74.6%</td><td class="num">958</td><td class="num">20.6%</td><td>棋盘+每日礼包+1+1礼包</td></tr>
+    <tr><td>$9.99（中高付费）</td><td class="num">131</td><td class="num">19.4%</td><td class="num">94.1%</td><td class="num">1,309</td><td class="num">28.2%</td><td>破冰+体力+每日大包</td></tr>
+    <tr><td>$14.99+（高付费）</td><td class="num">40</td><td class="num">5.9%</td><td class="num">100%</td><td class="num">1,199</td><td class="num">25.8%</td><td>体力大包+1+1+3合1+商城豪华</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="insight-box">
+  <h4>💰 金额分布规律</h4>
+  <ul>
+    <li><strong>二八定律显著</strong>：前 54.3% 的玩家（$4.99以下）仅贡献 25.3% 收入；而 <span class="hl">5.9% 的高付费玩家（$14.99+）贡献了 25.8% 收入</span></li>
+    <li><strong>$6.99 和 $9.99 是两个关键价格锚点</strong>，合计 39.7% 的玩家，贡献 48.8% 收入 — 这是"核心中R"群体</li>
+    <li>建议：<span class="hl-cyan">$6.99 ~ $9.99 是最佳首付定价区间</span>，能吸引较多玩家同时保证合理客单价</li>
+  </ul>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- Section 4: 玩家等级 × 付费 -->
+<!-- ============================================ -->
+<div class="section" id="s4">
+<h2 class="section-title">4. 维度三：玩家等级 × 付费金额</h2>
+
+<div class="chart-row">
+  <div class="chart-box">
+    <div class="chart-title">D0付费玩家等级分布</div>
+    <div class="chart-sub">首日付费时玩家达到的最高等级</div>
+    <div id="chart_level_dist" class="chart"></div>
+  </div>
+  <div class="chart-box">
+    <div class="chart-title">首付发生在入游第几天</div>
+    <div class="chart-sub">付费转化窗口集中在前3天</div>
+    <div id="chart_day_dist" class="chart"></div>
+  </div>
+</div>
+
+<div class="scroll-wrap">
+<table class="data">
+  <thead>
+    <tr><th>D0等级</th><th class="num">付费人数</th><th class="num">占比</th><th>可解锁礼包</th><th>分析</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Lv 1~4</td><td class="num">17</td><td class="num">5.1%</td><td>仅 Shop</td><td>新手期，只有商城直购可用</td></tr>
+    <tr><td>Lv 5</td><td class="num">13</td><td class="num">3.9%</td><td>+ ChainPack</td><td>解锁连锁礼包</td></tr>
+    <tr><td>Lv 6</td><td class="num">35</td><td class="num">10.4%</td><td>+ BattlePass</td><td>解锁战令，付费意愿第一个小高峰</td></tr>
+    <tr><td>Lv 7</td><td class="num">21</td><td class="num">6.3%</td><td>+ CardPackageFrenzy</td><td>解锁卡包狂欢</td></tr>
+    <tr><td>Lv 8</td><td class="num">34</td><td class="num">10.1%</td><td>+ 多种活动</td><td>解锁 CoinRacing/PuzzleToy/RoadTrip 等</td></tr>
+    <tr><td>Lv 9</td><td class="num">56</td><td class="num"><span class="hl">16.7%</span></td><td>+ Balloon/ThemeDeco</td><td><span class="hl-red">付费高峰等级！</span>解锁气球+主题装修</td></tr>
+    <tr><td>Lv 10</td><td class="num">35</td><td class="num">10.4%</td><td>+ MiniBoard系列</td><td>解锁棋盘活动，$6.99固定价位</td></tr>
+    <tr><td>Lv 11</td><td class="num">42</td><td class="num">12.5%</td><td>同上</td><td>活动深入参与期</td></tr>
+    <tr><td>Lv 12</td><td class="num">28</td><td class="num">8.3%</td><td>+ 限时/阶梯/水订单</td><td>全活动解锁</td></tr>
+    <tr><td>Lv 13+</td><td class="num">55</td><td class="num">16.4%</td><td>全部</td><td>老玩家后期付费</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="insight-box">
+  <h4>🎮 等级与付费金额的关系</h4>
+  <ul>
+    <li><span class="hl">Lv 9 是付费转化的黄金等级</span>（16.7%），原因是该等级同时解锁了气球嘉年华和主题装修两个大型活动</li>
+    <li>Lv 6 ~ Lv 11 覆盖 66.4% 的D0付费玩家，这是<strong>核心付费转化区间</strong></li>
+    <li>等级越高，可购买的礼包类型越多 → 选择越多 → 更容易匹配到合适的付费点 → 付费概率和金额双升</li>
+    <li>但也有 <span class="hl-cyan">5.1% 的玩家在 Lv1~4 就完成了首付</span>，这部分主要来自 Shop $1.99（冲动消费或试探心理）</li>
+  </ul>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- Section 5: 付费时机 -->
+<!-- ============================================ -->
+<div class="section" id="s5">
+<h2 class="section-title">5. 维度四：入游当天 vs 之后首付</h2>
+
+<div class="chart-box full">
+  <div class="chart-title">各付费类型 — 入游当天首付 vs 之后首付</div>
+  <div class="chart-sub">哪些商品更擅长"即时转化"vs"深度转化"</div>
+  <div id="chart_timing" class="chart-tall"></div>
+</div>
+
+<div class="scroll-wrap">
+<table class="data">
+  <thead>
+    <tr><th>付费类型</th><th class="num">入游当天首付</th><th class="num">之后首付</th><th class="num">当天占比</th><th>特征分析</th></tr>
+  </thead>
+  <tbody>
+    <tr><td><span class="hl">Shop</span></td><td class="num">132</td><td class="num">157</td><td class="num">45.7%</td><td>最均衡，两阶段都能转化；$1.99冲动型消费驱动当天付费</td></tr>
+    <tr><td>IceBreak</td><td class="num">37</td><td class="num">10</td><td class="num"><span class="hl-red">78.7%</span></td><td>⚡ <strong>即时转化之王！</strong>破冰礼包几乎只在首日有效</td></tr>
+    <tr><td>LevelPack</td><td class="num">18</td><td class="num">70</td><td class="num">20.5%</td><td>深度转化型；需要玩到一定等级才触发购买</td></tr>
+    <tr><td>DailyPack</td><td class="num">15</td><td class="num">58</td><td class="num">20.5%</td><td>深度转化型；需要感受到每日资源不足</td></tr>
+    <tr><td>EnergyPack</td><td class="num">10</td><td class="num">41</td><td class="num">19.6%</td><td>深度转化型；体力缺口在后期更强烈</td></tr>
+    <tr><td>MiniBoardAreaScroll</td><td class="num">11</td><td class="num">24</td><td class="num">31.4%</td><td>活动驱动型；需要活动开启 + 等级足够</td></tr>
+    <tr><td>ChainPack</td><td class="num">11</td><td class="num">17</td><td class="num">39.3%</td><td>较均衡</td></tr>
+    <tr><td>GiftOnAddOne</td><td class="num">9</td><td class="num">9</td><td class="num">50.0%</td><td>完全均衡；1+1礼包在任何阶段都有吸引力</td></tr>
+    <tr><td>MiniBoardDoor</td><td class="num">1</td><td class="num">42</td><td class="num"><span class="hl-green">2.3%</span></td><td>极端深度转化；需要 Lv10 + 活动开启</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="insight-box">
+  <h4>⏰ 时机对付费金额的影响</h4>
+  <ul>
+    <li><strong>IceBreak（破冰礼包）</strong>是首日即时转化率最高的商品（78.7%），且客单价 $9.67 高于平均。<span class="hl-red">破冰礼包的定价和展示时机对首日收入有重大影响</span></li>
+    <li>入游当天首付以 <strong>Shop $1.99（试探）+ IceBreak $9.99（即时需求）</strong>为主，平均金额偏低</li>
+    <li>之后首付以 <strong>LevelPack + DailyPack + EnergyPack（功能需求）</strong>为主，平均金额更高</li>
+    <li>结论：<span class="hl-cyan">首日付费金额低的主因是"冲动/试探型"消费占比高，高金额付费需要更长的游戏体验来培养需求</span></li>
+  </ul>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- Section 6: 活动触发 -->
+<!-- ============================================ -->
+<div class="section" id="s6">
+<h2 class="section-title">6. 维度五：首付前 60 分钟的活动触发</h2>
+
+<div class="chart-box">
+  <div class="chart-title">首付前 60 分钟内最后参与的活动 TOP 15</div>
+  <div class="chart-sub">分析"是什么活动直接触发了玩家的付费行为"</div>
+  <div id="chart_trigger" class="chart-xl"></div>
+</div>
+
+<div class="scroll-wrap">
+<table class="data">
+  <thead>
+    <tr><th>付费类型</th><th>触发活动</th><th class="num">人数</th><th>解读</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>Shop</td><td><span class="hl">BattlePass</span></td><td class="num">118</td><td>玩战令 → 需要资源 → 去商城买。<strong>战令是商城付费的最大催化剂</strong></td></tr>
+    <tr><td>Shop</td><td>ThemeDecoBalloon</td><td class="num">29</td><td>主题装修 → 缺货 → 商城补资源</td></tr>
+    <tr><td>IceBreak</td><td>BattlePass</td><td class="num">29</td><td>战令 → 触发破冰礼包弹窗</td></tr>
+    <tr><td>MiniBoardAreaScroll</td><td>MiniBoardAreaScroll</td><td class="num">29</td><td>棋盘活动 → 活动内付费（完美闭环！）</td></tr>
+    <tr><td>MiniBoardDoor</td><td>MiniBoardDoor</td><td class="num">23</td><td>棋盘活动 → 活动内付费（闭环）</td></tr>
+    <tr><td>EnergyPack</td><td>ThemeDecoBalloon</td><td class="num">20</td><td>主题装修消耗体力 → 体力不足 → 买体力包</td></tr>
+    <tr><td>LevelPack</td><td>ThemeDecoBalloon</td><td class="num">19</td><td>主题装修 → 等级礼包弹窗</td></tr>
+    <tr><td>DailyPack</td><td>BattlePass</td><td class="num">19</td><td>战令 → 每日礼包弹窗</td></tr>
+    <tr><td>LevelPack</td><td>BattlePass</td><td class="num">19</td><td>战令 → 等级礼包弹窗</td></tr>
+    <tr><td>Shop</td><td>Treasure</td><td class="num">17</td><td>宝藏活动 → 商城</td></tr>
+    <tr><td>Shop</td><td>CardPackageFrenzy</td><td class="num">15</td><td>卡包狂欢 → 商城</td></tr>
+    <tr><td>EnergyPack</td><td>RoadTrip</td><td class="num">12</td><td>房车探险消耗 → 体力包</td></tr>
+    <tr><td>ChainPack</td><td>BattlePass</td><td class="num">11</td><td>战令 → 连锁礼包</td></tr>
+    <tr><td>Shop</td><td>RoadTrip</td><td class="num">11</td><td>房车探险 → 商城</td></tr>
+    <tr><td>DailyPack</td><td>ThemeDecoBalloon</td><td class="num">10</td><td>主题装修 → 每日礼包</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="warn-box">
+  <h4>⚠️ 核心洞察：活动是付费金额的"放大器"</h4>
+  <ul>
+    <li><span class="hl-red">BattlePass（战令）是最强的付费催化活动</span>，触发了 118 次 Shop 首付 + 29 次 IceBreak + 19 次 DailyPack + 19 次 LevelPack... 合计超过 200 次首付转化</li>
+    <li><strong>ThemeDecoBalloon（主题装修）</strong>排第二，特别擅长触发<span class="hl">高客单价商品</span>（EnergyPack $11.62、DailyPack $8.46）</li>
+    <li><strong>MiniBoard 系列</strong>实现了"活动内付费闭环"——29 人因 MiniBoardAreaScroll 活动直接购买了 $6.99 的棋盘礼包</li>
+    <li>📌 结论：<span class="hl-cyan">活动类型直接影响触发的付费类型 → 进而决定付费金额。高消耗活动（主题装修/房车探险）更容易触发高客单价商品</span></li>
+  </ul>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- Section 7: 留存 -->
+<!-- ============================================ -->
+<div class="section" id="s7">
+<h2 class="section-title">7. 维度六：活动参与 × 留存</h2>
+
+<div class="chart-row">
+  <div class="chart-box">
+    <div class="chart-title">付费 vs 免费玩家留存对比</div>
+    <div class="chart-sub">付费行为与留存的关系（不等于因果）</div>
+    <div id="chart_retention" class="chart"></div>
+  </div>
+  <div class="chart-box">
+    <div class="chart-title">D0付费者 — 活动参与对D1留存的影响</div>
+    <div class="chart-sub">参与该活动 vs 未参与的D1留存差异（pp）</div>
+    <div id="chart_activity_retention" class="chart"></div>
+  </div>
+</div>
+
+<div class="scroll-wrap">
+<table class="data">
+  <thead>
+    <tr><th>活动</th><th class="num">符合条件人数</th><th class="num">参与人数</th><th class="num">参与率</th><th class="num">D1留存(参与)</th><th class="num">D1留存(未参)</th><th class="num">D1差异</th><th class="num">D7留存(参与)</th><th class="num">D7留存(未参)</th><th class="num">D7差异</th></tr>
+  </thead>
+  <tbody>
+    <tr><td>ThemeDecoBalloon</td><td class="num">216</td><td class="num">84</td><td class="num">38.9%</td><td class="num"><span class="hl-green">85.7%</span></td><td class="num">68.2%</td><td class="num"><span class="hl-green">+17.5pp</span></td><td class="num">46.4%</td><td class="num">43.9%</td><td class="num">+2.5pp</td></tr>
+    <tr><td>FoodCollection</td><td class="num">22</td><td class="num">18</td><td class="num">81.8%</td><td class="num"><span class="hl-green">83.3%</span></td><td class="num">50.0%</td><td class="num"><span class="hl-green">+33.3pp</span></td><td class="num">38.9%</td><td class="num">25.0%</td><td class="num">+13.9pp</td></tr>
+    <tr><td>RoadTrip</td><td class="num">48</td><td class="num">31</td><td class="num">64.6%</td><td class="num"><span class="hl-green">87.1%</span></td><td class="num">58.8%</td><td class="num"><span class="hl-green">+28.3pp</span></td><td class="num">45.2%</td><td class="num">47.1%</td><td class="num">-1.9pp</td></tr>
+    <tr><td>WaterOrder</td><td class="num">16</td><td class="num">10</td><td class="num">62.5%</td><td class="num"><span class="hl-green">100%</span></td><td class="num">66.7%</td><td class="num"><span class="hl-green">+33.3pp</span></td><td class="num">70.0%</td><td class="num">33.3%</td><td class="num">+36.7pp</td></tr>
+    <tr><td>Balloon</td><td class="num">216</td><td class="num">83</td><td class="num">38.4%</td><td class="num">66.3%</td><td class="num">80.5%</td><td class="num"><span class="hl-red">-14.2pp</span></td><td class="num">42.2%</td><td class="num">46.6%</td><td class="num">-4.4pp</td></tr>
+    <tr><td>CoinRacing</td><td class="num">127</td><td class="num">47</td><td class="num">37.0%</td><td class="num">68.1%</td><td class="num">77.5%</td><td class="num"><span class="hl-red">-9.4pp</span></td><td class="num">42.6%</td><td class="num">45.0%</td><td class="num">-2.4pp</td></tr>
+  </tbody>
+</table>
+</div>
+
+<div class="insight-box">
+  <h4>📈 活动参与如何影响付费者的留存（间接影响LTV）</h4>
+  <ul>
+    <li><span class="hl-green">ThemeDecoBalloon（主题装修）是留存正相关最强的活动</span>：D1留存提升 +17.5pp（85.7% vs 68.2%），且样本量充足（216人）</li>
+    <li><strong>RoadTrip（房车探险）</strong>D1留存 +28.3pp，但D7归零 — 说明只有短期黏性</li>
+    <li>⚠️ <span class="hl-red">Balloon（气球嘉年华）参与者留存反而更低</span>（-14.2pp），可能原因：参与气球的玩家在D0消耗过大导致次日疲劳</li>
+    <li>留存越高 → 后续付费机会越多 → LTV越高。因此，<span class="hl-cyan">引导付费者参与主题装修比参与气球嘉年华更有利于长期价值</span></li>
+  </ul>
+</div>
+</div>
+
+<!-- ============================================ -->
+<!-- Section 8: 综合结论 -->
+<!-- ============================================ -->
+<div class="section" id="s8">
+<h2 class="section-title">8. 综合结论：首日付费金额和什么相关？</h2>
+
+<div class="conclusion-box">
+  <h4>🎯 首日付费金额的 6 大驱动因素（按影响力排序）</h4>
+  <ol>
+    <li><strong>付费类型（最核心）</strong>：不同 pay_type 的客单价差距 3~10 倍（ChainPack $2.95 vs EnergyPack $11.62）。付费类型本质上由<strong>玩家的即时需求</strong>决定 —— 体力缺口产生高价购买（EnergyPack），好奇心试探产生低价购买（Shop $1.99）</li>
+    <li><strong>触发活动（强关联）</strong>：<span class="hl">战令（BattlePass）是最强催化剂</span>，触发 200+ 次首付；但主要导向低价 Shop。而<span class="hl-red">主题装修（ThemeDecoBalloon）和房车探险（RoadTrip）更擅长触发高客单价的体力包/每日包</span></li>
+    <li><strong>玩家等级（中等关联）</strong>：<span class="hl-cyan">Lv 9 是付费转化的"甜蜜点"</span>（解锁气球+主题装修）。等级越高 → 可购买商品越多 → 付费金额天花板越高</li>
+    <li><strong>付费时机（中等关联）</strong>：入游当天首付偏低（$1.99~$9.99 试探型为主），之后首付偏高（功能需求驱动）。破冰礼包是唯一在首日有效的高客单价商品</li>
+    <li><strong>活动参与深度（间接关联）</strong>：参与主题装修的付费者 D1 留存 +17.5pp → 更高留存意味着更多后续付费机会 → LTV 更高</li>
+    <li><strong>金额锚点设计</strong>：$6.99 和 $9.99 两个价格点合计覆盖 39.7% 的首付用户 → 这是市场验证过的"心理舒适区"定价</li>
+  </ol>
+</div>
+
+<div class="conclusion-box" style="border-color:rgba(34,211,238,.25);background:linear-gradient(135deg,rgba(34,211,238,.08),rgba(108,123,255,.08))">
+  <h4 style="color:var(--cyan)">📋 运营优化建议</h4>
+  <ol>
+    <li><strong>提升首日到达 Lv 9 的比例</strong>：优化新手引导节奏，让更多 D0 玩家到达 Lv 9 解锁高价值活动 → 提高首日客单价</li>
+    <li><strong>优化破冰礼包（IceBreak）</strong>：这是首日最有效的高客单价商品（78.7%首日转化），可考虑增加展示频率或优化触发时机</li>
+    <li><strong>利用"主题装修→体力缺口"链路</strong>：主题装修能同时触发高付费 + 高留存，建议在D0引导中优先曝光主题装修活动</li>
+    <li><strong>$6.99 定价策略扩展</strong>：MiniBoard 系列已验证 $6.99 是高转化价位；可考虑为更多活动礼包设置此价位</li>
+    <li><strong>警惕气球嘉年华的留存风险</strong>：D0付费者参与气球活动后留存反而下降 14.2pp，需排查是否因活动节奏过于消耗</li>
+  </ol>
+</div>
+</div>
+
+<div class="footer">
+  Merge Hope 首日付费看板 · 数据范围 2026-06-06 ~ 2026-06-25 · 自动生成于 2026-06-30
+</div>
+
+</div>
+
+<script>
+// ===== 通用 ECharts 配置 =====
+const darkTheme = {
+  backgroundColor: 'transparent',
+  textStyle: { color: '#8b8fa3' },
+  legend: { textStyle: { color: '#8b8fa3' } },
+  grid: { top: 40, right: 20, bottom: 40, left: 60, containLabel: true }
+};
+
+// ===== Section 2: 付费类型 × 数量 =====
+const c1 = echarts.init(document.getElementById('chart_paytype_count'));
+c1.setOption({
+  ...darkTheme,
+  tooltip: { trigger: 'axis' },
+  xAxis: { type: 'category', data: ['Shop','LevelPack','DailyPack','EnergyPack','IceBreak','MiniBoardDoor','MiniBoardAS','ChainPack','GiftOnAddOne','3in1Pack'], axisLabel: { rotate: 25, color: '#8b8fa3', fontSize: 11 } },
+  yAxis: { type: 'value', splitLine: { lineStyle: { color: '#2a2d3a' } } },
+  series: [{
+    type: 'bar',
+    data: [
+      { value: 289, itemStyle: { color: '#6c7bff' } },
+      { value: 88, itemStyle: { color: '#a78bfa' } },
+      { value: 73, itemStyle: { color: '#22d3ee' } },
+      { value: 51, itemStyle: { color: '#f87171' } },
+      { value: 47, itemStyle: { color: '#fbbf24' } },
+      { value: 43, itemStyle: { color: '#34d399' } },
+      { value: 35, itemStyle: { color: '#fb923c' } },
+      { value: 28, itemStyle: { color: '#818cf8' } },
+      { value: 18, itemStyle: { color: '#f472b6' } },
+      { value: 2, itemStyle: { color: '#94a3b8' } }
+    ],
+    barWidth: '50%',
+    label: { show: true, position: 'top', color: '#e4e6eb', fontSize: 12 }
+  }]
+});
+
+// ===== Section 2: 付费类型 × 均价 =====
+const c2 = echarts.init(document.getElementById('chart_paytype_avg'));
+c2.setOption({
+  ...darkTheme,
+  tooltip: { trigger: 'axis', formatter: '{b}<br/>平均金额: ${c}' },
+  xAxis: { type: 'category', data: ['3in1Pack','EnergyPack','GiftOn1+1','IceBreak','DailyPack','MBDoor','MBAS','Shop','LevelPack','ChainPack'], axisLabel: { rotate: 25, color: '#8b8fa3', fontSize: 11 } },
+  yAxis: { type: 'value', axisLabel: { formatter: '${value}' }, splitLine: { lineStyle: { color: '#2a2d3a' } } },
+  series: [{
+    type: 'bar',
+    data: [
+      { value: 27.49, itemStyle: { color: '#f87171' } },
+      { value: 11.62, itemStyle: { color: '#f87171' } },
+      { value: 10.66, itemStyle: { color: '#fb923c' } },
+      { value: 9.67, itemStyle: { color: '#fbbf24' } },
+      { value: 8.46, itemStyle: { color: '#fbbf24' } },
+      { value: 6.99, itemStyle: { color: '#22d3ee' } },
+      { value: 6.99, itemStyle: { color: '#22d3ee' } },
+      { value: 5.78, itemStyle: { color: '#a78bfa' } },
+      { value: 4.90, itemStyle: { color: '#34d399' } },
+      { value: 2.95, itemStyle: { color: '#34d399' } }
+    ],
+    barWidth: '50%',
+    label: { show: true, position: 'top', color: '#e4e6eb', fontSize: 11, formatter: '${c}' }
+  }]
+});
+
+// ===== Section 2: TOP 20 商品组合 =====
+const c3 = echarts.init(document.getElementById('chart_combo_top20'));
+const comboLabels = ['Shop $1.99','LevelPack $4.99','Shop $4.99','IceBreak $9.99','MBDoor $6.99','DailyPack $9.99','Shop $9.99','MBAS $6.99','DailyPack $6.99','EnergyPack $9.99','ChainPack $1.99','Shop $19.99','GiftOn1+1 $9.99','EnergyPack $6.99','EnergyPack $19.99','Shop $14.99','EnergyPack $14.99','DailyPack $4.99','LevelPack $2.99','IceBreak $4.99'];
+const comboValues = [169,84,56,44,43,39,38,35,29,26,24,15,14,9,8,7,7,5,4,3];
+const comboColors = comboValues.map(v => v > 40 ? '#f87171' : v > 20 ? '#fbbf24' : v > 10 ? '#22d3ee' : '#8b8fa3');
+c3.setOption({
+  ...darkTheme,
+  tooltip: { trigger: 'axis' },
+  grid: { top: 20, right: 40, bottom: 40, left: 160 },
+  xAxis: { type: 'value', splitLine: { lineStyle: { color: '#2a2d3a' } } },
+  yAxis: { type: 'category', data: comboLabels.reverse(), axisLabel: { color: '#e4e6eb', fontSize: 12 } },
+  series: [{
+    type: 'bar',
+    data: comboValues.reverse().map((v,i) => ({ value: v, itemStyle: { color: comboColors.reverse()[i] || '#6c7bff' } })),
+    barWidth: '60%',
+    label: { show: true, position: 'right', color: '#e4e6eb', fontSize: 11 }
+  }]
+});
+
+// ===== Section 3: 金额档位分布 =====
+const c4 = echarts.init(document.getElementById('chart_amount_tier'));
+c4.setOption({
+  ...darkTheme,
+  tooltip: { trigger: 'item', formatter: '{b}: {c}人 ({d}%)' },
+  series: [{
+    type: 'pie',
+    radius: ['40%', '70%'],
+    center: ['50%', '55%'],
+    data: [
+      { value: 193, name: '$1.99', itemStyle: { color: '#34d399' } },
+      { value: 173, name: '$2.99~$4.99', itemStyle: { color: '#22d3ee' } },
+      { value: 137, name: '$6.99', itemStyle: { color: '#6c7bff' } },
+      { value: 131, name: '$9.99', itemStyle: { color: '#fbbf24' } },
+      { value: 40, name: '$14.99+', itemStyle: { color: '#f87171' } }
+    ],
+    label: { color: '#e4e6eb', fontSize: 13, formatter: '{b}\n{c}人' },
+    emphasis: { label: { fontSize: 16 } }
+  }]
+});
+
+// ===== Section 3: 收入占比 =====
+const c5 = echarts.init(document.getElementById('chart_amount_revenue'));
+c5.setOption({
+  ...darkTheme,
+  tooltip: { trigger: 'item', formatter: '{b}: ${c} ({d}%)' },
+  series: [{
+    type: 'pie',
+    radius: ['40%', '70%'],
+    center: ['50%', '55%'],
+    data: [
+      { value: 384, name: '$1.99档', itemStyle: { color: '#34d399' } },
+      { value: 790, name: '$2.99~$4.99档', itemStyle: { color: '#22d3ee' } },
+      { value: 958, name: '$6.99档', itemStyle: { color: '#6c7bff' } },
+      { value: 1309, name: '$9.99档', itemStyle: { color: '#fbbf24' } },
+      { value: 1199, name: '$14.99+档', itemStyle: { color: '#f87171' } }
+    ],
+    label: { color: '#e4e6eb', fontSize: 13, formatter: '{b}\n${c}' },
+    emphasis: { label: { fontSize: 16 } }
+  }]
+});
+
+// ===== Section 4: 等级分布 =====
+const c6 = echarts.init(document.getElementById('chart_level_dist'));
+c6.setOption({
+  ...darkTheme,
+  tooltip: { trigger: 'axis' },
+  xAxis: { type: 'category', data: ['Lv1','Lv2','Lv3','Lv4','Lv5','Lv6','Lv7','Lv8','Lv9','Lv10','Lv11','Lv12','Lv13+'], axisLabel: { color: '#8b8fa3' } },
+  yAxis: { type: 'value', splitLine: { lineStyle: { color: '#2a2d3a' } } },
+  series: [{
+    type: 'bar',
+    data: [1,4,6,6,13,35,21,34,56,35,42,28,55].map((v,i) => ({
+      value: v,
+      itemStyle: { color: i === 8 ? '#f87171' : (i >= 5 && i <= 10 ? '#6c7bff' : '#4b5563') }
+    })),
+    barWidth: '55%',
+    label: { show: true, position: 'top', color: '#e4e6eb', fontSize: 11 },
+    markLine: {
+      data: [{ xAxis: 'Lv9', label: { formatter: '付费高峰', color: '#f87171' }, lineStyle: { color: '#f87171', type: 'dashed' } }],
+      symbol: 'none'
+    }
+  }]
+});
+
+// ===== Section 4: 首付日 =====
+const c7 = echarts.init(document.getElementById('chart_day_dist'));
+const dayData = [244,139,88,44,36,28,21,17,10,12,5,7,5,5,4,2,3,4];
+c7.setOption({
+  ...darkTheme,
+  tooltip: { trigger: 'axis', formatter: function(p) { return 'D+' + p[0].name + ': ' + p[0].value + '人'; } },
+  xAxis: { type: 'category', data: dayData.map((_,i) => i), axisLabel: { formatter: 'D+{value}', color: '#8b8fa3' } },
+  yAxis: { type: 'value', splitLine: { lineStyle: { color: '#2a2d3a' } } },
+  series: [{
+    type: 'bar',
+    data: dayData.map((v,i) => ({
+      value: v,
+      itemStyle: { color: i === 0 ? '#f87171' : i <= 2 ? '#fbbf24' : '#4b5563' }
+    })),
+    barWidth: '60%',
+    label: { show: true, position: 'top', color: '#e4e6eb', fontSize: 10 },
+    markArea: {
+      itemStyle: { color: 'rgba(248,113,113,0.08)' },
+      data: [[{ xAxis: 0 }, { xAxis: 2 }]],
+      label: { position: 'inside', color: '#f87171', fontSize: 12, formatter: 'D0~D2: 69.9%' }
+    }
+  }]
+});
+
+// ===== Section 5: 付费时机 =====
+const c8 = echarts.init(document.getElementById('chart_timing'));
+c8.setOption({
+  ...darkTheme,
+  tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
+  legend: { data: ['入游当天首付', '之后首付'], textStyle: { color: '#8b8fa3' }, top: 10 },
+  grid: { top: 50, right: 30, bottom: 40, left: 160 },
+  xAxis: { type: 'value', splitLine: { lineStyle: { color: '#2a2d3a' } } },
+  yAxis: { type: 'category', data: ['ThreeInOnePack','MiniBoardDoor','MiniBoardAS','ChainPack','GiftOnAddOne','EnergyPack','DailyPack','LevelPack','IceBreak','Shop'].reverse(), axisLabel: { color: '#e4e6eb', fontSize: 12 } },
+  series: [
+    { name: '入游当天首付', type: 'bar', stack: 'total', data: [132,37,18,15,10,9,11,11,1,0].reverse(), itemStyle: { color: '#fbbf24' }, label: { show: true, position: 'inside', fontSize: 11, color: '#111' } },
+    { name: '之后首付', type: 'bar', stack: 'total', data: [157,10,70,58,41,9,17,24,42,2].reverse(), itemStyle: { color: '#6c7bff' }, label: { show: true, position: 'inside', fontSize: 11, color: '#fff' } }
+  ]
+});
+
+// ===== Section 6: 触发活动 =====
+const c9 = echarts.init(document.getElementById('chart_trigger'));
+const triggerData = [
+  { pt: 'Shop', act: 'BattlePass', cnt: 118 },
+  { pt: 'Shop', act: 'ThemeDeco', cnt: 29 },
+  { pt: 'IceBreak', act: 'BattlePass', cnt: 29 },
+  { pt: 'MBAS', act: 'MBAS', cnt: 29 },
+  { pt: 'MBDoor', act: 'MBDoor', cnt: 23 },
+  { pt: 'EnergyPack', act: 'ThemeDeco', cnt: 20 },
+  { pt: 'LevelPack', act: 'ThemeDeco', cnt: 19 },
+  { pt: 'DailyPack', act: 'BattlePass', cnt: 19 },
+  { pt: 'LevelPack', act: 'BattlePass', cnt: 19 },
+  { pt: 'Shop', act: 'Treasure', cnt: 17 },
+  { pt: 'Shop', act: 'CardPkgFrenzy', cnt: 15 },
+  { pt: 'EnergyPack', act: 'RoadTrip', cnt: 12 },
+  { pt: 'ChainPack', act: 'BattlePass', cnt: 11 },
+  { pt: 'Shop', act: 'RoadTrip', cnt: 11 },
+  { pt: 'DailyPack', act: 'ThemeDeco', cnt: 10 }
+];
+c9.setOption({
+  ...darkTheme,
+  tooltip: { trigger: 'axis' },
+  grid: { top: 20, right: 40, bottom: 30, left: 210 },
+  xAxis: { type: 'value', splitLine: { lineStyle: { color: '#2a2d3a' } } },
+  yAxis: { type: 'category', data: triggerData.map(d => d.pt + ' ← ' + d.act).reverse(), axisLabel: { color: '#e4e6eb', fontSize: 12 } },
+  series: [{
+    type: 'bar',
+    data: triggerData.map(d => {
+      let color = '#6c7bff';
+      if (d.act.includes('BattlePass')) color = '#f87171';
+      else if (d.act.includes('ThemeDeco')) color = '#fbbf24';
+      else if (d.act === d.pt || d.act === 'MBAS' || d.act === 'MBDoor') color = '#34d399';
+      else color = '#a78bfa';
+      return { value: d.cnt, itemStyle: { color } };
+    }).reverse(),
+    barWidth: '60%',
+    label: { show: true, position: 'right', color: '#e4e6eb', fontSize: 11 }
+  }]
+});
+
+// ===== Section 7: 留存对比 =====
+const c10 = echarts.init(document.getElementById('chart_retention'));
+c10.setOption({
+  ...darkTheme,
+  tooltip: { trigger: 'axis', formatter: function(params) { return params.map(p => p.seriesName + ': ' + p.value + '%').join('<br/>'); } },
+  legend: { data: ['付费玩家', '免费玩家'], textStyle: { color: '#8b8fa3' }, top: 5 },
+  xAxis: { type: 'category', data: ['D+0','D+1','D+2','D+3','D+4','D+5','D+6','D+7'], axisLabel: { color: '#8b8fa3' } },
+  yAxis: { type: 'value', axisLabel: { formatter: '{value}%' }, splitLine: { lineStyle: { color: '#2a2d3a' } } },
+  series: [
+    { name: '付费玩家', type: 'line', data: [100,73.3,61.8,55.2,50.5,47.2,44.8,42.1], smooth: true, lineStyle: { width: 3, color: '#fbbf24' }, itemStyle: { color: '#fbbf24' }, areaStyle: { color: 'rgba(251,191,36,0.1)' } },
+    { name: '免费玩家', type: 'line', data: [100,40.4,30.0,25.2,22.5,20.4,19.1,17.8], smooth: true, lineStyle: { width: 3, color: '#8b8fa3' }, itemStyle: { color: '#8b8fa3' }, areaStyle: { color: 'rgba(139,143,163,0.05)' } }
+  ]
+});
+
+// ===== Section 7: 活动 × 留存 =====
+const c11 = echarts.init(document.getElementById('chart_activity_retention'));
+const actRetData = [
+  { name: 'WaterOrder', d1: 33.3, sample: 16 },
+  { name: 'FoodCollection', d1: 33.3, sample: 22 },
+  { name: 'RoadTrip', d1: 28.3, sample: 48 },
+  { name: 'ThemeDecoBalloon', d1: 17.5, sample: 216 },
+  { name: 'CardPkgFrenzy', d1: 42.3, sample: 40 },
+  { name: 'MiniBoardAS', d1: -1.1, sample: 93 },
+  { name: 'CoinRacing', d1: -9.4, sample: 127 },
+  { name: 'MiniBoardDoor', d1: -13.6, sample: 27 },
+  { name: 'Balloon', d1: -14.2, sample: 216 }
+];
+c11.setOption({
+  ...darkTheme,
+  tooltip: { trigger: 'axis', formatter: function(p) { var d = actRetData[actRetData.length - 1 - p[0].dataIndex]; return d.name + '<br/>D1差异: ' + (d.d1 > 0 ? '+' : '') + d.d1 + 'pp<br/>样本: ' + d.sample + '人'; } },
+  grid: { top: 20, right: 30, bottom: 30, left: 140 },
+  xAxis: { type: 'value', axisLabel: { formatter: '{value}pp' }, splitLine: { lineStyle: { color: '#2a2d3a' } }, min: -20, max: 50 },
+  yAxis: { type: 'category', data: actRetData.map(d => d.name).reverse(), axisLabel: { color: '#e4e6eb', fontSize: 12 } },
+  series: [{
+    type: 'bar',
+    data: actRetData.map(d => ({
+      value: d.d1,
+      itemStyle: { color: d.d1 > 0 ? '#34d399' : '#f87171' }
+    })).reverse(),
+    barWidth: '55%',
+    label: { show: true, position: 'right', color: '#e4e6eb', fontSize: 11, formatter: function(p) { return (p.value > 0 ? '+' : '') + p.value + 'pp'; } },
+    markLine: {
+      data: [{ xAxis: 0, lineStyle: { color: '#4b5563', type: 'dashed' } }],
+      symbol: 'none', label: { show: false }
+    }
+  }]
+});
+
+// ===== 窗口 resize =====
+window.addEventListener('resize', function() {
+  [c1,c2,c3,c4,c5,c6,c7,c8,c9,c10,c11].forEach(c => c.resize());
+});
+</script>
+</body>
+</html>
