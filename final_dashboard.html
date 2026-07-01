@@ -902,21 +902,29 @@
 <section class="chapter" id="ch4">
   <div class="chapter-title"><span class="chapter-num">第四章</span> 首日付费行为分析</div>
 
-  <!-- 首日付费等级分布（首次 vs 全部） -->
+  <!-- 首日首次付费分析（三图联动） -->
   <div class="card">
-    <div class="card-title">首日付费等级分布 <span style="color:var(--text2);font-size:12px;font-weight:400;">（475人 · 首次付费 vs 全部订单）</span></div>
-    <div id="ch4LevelChart" class="chart-box" style="height:360px;"></div>
+    <div class="card-title">首日首次付费分析 <span style="color:var(--text2);font-size:12px;font-weight:400;">（475人 · 点击图表交叉筛选）</span>
+      <span id="firstFilterTags" style="margin-left:8px;"></span>
+      <button id="resetFirst" onclick="resetFirstFilter()" style="float:right;background:var(--border);border:none;color:var(--text2);padding:4px 12px;border-radius:4px;cursor:pointer;font-size:12px;display:none;">重置筛选</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+      <div id="ch4FirstLevel" class="chart-box" style="height:340px;"></div>
+      <div id="ch4FirstCategory" class="chart-box" style="height:340px;"></div>
+      <div id="ch4FirstAmount" class="chart-box" style="height:340px;"></div>
+    </div>
   </div>
 
-  <!-- 商品类别分布 + 金额档位分布 -->
-  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
-    <div class="card">
-      <div class="card-title">首日首次付费商品类别 <span style="color:var(--text2);font-size:12px;font-weight:400;">（475人 · 按类型）</span></div>
-      <div id="ch4CategoryChart" class="chart-box" style="height:360px;"></div>
+  <!-- 首日全部付费分析（三图联动） -->
+  <div class="card">
+    <div class="card-title">首日全部付费分析 <span style="color:var(--text2);font-size:12px;font-weight:400;">（820笔订单 · 点击图表交叉筛选）</span>
+      <span id="allFilterTags" style="margin-left:8px;"></span>
+      <button id="resetAll" onclick="resetAllFilter()" style="float:right;background:var(--border);border:none;color:var(--text2);padding:4px 12px;border-radius:4px;cursor:pointer;font-size:12px;display:none;">重置筛选</button>
     </div>
-    <div class="card">
-      <div class="card-title">首日首次付费金额档位 <span style="color:var(--text2);font-size:12px;font-weight:400;">（475人 · 按金额）</span></div>
-      <div id="ch4AmountChart" class="chart-box" style="height:360px;"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+      <div id="ch4AllLevel" class="chart-box" style="height:340px;"></div>
+      <div id="ch4AllCategory" class="chart-box" style="height:340px;"></div>
+      <div id="ch4AllAmount" class="chart-box" style="height:340px;"></div>
     </div>
   </div>
 
@@ -1331,111 +1339,187 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
 // 第四章 · 首日付费行为分析
 // ============================================================
 
-// --- 首日付费等级分布（首次 vs 全部订单） ---
-(function(){
-  var dom = document.getElementById('ch4LevelChart');
-  if(!dom) return;
-  var chart = makeChart(dom);
-  var lvLabels = ['Lv1','Lv2','Lv3','Lv4','Lv5','Lv6','Lv7','Lv8','Lv9','Lv10','Lv11','Lv12','Lv13','Lv14','Lv15+'];
-  // 首次付费（475人，按玩家）
-  var firstPay = [10,9,21,38,44,177,59,41,51,16,7,2,0,0,0];
-  // 全部订单（820笔，按每笔付费时等级）
-  var allOrders = [12,13,33,49,53,249,91,59,82,49,45,26,11,16,29];
-  chart.setOption(Object.assign(baseOption({ grid: { left: 50, right: 20, top: 50, bottom: 40 } }), {
-    tooltip: {
-      trigger: 'axis', axisPointer: { type: 'shadow' },
-      formatter: function(ps) {
-        var s = '<b>' + ps[0].name + '</b><br/>';
-        ps.forEach(function(p){ s += p.marker + ' ' + p.seriesName + ': ' + p.value + '<br/>'; });
-        return s;
+// --- 首日付费联动图表 ---
+var FIRST_RAW = [["Lv1","商城直购","$1.99",6],["Lv1","商城直购","$19.99+",3],["Lv1","商城直购","$4.99",1],["Lv10","1+1礼包","$9.99",2],["Lv10","体力礼包","$14.99",1],["Lv10","体力礼包","$9.99",2],["Lv10","商城直购","$4.99",1],["Lv10","商城直购","$9.99",1],["Lv10","战令","$4.99",4],["Lv10","战令","$9.99",1],["Lv10","棋盘滚动","$6.99",2],["Lv10","每日礼包","$6.99",1],["Lv10","每日礼包","$9.99",1],["Lv11","商城直购","$1.99",1],["Lv11","战令","$9.99",2],["Lv11","每日礼包","$9.99",1],["Lv11","等级礼包","$4.99",3],["Lv12","等级礼包","$4.99",1],["Lv12","连锁礼包","$1.99",1],["Lv2","商城直购","$1.99",9],["Lv3","商城直购","$1.99",8],["Lv3","商城直购","$14.99",3],["Lv3","商城直购","$19.99+",2],["Lv3","商城直购","$4.99",5],["Lv3","商城直购","$9.99",3],["Lv4","商城直购","$1.99",23],["Lv4","商城直购","$14.99",2],["Lv4","商城直购","$19.99+",4],["Lv4","商城直购","$4.99",6],["Lv4","商城直购","$9.99",3],["Lv5","商城直购","$1.99",15],["Lv5","商城直购","$14.99",2],["Lv5","商城直购","$19.99+",3],["Lv5","商城直购","$4.99",11],["Lv5","商城直购","$9.99",7],["Lv5","破冰礼包","$9.99",6],["Lv6","商城直购","$1.99",10],["Lv6","商城直购","$4.99",7],["Lv6","商城直购","$9.99",2],["Lv6","战令","$4.99",31],["Lv6","战令","$9.99",79],["Lv6","每日礼包","$6.99",6],["Lv6","每日礼包","$9.99",6],["Lv6","破冰礼包","$9.99",36],["Lv7","1+1礼包","$9.99",3],["Lv7","体力礼包","$14.99",1],["Lv7","商城直购","$1.99",7],["Lv7","商城直购","$19.99+",1],["Lv7","商城直购","$4.99",4],["Lv7","商城直购","$9.99",2],["Lv7","战令","$4.99",4],["Lv7","战令","$9.99",14],["Lv7","破冰礼包","$9.99",1],["Lv7","等级礼包","$4.99",15],["Lv7","连锁礼包","$1.99",6],["Lv7","连锁礼包","$9.99",1],["Lv8","1+1礼包","$9.99",1],["Lv8","体力礼包","$14.99",1],["Lv8","体力礼包","$6.99",2],["Lv8","商城直购","$1.99",7],["Lv8","商城直购","$19.99+",1],["Lv8","商城直购","$4.99",5],["Lv8","战令","$4.99",6],["Lv8","战令","$9.99",7],["Lv8","每日礼包","$9.99",1],["Lv8","破冰礼包","$4.99",1],["Lv8","破冰礼包","$9.99",2],["Lv8","等级礼包","$4.99",5],["Lv8","连锁礼包","$1.99",1],["Lv8","连锁礼包","$9.99",1],["Lv9","1+1礼包","$9.99",2],["Lv9","体力礼包","$14.99",1],["Lv9","体力礼包","$6.99",2],["Lv9","体力礼包","$9.99",2],["Lv9","商城直购","$1.99",12],["Lv9","商城直购","$4.99",2],["Lv9","商城直购","$9.99",1],["Lv9","战令","$4.99",11],["Lv9","战令","$9.99",9],["Lv9","每日礼包","$6.99",2],["Lv9","每日礼包","$9.99",2],["Lv9","破冰礼包","$9.99",2],["Lv9","等级礼包","$4.99",2],["Lv9","连锁礼包","$9.99",1]];
+
+var ALL_RAW = [["Lv1","商城直购","$1.99",8],["Lv1","商城直购","$19.99+",3],["Lv1","商城直购","$4.99",1],["Lv10","1+1礼包","$14.99",1],["Lv10","1+1礼包","$9.99",3],["Lv10","体力礼包","$14.99",2],["Lv10","体力礼包","$4.99",1],["Lv10","体力礼包","$9.99",5],["Lv10","商城直购","$19.99+",1],["Lv10","商城直购","$4.99",1],["Lv10","商城直购","$9.99",2],["Lv10","战令","$4.99",5],["Lv10","战令","$6.99",1],["Lv10","战令","$9.99",4],["Lv10","棋盘滚动","$6.99",13],["Lv10","棋盘门","$6.99",5],["Lv10","每日礼包","$6.99",1],["Lv10","每日礼包","$9.99",4],["Lv11","1+1礼包","$9.99",1],["Lv11","体力礼包","$14.99",1],["Lv11","商城直购","$1.99",3],["Lv11","商城直购","$19.99+",1],["Lv11","商城直购","$4.99",3],["Lv11","商城直购","$9.99",1],["Lv11","战令","$9.99",5],["Lv11","棋盘滚动","$6.99",2],["Lv11","每日礼包","$14.99",1],["Lv11","每日礼包","$9.99",1],["Lv11","破冰礼包","$9.99",1],["Lv11","等级礼包","$4.99",24],["Lv11","连锁礼包","$1.99",1],["Lv12","3合1礼包","$19.99+",1],["Lv12","体力礼包","$6.99",1],["Lv12","商城直购","$1.99",2],["Lv12","商城直购","$4.99",2],["Lv12","商城直购","$9.99",1],["Lv12","战令","$9.99",2],["Lv12","棋盘滚动","$6.99",1],["Lv12","棋盘门","$6.99",4],["Lv12","每日礼包","$14.99",2],["Lv12","每日礼包","$6.99",1],["Lv12","每日礼包","$9.99",1],["Lv12","破冰礼包","$4.99",1],["Lv12","破冰礼包","$9.99",1],["Lv12","等级礼包","$4.99",4],["Lv12","连锁礼包","$1.99",1],["Lv12","连锁礼包","$9.99",1],["Lv13+","体力礼包","$14.99",1],["Lv13+","体力礼包","$19.99+",2],["Lv13+","体力礼包","$6.99",2],["Lv13+","体力礼包","$9.99",2],["Lv13+","商城直购","$1.99",1],["Lv13+","商城直购","$19.99+",2],["Lv13+","商城直购","$4.99",4],["Lv13+","商城直购","$9.99",4],["Lv13+","战令","$6.99",1],["Lv13+","战令","$9.99",1],["Lv13+","棋盘滚动","$6.99",5],["Lv13+","棋盘门","$6.99",3],["Lv13+","每日礼包","$14.99",2],["Lv13+","每日礼包","$19.99+",1],["Lv13+","每日礼包","$6.99",3],["Lv13+","每日礼包","$9.99",4],["Lv13+","等级礼包","$4.99",19],["Lv13+","连锁礼包","$1.99",2],["Lv2","商城直购","$1.99",10],["Lv2","商城直购","$4.99",3],["Lv3","商城直购","$1.99",13],["Lv3","商城直购","$14.99",4],["Lv3","商城直购","$19.99+",2],["Lv3","商城直购","$4.99",10],["Lv3","商城直购","$9.99",4],["Lv4","商城直购","$1.99",27],["Lv4","商城直购","$14.99",2],["Lv4","商城直购","$19.99+",4],["Lv4","商城直购","$4.99",11],["Lv4","商城直购","$9.99",5],["Lv5","商城直购","$1.99",20],["Lv5","商城直购","$14.99",2],["Lv5","商城直购","$19.99+",3],["Lv5","商城直购","$4.99",13],["Lv5","商城直购","$9.99",9],["Lv5","破冰礼包","$9.99",6],["Lv6","商城直购","$1.99",11],["Lv6","商城直购","$4.99",12],["Lv6","商城直购","$9.99",5],["Lv6","战令","$4.99",31],["Lv6","战令","$6.99",2],["Lv6","战令","$9.99",112],["Lv6","每日礼包","$6.99",13],["Lv6","每日礼包","$9.99",13],["Lv6","破冰礼包","$9.99",50],["Lv7","1+1礼包","$14.99",1],["Lv7","1+1礼包","$9.99",5],["Lv7","3合1礼包","$19.99+",1],["Lv7","体力礼包","$14.99",1],["Lv7","体力礼包","$6.99",2],["Lv7","商城直购","$1.99",13],["Lv7","商城直购","$19.99+",1],["Lv7","商城直购","$4.99",4],["Lv7","商城直购","$9.99",4],["Lv7","战令","$4.99",6],["Lv7","战令","$9.99",17],["Lv7","每日礼包","$6.99",1],["Lv7","每日礼包","$9.99",1],["Lv7","破冰礼包","$9.99",1],["Lv7","等级礼包","$4.99",23],["Lv7","连锁礼包","$1.99",8],["Lv7","连锁礼包","$4.99",1],["Lv7","连锁礼包","$9.99",1],["Lv8","1+1礼包","$9.99",1],["Lv8","3合1礼包","$19.99+",1],["Lv8","体力礼包","$14.99",1],["Lv8","体力礼包","$6.99",2],["Lv8","商城直购","$1.99",8],["Lv8","商城直购","$19.99+",2],["Lv8","商城直购","$4.99",9],["Lv8","商城直购","$9.99",1],["Lv8","战令","$4.99",7],["Lv8","战令","$9.99",9],["Lv8","每日礼包","$6.99",1],["Lv8","每日礼包","$9.99",1],["Lv8","破冰礼包","$4.99",1],["Lv8","破冰礼包","$9.99",2],["Lv8","等级礼包","$4.99",6],["Lv8","连锁礼包","$1.99",3],["Lv8","连锁礼包","$4.99",3],["Lv8","连锁礼包","$9.99",1],["Lv9","1+1礼包","$9.99",4],["Lv9","体力礼包","$14.99",2],["Lv9","体力礼包","$6.99",2],["Lv9","体力礼包","$9.99",4],["Lv9","商城直购","$1.99",15],["Lv9","商城直购","$19.99+",2],["Lv9","商城直购","$4.99",7],["Lv9","商城直购","$9.99",3],["Lv9","战令","$4.99",12],["Lv9","战令","$9.99",12],["Lv9","每日礼包","$14.99",1],["Lv9","每日礼包","$6.99",3],["Lv9","每日礼包","$9.99",4],["Lv9","破冰礼包","$9.99",5],["Lv9","等级礼包","$4.99",3],["Lv9","连锁礼包","$1.99",1],["Lv9","连锁礼包","$4.99",1],["Lv9","连锁礼包","$9.99",1]];
+
+var CAT_COLORS = {'商城直购':'#6c7bff','战令':'#a78bfa','破冰礼包':'#fbbf24','等级礼包':'#22d3ee','每日礼包':'#f87171','体力礼包':'#34d399','连锁礼包':'#818cf8','1+1礼包':'#f472b6','棋盘滚动':'#fb923c','棋盘门':'#F07C2E','3合1礼包':'#94a3b8'};
+var AMT_COLORS = {'$1.99':'#34d399','$4.99':'#22d3ee','$6.99':'#fbbf24','$9.99':'#6c7bff','$14.99':'#a78bfa','$19.99+':'#f87171'};
+var AMT_ORDER = ['$1.99','$4.99','$6.99','$9.99','$14.99','$19.99+'];
+
+function createLinkedGroup(raw, domIds, resetBtnId, filterTagsId) {
+  var chartInstances = {};
+  var filter = { level: null, category: null, amount: null };
+
+  // 收集所有出现的等级（保持排序）
+  var ALL_LEVELS = [];
+  var lvSet = {};
+  raw.forEach(function(r) { if (!lvSet[r[0]]) { lvSet[r[0]] = true; ALL_LEVELS.push(r[0]); } });
+  ALL_LEVELS.sort(function(a, b) {
+    var na = a.replace('Lv','').replace('+',''), nb = b.replace('Lv','').replace('+','');
+    return parseInt(na) - parseInt(nb);
+  });
+
+  Object.keys(domIds).forEach(function(key) {
+    var dom = document.getElementById(domIds[key]);
+    if (dom) chartInstances[key] = makeChart(dom);
+  });
+  if (!chartInstances.level || !chartInstances.category || !chartInstances.amount) return function(){};
+
+  function getFiltered() {
+    return raw.filter(function(r) {
+      if (filter.level && r[0] !== filter.level) return false;
+      if (filter.category && r[1] !== filter.category) return false;
+      if (filter.amount && r[2] !== filter.amount) return false;
+      return true;
+    });
+  }
+
+  function aggregate(data, idx) {
+    var map = {};
+    data.forEach(function(r) { map[r[idx]] = (map[r[idx]] || 0) + r[3]; });
+    return map;
+  }
+
+  function updateFilterTags() {
+    var el = document.getElementById(filterTagsId);
+    if (!el) return;
+    var tags = [];
+    var tagStyle = 'display:inline-block;background:rgba(248,113,73,0.15);color:#f87149;padding:2px 8px;border-radius:3px;font-size:11px;font-weight:400;margin-right:4px;';
+    if (filter.level) tags.push('<span style="' + tagStyle + '">' + filter.level + '</span>');
+    if (filter.category) tags.push('<span style="' + tagStyle + '">' + filter.category + '</span>');
+    if (filter.amount) tags.push('<span style="' + tagStyle + '">' + filter.amount + '</span>');
+    el.innerHTML = tags.join('');
+  }
+
+  function updateCharts() {
+    var data = getFiltered();
+    var hasFilter = filter.level || filter.category || filter.amount;
+    document.getElementById(resetBtnId).style.display = hasFilter ? 'inline-block' : 'none';
+    updateFilterTags();
+
+    // === 等级柱状图 ===
+    var levelMap = aggregate(data, 0);
+    var barData = ALL_LEVELS.map(function(lv) {
+      var val = levelMap[lv] || 0;
+      var color = '#58a6ff';
+      var opacity = 1;
+      if (filter.level) {
+        if (lv === filter.level) { color = '#f87149'; }
+        else { opacity = 0.25; }
+      } else if (hasFilter) {
+        opacity = val > 0 ? 1 : 0.25;
       }
-    },
-    legend: { data: ['首次付费（人）','全部订单（笔）'], textStyle: { color: THEME.textColor2 }, top: 6 },
-    xAxis: {
-      type: 'category', data: lvLabels,
-      axisLabel: { color: THEME.textColor2, fontSize: 11 },
-      axisLine: { lineStyle: { color: THEME.axisLine } }
-    },
-    yAxis: {
-      type: 'value', name: '数量',
-      axisLabel: { color: THEME.textColor2, fontSize: 11 },
-      splitLine: { lineStyle: { color: THEME.splitLine, type: 'dashed' } },
-      axisLine: { lineStyle: { color: THEME.axisLine } }
-    },
-    series: [
-      {
-        name: '首次付费（人）', type: 'bar', barGap: '10%',
-        data: firstPay,
-        itemStyle: { color: '#58a6ff' },
-        label: { show: true, position: 'top', fontSize: 9, color: THEME.textColor2, formatter: function(p){ return p.value || ''; } }
+      return { value: val, itemStyle: { color: color, opacity: opacity } };
+    });
+    chartInstances.level.setOption(Object.assign(baseOption({ grid: { left: 40, right: 10, top: 40, bottom: 40 } }), {
+      title: { text: '等级分布', textStyle: { color: THEME.textColor, fontSize: 13, fontWeight: 500 }, left: 'center', top: 6 },
+      tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: function(ps) { return '<b>' + ps[0].name + '</b><br/>数量: ' + ps[0].value; } },
+      xAxis: {
+        type: 'category', data: ALL_LEVELS,
+        axisLabel: { color: THEME.textColor2, fontSize: 10, rotate: 35 },
+        axisLine: { lineStyle: { color: THEME.axisLine } }
       },
-      {
-        name: '全部订单（笔）', type: 'bar',
-        data: allOrders,
-        itemStyle: { color: 'rgba(251,191,36,0.7)' },
-        label: { show: true, position: 'top', fontSize: 9, color: THEME.textColor2, formatter: function(p){ return p.value || ''; } }
+      yAxis: {
+        type: 'value',
+        axisLabel: { color: THEME.textColor2, fontSize: 10 },
+        splitLine: { lineStyle: { color: THEME.splitLine, type: 'dashed' } },
+        axisLine: { show: false }
+      },
+      series: [{
+        type: 'bar', data: barData, barMaxWidth: 28,
+        label: { show: true, position: 'top', fontSize: 9, color: THEME.textColor2, formatter: function(p) { return p.value || ''; } }
+      }]
+    }), true);
+
+    // === 商品类别饼图 ===
+    var catMap = aggregate(data, 1);
+    var catData = [];
+    Object.keys(catMap).forEach(function(k) {
+      if (catMap[k] > 0) {
+        var selected = filter.category === k;
+        var dimmed = filter.category && !selected;
+        catData.push({
+          value: catMap[k], name: k,
+          itemStyle: { color: CAT_COLORS[k] || '#94a3b8', opacity: dimmed ? 0.25 : 1 },
+          label: { color: dimmed ? 'rgba(228,230,235,0.25)' : THEME.textColor }
+        });
       }
-    ]
-  }));
-})();
+    });
+    catData.sort(function(a, b) { return b.value - a.value; });
+    chartInstances.category.setOption(Object.assign(baseOption({}), {
+      title: { text: '商品类别', textStyle: { color: THEME.textColor, fontSize: 13, fontWeight: 500 }, left: 'center', top: 6 },
+      tooltip: { trigger: 'item', formatter: function(p) { return '<b>' + p.name + '</b><br/>' + p.value + ' (' + p.percent + '%)'; } },
+      legend: { show: false },
+      series: [{
+        type: 'pie', radius: ['30%', '62%'], center: ['50%', '55%'],
+        label: { show: true, fontSize: 10, formatter: '{b}\n{d}%' },
+        labelLine: { lineStyle: { color: THEME.textColor2 } },
+        emphasis: { scaleSize: 8 },
+        data: catData
+      }]
+    }), true);
 
-// --- 首日首次付费商品类别（饼图） ---
-(function(){
-  var dom = document.getElementById('ch4CategoryChart');
-  if(!dom) return;
-  var chart = makeChart(dom);
-  chart.setOption(Object.assign(baseOption({}), {
-    tooltip: { trigger: 'item', formatter: '{b}<br/>{c}人 ({d}%)' },
-    legend: {
-      orient: 'vertical', right: 10, top: 'center',
-      textStyle: { color: THEME.textColor2, fontSize: 11 }
-    },
-    series: [{
-      type: 'pie', radius: ['35%', '65%'], center: ['40%', '50%'],
-      label: { show: true, color: THEME.textColor, fontSize: 11, formatter: '{b}\n{d}%' },
-      labelLine: { lineStyle: { color: THEME.textColor2 } },
-      data: [
-        { value: 180, name: '商城直购', itemStyle: { color: '#6c7bff' } },
-        { value: 168, name: '战令', itemStyle: { color: '#a78bfa' } },
-        { value: 48, name: '破冰礼包', itemStyle: { color: '#fbbf24' } },
-        { value: 26, name: '等级礼包', itemStyle: { color: '#22d3ee' } },
-        { value: 20, name: '每日礼包', itemStyle: { color: '#f87171' } },
-        { value: 12, name: '体力礼包', itemStyle: { color: '#34d399' } },
-        { value: 11, name: '连锁礼包', itemStyle: { color: '#818cf8' } },
-        { value: 8, name: '1+1礼包', itemStyle: { color: '#f472b6' } },
-        { value: 2, name: '棋盘区域', itemStyle: { color: '#fb923c' } }
-      ]
-    }]
-  }));
-})();
+    // === 金额档位饼图 ===
+    var amtMap = aggregate(data, 2);
+    var amtData = [];
+    AMT_ORDER.forEach(function(k) {
+      if (amtMap[k] && amtMap[k] > 0) {
+        var selected = filter.amount === k;
+        var dimmed = filter.amount && !selected;
+        amtData.push({
+          value: amtMap[k], name: k,
+          itemStyle: { color: AMT_COLORS[k] || '#94a3b8', opacity: dimmed ? 0.25 : 1 },
+          label: { color: dimmed ? 'rgba(228,230,235,0.25)' : THEME.textColor }
+        });
+      }
+    });
+    chartInstances.amount.setOption(Object.assign(baseOption({}), {
+      title: { text: '金额档位', textStyle: { color: THEME.textColor, fontSize: 13, fontWeight: 500 }, left: 'center', top: 6 },
+      tooltip: { trigger: 'item', formatter: function(p) { return '<b>' + p.name + '</b><br/>' + p.value + ' (' + p.percent + '%)'; } },
+      legend: { show: false },
+      series: [{
+        type: 'pie', radius: ['30%', '62%'], center: ['50%', '55%'],
+        label: { show: true, fontSize: 10, formatter: '{b}\n{d}%' },
+        labelLine: { lineStyle: { color: THEME.textColor2 } },
+        emphasis: { scaleSize: 8 },
+        data: amtData
+      }]
+    }), true);
+  }
 
-// --- 首日首次付费金额档位（饼图） ---
-(function(){
-  var dom = document.getElementById('ch4AmountChart');
-  if(!dom) return;
-  var chart = makeChart(dom);
-  chart.setOption(Object.assign(baseOption({}), {
-    tooltip: { trigger: 'item', formatter: '{b}<br/>{c}人 ({d}%)' },
-    legend: {
-      orient: 'vertical', right: 10, top: 'center',
-      textStyle: { color: THEME.textColor2, fontSize: 11 }
-    },
-    series: [{
-      type: 'pie', radius: ['35%', '65%'], center: ['40%', '50%'],
-      label: { show: true, color: THEME.textColor, fontSize: 11, formatter: '{b}\n{d}%' },
-      labelLine: { lineStyle: { color: THEME.textColor2 } },
-      data: [
-        { value: 204, name: '$9.99', itemStyle: { color: '#6c7bff' } },
-        { value: 124, name: '$4.99', itemStyle: { color: '#22d3ee' } },
-        { value: 106, name: '$1.99', itemStyle: { color: '#34d399' } },
-        { value: 15, name: '$6.99', itemStyle: { color: '#fbbf24' } },
-        { value: 12, name: '$19.99', itemStyle: { color: '#f87171' } },
-        { value: 11, name: '$14.99', itemStyle: { color: '#a78bfa' } },
-        { value: 3, name: '其他', itemStyle: { color: '#94a3b8' } }
-      ]
-    }]
-  }));
-})();
+  // 点击事件绑定
+  chartInstances.level.on('click', function(params) {
+    filter.level = filter.level === params.name ? null : params.name;
+    updateCharts();
+  });
+  chartInstances.category.on('click', function(params) {
+    filter.category = filter.category === params.name ? null : params.name;
+    updateCharts();
+  });
+  chartInstances.amount.on('click', function(params) {
+    filter.amount = filter.amount === params.name ? null : params.name;
+    updateCharts();
+  });
+
+  // 设置鼠标指针
+  [chartInstances.level, chartInstances.category, chartInstances.amount].forEach(function(c) {
+    c.getZr().on('mousemove', function(e) { c.getDom().style.cursor = e.target ? 'pointer' : 'default'; });
+  });
+
+  updateCharts();
+
+  return function() { filter = { level: null, category: null, amount: null }; updateCharts(); };
+}
+
+var resetFirstFilter = createLinkedGroup(FIRST_RAW,
+  { level: 'ch4FirstLevel', category: 'ch4FirstCategory', amount: 'ch4FirstAmount' },
+  'resetFirst', 'firstFilterTags');
+
+var resetAllFilter = createLinkedGroup(ALL_RAW,
+  { level: 'ch4AllLevel', category: 'ch4AllCategory', amount: 'ch4AllAmount' },
+  'resetAll', 'allFilterTags');
 
 // --- 首日付费商品类别趋势（堆叠面积图） ---
 (function(){
