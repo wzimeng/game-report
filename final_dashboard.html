@@ -826,6 +826,52 @@
     </div>
   </div>
 
+  <!-- 金币募集第一期（默认折叠） -->
+  <details class="collapsible">
+    <summary style="cursor:pointer;font-size:15px;font-weight:600;color:var(--text2);display:flex;align-items:center;gap:8px;">
+      <span style="transition:transform .2s;display:inline-block;">▾</span> 金币募集第一期数据（6/5 – 6/8，原版难度）
+    </summary>
+    <div style="margin-top:16px;overflow-x:auto;">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="text-align:left;">关卡</th>
+          <th>通关率</th>
+          <th>通关人数</th>
+          <th>通关玩家付费率</th>
+          <th>通关日均体力</th>
+          <th>通关日均宝石</th>
+          <th>通关ARPPU</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>10关通关</td>
+          <td class="num">2.5%</td>
+          <td class="num">20</td>
+          <td class="num">60.0%</td>
+          <td class="num">1,788</td>
+          <td class="num">207</td>
+          <td class="num">$20.97</td>
+        </tr>
+        <tr>
+          <td>隐藏关(11关)</td>
+          <td class="num">0.6%<span style="color:var(--text2);font-size:10px;"> (5人)</span></td>
+          <td class="num">5</td>
+          <td class="num">40.0%</td>
+          <td class="num">1,704</td>
+          <td class="num">170</td>
+          <td class="num">$14.98</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="info-card warn" style="margin-top:12px;margin-bottom:0;">
+      <strong style="color:var(--yellow);">📌 待补算：</strong>
+      第一期参与人数仅788人（同期活跃3,360），怀疑大量玩家在活动开放时尚未达到Lv.8解锁等级。需从数据库统计：活动开放前已达到Lv.8的玩家中参与率和通关体力消耗，以排除等级因素后进行两期对比。
+    </div>
+  </details>
+
   <!-- 三日活动 各关卡停留体力/宝石消耗对比图 -->
   <div class="card">
     <div class="card-title">三日活动 · 通关玩家资源消耗对比</div>
@@ -932,9 +978,10 @@
   <div class="info-card warn">
     <strong style="color:var(--yellow);">📌 以下指标需从数据库补算：</strong>
     <ul style="margin:8px 0 0 20px;font-size:13px;line-height:2;color:var(--text);">
+      <li><strong>金币募集第一期</strong> — 活动开放前已达Lv.8玩家的参与率和通关体力消耗（排除等级因素后与二期对比）</li>
       <li><strong>金币募集二期</strong> — 通关玩家在活动期间的登录天数分布（怀疑部分玩家入场时活动天数已不足）</li>
-      <li><strong>玩具拼图</strong> — 玩家完成第五阶段（25块进阶）时刻的累计日均体力消耗（当前数据为活动全程日均，需精确到到达时刻）</li>
-      <li><strong>全部活动</strong> — 付费玩家通关率当前为各层付费人数反算估值，精确值需从数据库直接查询活动结束前有付费记录的玩家中的通关比例</li>
+      <li><strong>玩具拼图</strong> — 玩家完成第五阶段（25块进阶）时刻的日均体力消耗（当前数据为活动全程日均，需精确到到达时刻）</li>
+      <li><strong>全部活动</strong> — 付费玩家通关率当前为各层付费人数反算估值，精确值需从数据库查询活动结束前有付费记录的玩家中的通关比例</li>
     </ul>
   </div>
 
