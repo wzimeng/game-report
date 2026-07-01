@@ -81,6 +81,7 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
   <h3>目录</h3>
   <ol>
     <li><a href="#s1">等级分析</a></li>
+    <li><a href="#s1b">流失队列深度拆解（D0 vs D8-14）</a></li>
     <li><a href="#s2">付费路径分析</a></li>
     <li><a href="#s3">资源存量对比</a></li>
     <li><a href="#s4">高付费流失玩家个案分析</a></li>
@@ -166,6 +167,59 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
   <div class="insight-box">
     <h4>💡 洞察</h4>
     <p>首日流失98人（19%），D0-D3 合计217人占42%，近半数流失玩家在前3天内离开。D8-14 也有124人（24%），说明中期留存同样是挑战。</p>
+  </div>
+</div>
+
+<!-- ==================== Section 1b: 流失队列深度拆解 ==================== -->
+<div id="s1b" class="section">
+  <h2 class="section-title">1.5 流失队列深度拆解（D0 vs D8-14）</h2>
+
+  <div class="chart-box full">
+    <div class="chart-title">各流失队列的等级分布</div>
+    <div class="chart-sub">按生命周期分桶（D0=首日流失, D1-3, D4-7, D8-14, D15+）| 等级=玩家达到的最高等级</div>
+    <div id="chart_cohort_level" class="chart-tall"></div>
+  </div>
+
+  <div class="chart-box full">
+    <div class="chart-title">各流失队列付费行为对比</div>
+    <div class="chart-sub">人均累计充值、付费次数、单价 | 仅统计流失付费玩家</div>
+    <table class="data">
+      <thead><tr><th>流失队列</th><th>人数</th><th>人均充值</th><th>人均次数</th><th>人均单价</th><th>平均等级</th><th>均登录天数</th></tr></thead>
+      <tbody>
+        <tr><td>D0 (首日)</td><td>97</td><td>$10.94</td><td>1.7</td><td>$6.07</td><td>Lv4.2</td><td>1.0</td></tr>
+        <tr><td>D1-3</td><td>119</td><td>$17.40</td><td>2.1</td><td>$7.97</td><td>Lv11.1</td><td>2.7</td></tr>
+        <tr><td>D4-7</td><td>119</td><td>$23.04</td><td>3.0</td><td>$7.32</td><td>Lv13.4</td><td>4.6</td></tr>
+        <tr><td>D8-14</td><td>123</td><td class="hl">$24.15</td><td>3.3</td><td>$7.43</td><td>Lv16.0</td><td>7.2</td></tr>
+        <tr><td>D15+</td><td>58</td><td>$20.85</td><td>3.2</td><td>$6.92</td><td>Lv17.7</td><td>10.3</td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-box">
+      <div class="chart-title">首购金额 vs 流失率</div>
+      <div class="chart-sub">按首笔付费金额分桶 | 包含活跃+流失全部付费玩家</div>
+      <div id="chart_amount_churn" class="chart"></div>
+    </div>
+    <div class="chart-box">
+      <div class="chart-title">各流失队列的累计充值构成</div>
+      <div class="chart-sub">按生命周期分桶看充值金额构成（百分比堆叠）| 仅统计流失付费玩家</div>
+      <div id="chart_cohort_rev" class="chart"></div>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <h4>💡 洞察：两类完全不同的流失</h4>
+    <ul>
+      <li><b>D0 首日流失（97人）</b>：66% 卡在 Lv1-5，47% 累计充值不超 $5，首购以 Shop 低价商品为主（53%）。本质是"试了一下没觉得好玩就走了"</li>
+      <li><b>D8-14 中期流失（123人）</b>：64% 在 Lv11-20 瓶颈区，54% 累计超 $10（15% 达 $50+），人均已买 3.3 笔。这是更有价值的流失——他们愿意付费但游戏体验没能留住</li>
+      <li><b>中期流失者人均充值 $24.15 是首日的 2.2 倍</b>，付费次数也多近一倍（3.3 vs 1.7），说明他们对游戏有过真实的付费意愿</li>
+    </ul>
+  </div>
+
+  <div class="warn-box">
+    <h4>⚠️ $1.99 小额首购流失率最高</h4>
+    <p>首购 ≤$1.99 的玩家流失率 <b>52.6%</b>，比 $2-4.99 档高出 11 个百分点（41.6%）。小额购买者更可能是低信心试探性消费 + 等级较低（Lv14.6），后续体验未能强化首次付费的信心。<b>$2-4.99 档（如 LevelPack $4.99）流失率最低</b>，可能提供了最佳性价比感知。</p>
   </div>
 </div>
 
@@ -585,6 +639,91 @@ const tooltipStyle={backgroundColor:'#1a1d28',borderColor:'#2a2d3a',textStyle:{c
       itemStyle:{borderColor:'#1a1d28',borderWidth:2},
       color:pieColors
     }]
+  });
+  window.addEventListener('resize',function(){chart.resize()});
+})();
+
+/* ====== Chart A: 各流失队列等级分布 ====== */
+(function(){
+  var dom=document.getElementById('chart_cohort_level');
+  var chart=echarts.init(dom);
+  var cats=['Lv1-5','Lv6-10','Lv11-15','Lv16-20','Lv21-25','Lv26-30','Lv31+'];
+  var cohorts=[
+    {name:'D0',color:C.red,data:[64,26,5,2,0,0,0]},
+    {name:'D1-3',color:C.orange,data:[6,52,49,9,1,2,0]},
+    {name:'D4-7',color:C.cyan,data:[7,33,45,23,8,2,1]},
+    {name:'D8-14',color:C.accent,data:[1,19,43,36,16,6,2]},
+    {name:'D15+',color:C.purple,data:[0,9,15,17,7,7,3]}
+  ];
+  chart.setOption({
+    tooltip:Object.assign({trigger:'axis'},tooltipStyle),
+    legend:{data:cohorts.map(function(c){return c.name}),textStyle:{color:'#e4e6eb'},top:6},
+    grid:Object.assign({},gridBase,{top:50,bottom:50}),
+    xAxis:{type:'category',data:cats,axisLabel:{color:C.text2},axisLine:{lineStyle:{color:'#2a2d3a'}}},
+    yAxis:{type:'value',name:'人数',nameTextStyle:{color:C.text2},axisLabel:{color:C.text2},splitLine:{lineStyle:{color:'#2a2d3a'}}},
+    series:cohorts.map(function(c){
+      return {name:c.name,type:'bar',data:c.data,barWidth:14,
+        itemStyle:{color:c.color},label:{show:true,position:'top',color:c.color,fontSize:9,
+        formatter:function(p){return p.value>0?p.value:''}}}
+    })
+  });
+  window.addEventListener('resize',function(){chart.resize()});
+})();
+
+/* ====== Chart C: 首购金额 vs 流失率 ====== */
+(function(){
+  var dom=document.getElementById('chart_amount_churn');
+  var chart=echarts.init(dom);
+  var cats=['$0-1.99','$2-4.99','$5-9.99','$10-19.99','$20+'];
+  var total=[247,315,510,47,7];
+  var rate=[52.6,41.6,44.9,44.7,71.4];
+  chart.setOption({
+    tooltip:Object.assign({trigger:'axis'},tooltipStyle),
+    legend:{data:['人数','流失率'],textStyle:{color:'#e4e6eb'},top:6},
+    grid:Object.assign({},gridBase,{top:50,bottom:50}),
+    xAxis:{type:'category',data:cats,axisLabel:{color:C.text2},axisLine:{lineStyle:{color:'#2a2d3a'}}},
+    yAxis:[
+      {type:'value',name:'人数',nameTextStyle:{color:C.text2},axisLabel:{color:C.text2},splitLine:{lineStyle:{color:'#2a2d3a'}}},
+      {type:'value',name:'流失率%',nameTextStyle:{color:C.text2},axisLabel:{color:C.text2,formatter:'{value}%'},splitLine:{show:false},min:0,max:80}
+    ],
+    series:[
+      {name:'人数',type:'bar',data:total,barWidth:28,itemStyle:{color:C.accent},
+       label:{show:true,position:'top',color:C.accent,fontSize:10}},
+      {name:'流失率',type:'line',yAxisIndex:1,data:rate,symbol:'circle',symbolSize:8,
+       lineStyle:{color:C.red,width:2},itemStyle:{color:C.red},
+       label:{show:true,color:C.red,fontSize:11,formatter:'{c}%'},
+       markLine:{silent:true,symbol:'none',lineStyle:{color:C.orange,type:'dashed'},
+         data:[{yAxis:46.3,label:{formatter:'整体 46.3%',color:C.orange,fontSize:10}}]}}
+    ]
+  });
+  window.addEventListener('resize',function(){chart.resize()});
+})();
+
+/* ====== Chart D: 各队列累计充值构成(百分比堆叠) ====== */
+(function(){
+  var dom=document.getElementById('chart_cohort_rev');
+  var chart=echarts.init(dom);
+  var cohorts=['D0','D1-3','D4-7','D8-14','D15+'];
+  var buckets=['$0-1.99','$2-4.99','$5-9.99','$10-19.99','$20-49.99','$50+'];
+  var raw=[[26,18,13,10,6],[19,20,20,22,10],[28,37,34,25,15],[14,21,23,27,8],[7,18,18,21,11],[3,5,11,18,8]];
+  var totals=cohorts.map(function(_,ci){var s=0;raw.forEach(function(r){s+=r[ci]});return s});
+  var pct=raw.map(function(r){return r.map(function(v,ci){return Math.round(1000*v/totals[ci])/10})});
+  var bColors=['#4ade80','#34d399','#22d3ee','#6c7bff','#a78bfa','#f87171'];
+  chart.setOption({
+    tooltip:Object.assign({trigger:'axis',formatter:function(ps){
+      var s=ps[0].axisValue+'<br>';
+      ps.forEach(function(p){s+=p.marker+p.seriesName+': '+p.value+'%<br>'});
+      return s}},tooltipStyle),
+    legend:{data:buckets,textStyle:{color:'#e4e6eb',fontSize:10},top:6,itemWidth:12,itemHeight:10},
+    grid:Object.assign({},gridBase,{top:50,left:70,bottom:30}),
+    yAxis:{type:'category',data:cohorts,axisLabel:{color:C.text2,fontSize:12},axisLine:{lineStyle:{color:'#2a2d3a'}}},
+    xAxis:{type:'value',max:100,axisLabel:{color:C.text2,formatter:'{value}%'},splitLine:{lineStyle:{color:'#2a2d3a'}}},
+    series:buckets.map(function(b,bi){
+      return {name:b,type:'bar',stack:'rev',data:pct[bi],barWidth:22,
+        itemStyle:{color:bColors[bi]},
+        label:{show:pct[bi].some(function(v){return v>=10}),position:'inside',color:'#fff',fontSize:10,
+          formatter:function(p){return p.value>=10?p.value+'%':''}}}
+    })
   });
   window.addEventListener('resize',function(){chart.resize()});
 })();
