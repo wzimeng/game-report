@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>最终汇报看板 — Merge Hope 活动与礼包调整效果</title>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+<style>
+  :root {
+    --bg: #0f1117;
+    --card: #1a1d28;
+    --border: #2a2d3a;
+    --text: #e4e6eb;
+    --text2: #8b8fa3;
+    --accent: #6c7bff;
+    --blue: #3b82f6;
+    --green: #34d399;
+    --red: #f87171;
+    --yellow: #fbbf24;
+    --purple: #a78bfa;
+    --cyan: #22d3ee;
+    --pink: #ff6b9d;
+    --orange: #F07C2E;
+  }
+  * { margin:0; padding:0; box-sizing:border-box; }
+  body {
+    font-family: -apple-system, 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+  }
+  .container { max-width:1200px; margin:0 auto; padding:20px; }
+
+  /* Header */
+  .report-header {
+    text-align: center; padding: 50px 20px 30px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 30px;
+  }
+  .report-header h1 { font-size: 28px; margin-bottom: 8px; }
+  .report-header .subtitle { color: var(--text2); font-size: 15px; }
+  .report-header .meta {
+    display: flex; justify-content: center; gap: 30px;
+    margin-top: 16px; font-size: 13px; color: var(--text2);
+  }
+  .report-header .meta span { display: flex; align-items: center; gap: 6px; }
+
+  /* Sections */
+  .chapter { margin-bottom: 50px; scroll-margin-top: 60px; }
+  .chapter-title {
+    font-size: 22px; font-weight: 700;
+    padding-bottom: 12px; margin-bottom: 24px;
+    border-bottom: 2px solid var(--accent);
+    display: flex; align-items: center; gap: 10px;
+  }
+  .chapter-num {
+    background: var(--accent); color: #fff;
+    font-size: 13px; padding: 2px 10px;
+    border-radius: 4px; font-weight: 600;
+  }
+
+  /* Cards */
+  .card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 24px;
+    margin-bottom: 24px;
+  }
+  .card-title {
+    font-size: 16px; font-weight: 600;
+    margin-bottom: 16px; color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .card-title .tag {
+    font-size: 11px; padding: 2px 8px;
+    border-radius: 3px; font-weight: 500;
+  }
+
+  /* Charts */
+  .chart-box { width: 100%; height: 400px; }
+  .chart-box.tall { height: 700px; }
+
+  /* Info cards */
+  .info-card {
+    background: rgba(167,139,250,0.08);
+    border: 1px solid rgba(167,139,250,0.2);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 16px;
+    font-size: 14px;
+    line-height: 1.8;
+  }
+  .info-card.warn {
+    background: rgba(251,191,36,0.08);
+    border-color: rgba(251,191,36,0.2);
+  }
+  .info-card.adjust {
+    background: rgba(248,113,113,0.06);
+    border-color: rgba(248,113,113,0.2);
+  }
+
+  /* Tables */
+  .data-table {
+    width: 100%; border-collapse: collapse;
+    font-size: 13px; margin-top: 12px;
+  }
+  .data-table th {
+    background: rgba(108,123,255,0.1);
+    color: var(--text); font-weight: 600;
+    padding: 10px 14px; text-align: left;
+    border-bottom: 2px solid var(--border);
+    white-space: nowrap;
+  }
+  .data-table td {
+    padding: 9px 14px;
+    border-bottom: 1px solid var(--border);
+    color: var(--text);
+  }
+  .data-table tr:hover td { background: rgba(255,255,255,0.02); }
+  .data-table tr.group-row td {
+    background: rgba(59,130,246,0.08);
+    color: var(--blue);
+    font-weight: 600;
+    font-size: 14px;
+    padding: 12px 14px 8px;
+    border-bottom: 1px solid rgba(59,130,246,0.2);
+    letter-spacing: 0.3px;
+  }
+  .data-table tr.group-row:hover td { background: rgba(59,130,246,0.08); }
+  .data-table .num { text-align: right; font-variant-numeric: tabular-nums; }
+  .data-table .highlight { color: var(--green); font-weight: 600; }
+  .data-table .neg { color: var(--red); }
+  .data-table .adjusted { color: var(--yellow); font-weight: 600; }
+
+  /* Gantt */
+  .gantt-scroll { overflow-x: auto; margin-top: 8px; }
+  .gantt-canvas {
+    position: relative;
+    display: grid;
+    grid-template-rows: auto var(--chart-height, 500px);
+    min-width: 900px;
+  }
+  .gantt-days {
+    display: grid;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 6px; margin-bottom: 4px;
+  }
+  .gantt-days span {
+    text-align: center; font-size: 11px; color: var(--text2);
+    padding: 2px 0;
+  }
+  .gantt-track { position: relative; width: 100%; }
+  .gantt-bar {
+    position: absolute;
+    height: 24px;
+    border-radius: 5px;
+    display: flex; align-items: center;
+    padding: 0 8px;
+    font-size: 11px; font-weight: 600;
+    color: #fff;
+    background: var(--type-color, #6c7bff);
+    opacity: 0.88;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: default;
+    transition: opacity .15s;
+    border: 1px solid rgba(255,255,255,0.08);
+  }
+  .gantt-bar:hover { opacity: 1; z-index: 10; }
+  .gantt-bar strong { font-weight: 600; font-size: 11px; pointer-events: none; }
+  .gantt-bar.is-clipped-end {
+    border-top-right-radius: 0; border-bottom-right-radius: 0;
+    border-right: 2px dashed rgba(255,255,255,0.3);
+  }
+  .gantt-bar.is-adjusted {
+    border: 2px solid var(--yellow);
+    box-shadow: 0 0 6px rgba(251,191,36,0.3);
+  }
+  .gantt-legend {
+    display: flex; flex-wrap: wrap; gap: 14px;
+    margin-top: 12px; font-size: 12px; color: var(--text2);
+  }
+  .gantt-legend span { display: flex; align-items: center; gap: 5px; }
+  .gantt-legend b {
+    display: inline-block; width: 14px; height: 14px;
+    border-radius: 3px;
+  }
+  .gantt-row-label {
+    position: absolute;
+    left: 0; width: 76px;
+    font-size: 11px; font-weight: 600;
+    color: var(--text2);
+    white-space: nowrap;
+    display: flex; align-items: center;
+    padding-left: 4px;
+  }
+  .gantt-row-bg {
+    position: absolute;
+    left: 80px; right: 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+  /* 6/19分割线 */
+  .gantt-divider {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 2px;
+    background: var(--yellow);
+    opacity: 0.6;
+    z-index: 5;
+  }
+  .gantt-divider-label {
+    position: absolute;
+    z-index: 6;
+    font-size: 10px;
+    color: var(--yellow);
+    font-weight: 600;
+    white-space: nowrap;
+    writing-mode: vertical-lr;
+    text-orientation: mixed;
+    letter-spacing: 1px;
+  }
+
+  /* badge */
+  .badge {
+    display: inline-block; padding: 2px 8px; border-radius: 4px;
+    font-size: 11px; font-weight: 600;
+  }
+  .badge-red { background: rgba(248,113,113,0.15); color: var(--red); }
+  .badge-green { background: rgba(52,211,153,0.15); color: var(--green); }
+  .badge-yellow { background: rgba(251,191,36,0.15); color: var(--yellow); }
+
+  /* sub-section */
+  .sub-title {
+    font-size: 15px; font-weight: 600; color: var(--accent);
+    margin: 20px 0 12px; padding-left: 10px;
+    border-left: 3px solid var(--accent);
+  }
+
+  /* Two columns */
+  .grid-2 {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 24px;
+  }
+  @media (max-width: 768px) {
+    .grid-2 { grid-template-columns: 1fr; }
+  }
+
+  /* adjust item */
+  .adjust-list { list-style: none; padding: 0; margin: 0; }
+  .adjust-list li {
+    padding: 10px 16px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    font-size: 13px;
+    line-height: 1.7;
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .adjust-list li .icon {
+    flex-shrink: 0;
+    width: 24px; height: 24px;
+    border-radius: 6px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 12px;
+    margin-top: 2px;
+  }
+  .adjust-list .act-item {
+    background: rgba(248,113,113,0.06);
+    border: 1px solid rgba(248,113,113,0.15);
+  }
+  .adjust-list .act-item .icon {
+    background: rgba(248,113,113,0.15);
+    color: var(--red);
+  }
+  .adjust-list .pack-item {
+    background: rgba(251,191,36,0.06);
+    border: 1px solid rgba(251,191,36,0.15);
+  }
+  .adjust-list .pack-item .icon {
+    background: rgba(251,191,36,0.15);
+    color: var(--yellow);
+  }
+
+  /* Footer */
+  .report-footer {
+    text-align: center;
+    padding: 30px 20px;
+    border-top: 1px solid var(--border);
+    color: var(--text2);
+    font-size: 13px;
+    margin-top: 40px;
+  }
+
+  /* 时间对比表 */
+  .time-compare { font-size: 12px; color: var(--text2); }
+  .time-compare .before { text-decoration: line-through; opacity: 0.5; }
+  .time-compare .after { color: var(--yellow); font-weight: 600; }
+  .time-compare .arrow { color: var(--text2); margin: 0 4px; }
+  .time-compare .same { color: var(--text2); }
+</style>
+</head>
+<body>
+
+<!-- Header -->
+<div class="report-header">
+  <h1>Merge Hope 活动与礼包调整效果汇报</h1>
+  <p class="subtitle">分析周期 2026/06/06 – 2026/06/29 · UTC-4 · 最终看板</p>
+  <div class="meta">
+    <span>📅 分析周期 24 天</span>
+    <span>🎯 难度调整节点 6/19 起</span>
+    <span>📦 礼包调整 3 次</span>
+  </div>
+</div>
+
+<div class="container">
+
+<!-- ==================== 第一章 活动排期总览 ==================== -->
+<section class="chapter" id="ch1">
+  <div class="chapter-title"><span class="chapter-num">第一章</span> 活动排期总览</div>
+
+  <!-- 甘特图 -->
+  <div class="card">
+    <div class="card-title">甘特图 · 6/1 – 6/30 活动排期
+      <span class="tag" style="background:rgba(108,123,255,0.15);color:#6c7bff;">38条活动</span>
+      <span class="tag" style="background:rgba(251,191,36,0.15);color:#fbbf24;">黄色边框 = 调整项</span>
+    </div>
+    <div class="gantt-scroll">
+      <div class="gantt-canvas" id="ganttCanvas" style="--chart-height:520px;--day-count:30">
+        <div class="gantt-days" id="ganttDays" style="grid-template-columns:80px repeat(30,minmax(28px,1fr))">
+          <span></span>
+          <span>01</span><span>02</span><span>03</span><span>04</span><span>05</span>
+          <span>06</span><span>07</span><span>08</span><span>09</span><span>10</span>
+          <span>11</span><span>12</span><span>13</span><span>14</span><span>15</span>
+          <span>16</span><span>17</span><span>18</span><span>19</span><span>20</span>
+          <span>21</span><span>22</span><span>23</span><span>24</span><span>25</span>
+          <span>26</span><span>27</span><span>28</span><span>29</span><span>30</span>
+        </div>
+        <div class="gantt-track" id="ganttTrack"></div>
+      </div>
+    </div>
+    <div class="gantt-legend">
+      <span><b style="background:#7B61FF"></b>卡册</span>
+      <span><b style="background:#6C757D"></b>战令</span>
+      <span><b style="background:#D1495B"></b>组合</span>
+      <span><b style="background:#4D908E"></b>主题装修</span>
+      <span><b style="background:#D45087"></b>棋盘</span>
+      <span><b style="background:#2A9D8F"></b>四日活动</span>
+      <span><b style="background:#43AA8B"></b>三日活动</span>
+      <span><b style="background:#277DA1"></b>单日活动</span>
+      <span><b style="background:#F07C2E"></b>礼包</span>
+      <span style="margin-left:8px;padding-left:8px;border-left:1px solid var(--border)"><b style="background:transparent;border:2px solid #fbbf24"></b>难度/内容调整</span>
+    </div>
+  </div>
+
+  <!-- 活动说明 -->
+  <div class="card">
+    <div class="card-title">活动说明</div>
+    <div style="overflow-x:auto">
+    <table class="data-table" style="margin-top:0">
+      <colgroup>
+        <col style="width:22%">
+        <col style="width:8%">
+        <col style="width:28%">
+        <col style="width:18%">
+        <col style="width:24%">
+      </colgroup>
+      <thead>
+        <tr><th>活动名称</th><th>解锁等级</th><th>类型说明</th><th>开放时间（调整前）</th><th>开放时间（调整后）</th></tr>
+      </thead>
+      <tbody>
+        <!-- 单日活动 -->
+        <tr class="group-row"><td colspan="5">📌 单日活动（每次开放 1 天）</td></tr>
+        <tr>
+          <td><span style="color:#fbbf24">●</span> 水滴订单（水滴）</td>
+          <td><strong>Lv.12</strong></td>
+          <td>正常订单额外奖励</td>
+          <td>6/7、6/14</td>
+          <td>6/21、6/28</td>
+        </tr>
+        <tr>
+          <td><span style="color:#f87171">●</span> 限时订单（限订）</td>
+          <td><strong>Lv.12</strong></td>
+          <td>额外高难度限时订单</td>
+          <td>6/10、6/17</td>
+          <td>6/24 <span class="badge badge-red">难度翻倍</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#ff6b9d">●</span> 卡包狂热（卡包）</td>
+          <td><strong>Lv.7</strong></td>
+          <td>正常订单额外奖励</td>
+          <td>6/12、6/19</td>
+          <td>6/26</td>
+        </tr>
+        <tr>
+          <td><span style="color:#22d3ee">●</span> 无尽奖励（无尽）</td>
+          <td><strong>Lv.12</strong></td>
+          <td>单独活动窗口里程碑</td>
+          <td>—（新活动）</td>
+          <td>6/20、6/27 <span class="badge badge-yellow">新增</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#a78bfa">●</span> 限时订单链（限链）</td>
+          <td><strong>Lv.12</strong></td>
+          <td>额外高难度阶梯订单（5步）</td>
+          <td>—（新活动）</td>
+          <td>6/22 <span class="badge badge-yellow">新增</span></td>
+        </tr>
+        <!-- 三日活动 -->
+        <tr class="group-row"><td colspan="5">📌 三日活动（每次开放 3 天）</td></tr>
+        <tr>
+          <td><span style="color:#43AA8B">●</span> 杰西卡金币募集</td>
+          <td><strong>Lv.8</strong></td>
+          <td>金币积分累计（10关+1隐藏关）</td>
+          <td>6/5 – 6/8</td>
+          <td>6/26 – 6/29 <span class="badge badge-red">难度调整</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#43AA8B">●</span> 艾瑞克小车竞速</td>
+          <td><strong>Lv.8</strong></td>
+          <td>金币竞速排名（10轮）</td>
+          <td>6/12 – 6/15</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><span style="color:#43AA8B">●</span> 杰西卡开车探险</td>
+          <td><strong>Lv.8</strong></td>
+          <td>积分里程碑（37节点）</td>
+          <td>—</td>
+          <td>6/19 – 6/22 <span class="badge badge-red">难度调整</span></td>
+        </tr>
+        <!-- 四日活动 -->
+        <tr class="group-row"><td colspan="5">📌 四日活动（每次开放 4 天）</td></tr>
+        <tr>
+          <td><span style="color:#2A9D8F">●</span> 露娜玩具拼图</td>
+          <td><strong>Lv.8</strong></td>
+          <td>拼图收集（9/16/25块三阶段）</td>
+          <td>6/8 – 6/12</td>
+          <td>6/29 – 7/3</td>
+        </tr>
+        <tr>
+          <td><span style="color:#2A9D8F">●</span> 山姆水塘钓鱼</td>
+          <td><strong>Lv.8</strong></td>
+          <td>闯关寻宝（10普通+5循环）</td>
+          <td>6/15 – 6/19</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><span style="color:#2A9D8F">●</span> 凯的食品券兑换</td>
+          <td><strong>Lv.8</strong></td>
+          <td>食品券合成→积分累计（12档+循环）</td>
+          <td>—</td>
+          <td>6/22 – 6/26 <span class="badge badge-red">难度调整</span></td>
+        </tr>
+        <!-- 中长期活动 -->
+        <tr class="group-row"><td colspan="5">📌 中长期活动</td></tr>
+        <tr>
+          <td><span style="color:#D45087">●</span> 副棋盘（多层棋盘）</td>
+          <td><strong>Lv.10</strong></td>
+          <td>多层棋盘闯关</td>
+          <td>6/20 – 6/29</td>
+          <td><span class="badge badge-red">难度调整</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#4D908E">●</span> 气球嘉年华</td>
+          <td><strong>Lv.9</strong></td>
+          <td>飞镖打气球→积分兑换装饰家具（21天）</td>
+          <td>6/6 – 6/30</td>
+          <td>—</td>
+        </tr>
+        <tr>
+          <td><span style="color:#6C757D">●</span> 战令 Season 2</td>
+          <td><strong>Lv.6</strong></td>
+          <td>赛季通行证</td>
+          <td>6/1 – 6/30</td>
+          <td>—</td>
+        </tr>
+        <!-- 限时礼包 -->
+        <tr class="group-row"><td colspan="5">📌 限时礼包</td></tr>
+        <tr>
+          <td><span style="color:#F07C2E">●</span> 1+2 礼包</td>
+          <td><strong>Lv.7</strong></td>
+          <td>限时付费礼包</td>
+          <td>6/7、6/14、6/17</td>
+          <td>6/24 <span class="badge badge-yellow">内容改为飞镖</span>、6/28</td>
+        </tr>
+        <tr>
+          <td><span style="color:#F07C2E">●</span> 三合一礼包</td>
+          <td><strong>Lv.7</strong></td>
+          <td>限时付费礼包</td>
+          <td>6/12、6/16</td>
+          <td>6/22 <span class="badge badge-yellow">卡包→飞镖</span>、6/26 <span class="badge badge-yellow">卡包→飞镖</span></td>
+        </tr>
+        <tr>
+          <td><span style="color:#F07C2E">●</span> 礼包链</td>
+          <td><strong>Lv.7</strong></td>
+          <td>连续多日限时礼包</td>
+          <td>6/8 – 6/11</td>
+          <td>6/19 – 6/22</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+  </div>
+
+</section>
+
+</div><!-- container end -->
+
+<!-- Footer -->
+<div class="report-footer">
+  <p>Merge Hope 活动与礼包调整效果汇报 · 分析周期 2026/06/06 – 2026/06/29 (UTC-4)</p>
+  <p style="margin-top:6px;">数据来源：activity_schedule_full.json · 全服及Level≥12队列数据</p>
+</div>
+
+<script>
+// ============================================================
+// 甘特图 (纯CSS定位)
+// ============================================================
+(function(){
+  const ROW_LABELS = ['卡册','战令','组合','主题装修','棋盘','四日活动','三日活动','单日活动','礼包'];
+  const ROW_COLORS = ['#7B61FF','#6C757D','#D1495B','#4D908E','#D45087','#2A9D8F','#43AA8B','#277DA1','#F07C2E'];
+
+  // adjusted = true 表示难度或内容有调整的条目
+  const activities = [
+    {name:"卡册",start:"06-01 16:00",end:"07-16 16:00",row:0},
+    {name:"战令2",start:"06-01 16:00",end:"06-30 16:00",row:1},
+    {name:"组合活动",start:"06-01 16:00",end:"07-01 16:00",row:2},
+    {name:"气球嘉年华",start:"06-06 16:00",end:"06-30 16:00",row:3},
+    {name:"滚动棋盘",start:"06-06 16:00",end:"06-15 16:00",row:4},
+    {name:"多层棋盘",start:"06-20 16:00",end:"06-29 16:00",row:4,adjusted:true},
+    // 四日活动
+    {name:"玩具拼图",start:"06-08 16:00",end:"06-12 16:00",row:5},
+    {name:"池塘钓鱼",start:"06-15 16:00",end:"06-19 16:00",row:5},
+    {name:"食品券兑换",start:"06-22 16:00",end:"06-26 16:00",row:5,adjusted:true},
+    {name:"玩具拼图",start:"06-29 16:00",end:"07-03 16:00",row:5,adjusted:true},
+    // 三日活动
+    {name:"金币募集",start:"06-05 16:00",end:"06-08 16:00",row:6},
+    {name:"小车竞速",start:"06-12 16:00",end:"06-15 16:00",row:6},
+    {name:"开车探险",start:"06-19 16:00",end:"06-22 16:00",row:6,adjusted:true},
+    {name:"金币募集",start:"06-26 16:00",end:"06-29 16:00",row:6,adjusted:true},
+    // 单日活动 — 用中文缩写
+    {name:"水滴",start:"06-07 16:00",end:"06-08 16:00",row:7},
+    {name:"限订",start:"06-10 16:00",end:"06-11 16:00",row:7},
+    {name:"卡包",start:"06-12 16:00",end:"06-13 16:00",row:7},
+    {name:"水滴",start:"06-14 16:00",end:"06-15 16:00",row:7},
+    {name:"限订",start:"06-17 16:00",end:"06-18 16:00",row:7},
+    {name:"卡包",start:"06-19 16:00",end:"06-20 16:00",row:7},
+    {name:"无尽",start:"06-20 16:00",end:"06-21 16:00",row:7,adjusted:true},
+    {name:"水滴",start:"06-21 16:00",end:"06-22 16:00",row:7},
+    {name:"限链",start:"06-22 16:00",end:"06-23 16:00",row:7,adjusted:true},
+    {name:"限订",start:"06-24 16:00",end:"06-25 16:00",row:7,adjusted:true},
+    {name:"卡包",start:"06-26 16:00",end:"06-27 16:00",row:7},
+    {name:"无尽",start:"06-27 16:00",end:"06-28 16:00",row:7,adjusted:true},
+    {name:"水滴",start:"06-28 16:00",end:"06-29 16:00",row:7},
+    // 礼包
+    {name:"1+2",start:"06-07 16:00",end:"06-08 16:00",row:8},
+    {name:"礼包链",start:"06-08 16:00",end:"06-11 16:00",row:8},
+    {name:"三合一",start:"06-12 16:00",end:"06-13 16:00",row:8},
+    {name:"1+2",start:"06-14 16:00",end:"06-15 16:00",row:8},
+    {name:"三合一",start:"06-16 16:00",end:"06-17 16:00",row:8},
+    {name:"1+2",start:"06-17 16:00",end:"06-18 16:00",row:8},
+    {name:"礼包链",start:"06-19 16:00",end:"06-22 16:00",row:8},
+    {name:"三合一",start:"06-22 16:00",end:"06-23 16:00",row:8,adjusted:true},
+    {name:"1+2",start:"06-24 16:00",end:"06-25 16:00",row:8,adjusted:true},
+    {name:"三合一",start:"06-26 16:00",end:"06-27 16:00",row:8,adjusted:true},
+    {name:"1+2",start:"06-28 16:00",end:"06-29 16:00",row:8},
+  ];
+
+  function parseDay(s) {
+    const [md, hm] = s.split(' ');
+    const [m, d] = md.split('-').map(Number);
+    const [h] = hm.split(':').map(Number);
+    if (m === 6) return (d - 1) + h / 24;
+    if (m === 7) return 30 + (d - 1) + h / 24;
+    return 0;
+  }
+
+  const TOTAL_DAYS = 30;
+  const BAR_H = 24;
+  const GAP = 3;
+  const ROW_GAP = 8;
+  const track = document.getElementById('ganttTrack');
+
+  const rowGroups = {};
+  activities.forEach(act => {
+    if (!rowGroups[act.row]) rowGroups[act.row] = [];
+    rowGroups[act.row].push(act);
+  });
+
+  const DISPLAY_ROWS = [0,1,2,3,4,5,6,7,8];
+
+  let currentTop = 0;
+  const rowTops = {};
+  const rowHeights = {};
+
+  DISPLAY_ROWS.forEach(rowIdx => {
+    const items = rowGroups[rowIdx] || [];
+    const lanes = [];
+    rowTops[rowIdx] = currentTop;
+
+    items.forEach(act => {
+      const s = parseDay(act.start);
+      const e = parseDay(act.end);
+      let lane = -1;
+      for (let i = 0; i < lanes.length; i++) {
+        if (lanes[i] <= s + 0.01) { lane = i; break; }
+      }
+      if (lane === -1) { lane = lanes.length; }
+      lanes[lane] = e;
+
+      const leftFrac = s / TOTAL_DAYS;
+      const widthFrac = Math.min((e - s) / TOTAL_DAYS, 1 - leftFrac);
+      const clipped = e > TOTAL_DAYS;
+      const top = currentTop + lane * (BAR_H + GAP);
+      const color = ROW_COLORS[rowIdx];
+
+      const bar = document.createElement('div');
+      let cls = 'gantt-bar';
+      if (clipped) cls += ' is-clipped-end';
+      if (act.adjusted) cls += ' is-adjusted';
+      bar.className = cls;
+      bar.style.cssText = `left:calc(80px + (100% - 80px) * ${leftFrac.toFixed(5)});width:calc((100% - 80px) * ${widthFrac.toFixed(5)});top:${top}px;--type-color:${color};height:${BAR_H}px;font-size:${(e-s)<=1.5?'9px':'11px'};`;
+      bar.title = act.name + (act.adjusted ? ' (调整)' : '');
+      bar.innerHTML = '<strong>' + act.name + '</strong>';
+      track.appendChild(bar);
+    });
+
+    const numLanes = Math.max(lanes.length, 1);
+    rowHeights[rowIdx] = numLanes * (BAR_H + GAP);
+
+    const label = document.createElement('div');
+    label.className = 'gantt-row-label';
+    label.style.cssText = 'top:' + currentTop + 'px;height:' + rowHeights[rowIdx] + 'px;';
+    label.textContent = ROW_LABELS[rowIdx];
+    track.appendChild(label);
+
+    const bg = document.createElement('div');
+    bg.className = 'gantt-row-bg';
+    bg.style.cssText = 'top:' + currentTop + 'px;height:' + rowHeights[rowIdx] + 'px;';
+    track.appendChild(bg);
+
+    currentTop += rowHeights[rowIdx] + ROW_GAP;
+  });
+
+  // 添加 6/19 分割线
+  const dividerDay = (19 - 1) / TOTAL_DAYS; // 6/19 位置
+  const divider = document.createElement('div');
+  divider.className = 'gantt-divider';
+  divider.style.cssText = 'left:calc(80px + (100% - 80px) * ' + dividerDay.toFixed(5) + ');top:0;height:' + currentTop + 'px;';
+  track.appendChild(divider);
+
+  const divLabel = document.createElement('div');
+  divLabel.className = 'gantt-divider-label';
+  divLabel.style.cssText = 'left:calc(80px + (100% - 80px) * ' + dividerDay.toFixed(5) + ' + 6px);top:4px;';
+  divLabel.textContent = '← 6/19起调整';
+  divLabel.style.writingMode = 'horizontal-tb';
+  track.appendChild(divLabel);
+
+  track.style.height = currentTop + 'px';
+  document.getElementById('ganttCanvas').style.setProperty('--chart-height', currentTop + 'px');
+})();
+</script>
+
+</body>
+</html>
