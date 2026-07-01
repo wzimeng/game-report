@@ -42,6 +42,25 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
 .insight-box li{margin-bottom:6px;font-size:14px}
 .tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:4px;font-weight:500}
 .tag-lv{background:rgba(108,123,255,.15);color:var(--accent)}
+/* === CSS Gantt Chart === */
+.gantt-scroll{overflow-x:auto;margin-top:8px}
+.gantt-canvas{position:relative;display:grid;grid-template-rows:auto var(--chart-height,500px);min-width:900px}
+.gantt-days{display:grid;grid-template-columns:80px repeat(var(--day-count,30),minmax(28px,1fr));border-bottom:1px solid var(--border);padding-bottom:6px;margin-bottom:4px}
+.gantt-days span{text-align:center;font-size:11px;color:var(--text2);padding:2px 0}
+.gantt-track{position:relative;width:100%;height:var(--chart-height,500px)}
+.gantt-bar{position:absolute;height:28px;border-radius:5px;display:flex;align-items:center;padding:0 8px;font-size:11px;font-weight:600;color:#fff;background:var(--type-color,#6c7bff);opacity:.88;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:default;transition:opacity .15s;border:1px solid rgba(255,255,255,.08)}
+.gantt-bar:hover{opacity:1;z-index:10}
+.gantt-bar strong{font-weight:600;font-size:11px;pointer-events:none}
+.gantt-bar.is-single{min-width:20px;font-size:10px;padding:0 3px}
+.gantt-bar.is-clipped-end{border-top-right-radius:0;border-bottom-right-radius:0;border-right:2px dashed rgba(255,255,255,.3)}
+.gantt-legend{display:flex;flex-wrap:wrap;gap:14px;margin-top:12px;font-size:12px;color:var(--text2)}
+.gantt-legend span{display:flex;align-items:center;gap:5px}
+.gantt-legend b{display:inline-block;width:14px;height:14px;border-radius:3px}
+.gantt-row-label{position:absolute;left:0;width:76px;font-size:11px;font-weight:600;color:var(--text2);white-space:nowrap;display:flex;align-items:center;padding-left:4px}
+.gantt-track-inner{position:absolute;left:80px;right:0;top:0;bottom:0}
+.gantt-row-bg{position:absolute;left:80px;right:0;border-bottom:1px solid rgba(255,255,255,.03)}
+.diff-pos{color:var(--green);font-weight:600}
+.diff-neg{color:var(--red);font-weight:600}
 @media(max-width:768px){.chart-row{grid-template-columns:1fr}.card-grid{grid-template-columns:1fr 1fr}h1{font-size:22px}}
 </style>
 </head>
@@ -69,23 +88,45 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
 <div class="section">
   <h2 class="section-title">活动排期与开启等级</h2>
   <div class="chart-box full">
-    <div class="chart-title">6/6~6/24 活动时间线 × 开启等级</div>
-    <div class="chart-sub">颜色越深 = 当天参与人数越多；等级标签标注该活动的最低参与等级</div>
-    <div id="chart_gantt" class="chart-tall"></div>
+    <div class="chart-title">6/1~6/30 活动排期甘特图</div>
+    <div class="chart-sub">按活动分类展示，含常驻活动、多日活动、单日活动和礼包</div>
+    <div class="gantt-scroll">
+      <div class="gantt-canvas" id="ganttCanvas" style="--chart-height:520px;--day-count:30">
+        <div class="gantt-days" style="grid-template-columns:80px repeat(30,minmax(28px,1fr))">
+          <span></span><span>01</span><span>02</span><span>03</span><span>04</span><span>05</span><span>06</span><span>07</span><span>08</span><span>09</span><span>10</span><span>11</span><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><span>19</span><span>20</span><span>21</span><span>22</span><span>23</span><span>24</span><span>25</span><span>26</span><span>27</span><span>28</span><span>29</span><span>30</span>
+        </div>
+        <div class="gantt-track" id="ganttTrack"></div>
+      </div>
+    </div>
+    <div class="gantt-legend">
+      <span><b style="background:#7B61FF"></b>卡册</span>
+      <span><b style="background:#6C757D"></b>战令</span>
+      <span><b style="background:#D1495B"></b>组合</span>
+      <span><b style="background:#4D908E"></b>主题装修</span>
+      <span><b style="background:#D45087"></b>棋盘</span>
+      <span><b style="background:#2A9D8F"></b>四日活动</span>
+      <span><b style="background:#43AA8B"></b>三日活动</span>
+      <span><b style="background:#277DA1"></b>单日活动</span>
+      <span><b style="background:#F07C2E"></b>礼包</span>
+    </div>
   </div>
   <div class="chart-box full">
-    <div class="chart-title">各活动开启等级要求（数据推断）</div>
-    <div class="chart-sub">取各活动参与者等级的 P5（第 5 百分位）作为开启等级估计</div>
+    <div class="chart-title">各活动解锁等级要求</div>
+    <div class="chart-sub">活动实际解锁等级，按等级门槛分组</div>
     <table class="data">
-      <thead><tr><th>活动</th><th>最低等级</th><th>P5 等级</th><th>总参与人数</th><th>等级门槛分类</th></tr></thead>
+      <thead><tr><th>活动</th><th>解锁等级</th><th>活动时间</th><th>分类</th></tr></thead>
       <tbody>
-        <tr><td>BattlePass</td><td>1</td><td>1</td><td>14,227</td><td><span class="tag tag-lv">无门槛</span></td></tr>
-        <tr><td>Treasure</td><td>1</td><td>1</td><td>5,210</td><td><span class="tag tag-lv">无门槛</span></td></tr>
-        <tr><td>CardPackageFrenzy</td><td>7</td><td>7</td><td>2,246</td><td><span class="tag tag-lv">Lv7</span></td></tr>
-        <tr><td>CoinCollection / CoinRacing / FoodCollection / PuzzleToy / RoadTrip</td><td>8</td><td>8</td><td>—</td><td><span class="tag tag-lv">Lv8</span></td></tr>
-        <tr><td>Balloon / ThemeDecoBalloon</td><td>9</td><td>9~10</td><td>—</td><td><span class="tag tag-lv">Lv9-10</span></td></tr>
-        <tr><td>MiniBoardAreaScroll / MiniBoardDoor</td><td>10</td><td>10</td><td>—</td><td><span class="tag tag-lv">Lv10</span></td></tr>
-        <tr><td>LimitedOrder / EndlessReward / LadderOrder / WaterOrder</td><td>12</td><td>12</td><td>—</td><td><span class="tag tag-lv">Lv12</span></td></tr>
+        <tr><td>BattlePass</td><td><span class="tag tag-lv">Lv1</span></td><td>6/1~7/1 常驻</td><td>战令</td></tr>
+        <tr><td>Treasure (卡册)</td><td><span class="tag tag-lv">Lv1</span></td><td>6/1~7/16 常驻</td><td>卡册</td></tr>
+        <tr><td>CardPackageFrenzy (CPF)</td><td><span class="tag tag-lv">Lv7</span></td><td>6/12, 6/19 各1天</td><td>单日活动</td></tr>
+        <tr><td>CoinCollection</td><td><span class="tag tag-lv">Lv8</span></td><td>6/1~7/1 常驻</td><td>组合活动</td></tr>
+        <tr><td>CoinRacing / 杰西卡基金</td><td><span class="tag tag-lv">Lv8</span></td><td>每周3天轮转</td><td>三日活动</td></tr>
+        <tr><td>FoodCollection / PuzzleToy</td><td><span class="tag tag-lv">Lv8</span></td><td>每周4天轮转</td><td>四日活动</td></tr>
+        <tr><td>RoadTrip (开车探险)</td><td><span class="tag tag-lv">Lv8</span></td><td>6/19~6/22</td><td>三日活动</td></tr>
+        <tr><td>Balloon / ThemeDecoBalloon</td><td><span class="tag tag-lv">Lv9</span></td><td>6/6~6/30</td><td>主题装修</td></tr>
+        <tr><td>MiniBoardAreaScroll / MiniBoardDoor</td><td><span class="tag tag-lv">Lv10</span></td><td>6/6~6/15 / 6/20~6/29</td><td>棋盘</td></tr>
+        <tr><td>WaterOrder / LimitedOrder</td><td><span class="tag tag-lv">Lv12</span></td><td>每周各1天</td><td>单日活动</td></tr>
+        <tr><td>EndlessReward / LadderOrder</td><td><span class="tag tag-lv">Lv12</span></td><td>6/20 / 6/22 各1天</td><td>单日活动</td></tr>
       </tbody>
     </table>
   </div>
@@ -278,6 +319,50 @@ table.data tr:hover td{background:rgba(255,255,255,.03)}
   </div>
 </div>
 
+<!-- ======================== 首日付费玩家 × 活动参与 × 留存 ======================== -->
+<div class="section">
+  <h2 class="section-title">首日付费玩家 × 活动参与 × D1/D3/D7 留存</h2>
+  <div class="card-grid">
+    <div class="stat-card"><div class="label">D0 付费玩家</div><div class="value" style="color:var(--accent)">336</div><div class="sub">6/6~6/23 首日付费</div></div>
+    <div class="stat-card"><div class="label">有活动记录</div><div class="value" style="color:var(--green)">335</div><div class="sub">99.7% 参与了至少1个活动</div></div>
+    <div class="stat-card"><div class="label">Lv9+ 占比</div><div class="value" style="color:var(--cyan)">64.3%</div><div class="sub">216/336 可玩气球/主题装修</div></div>
+    <div class="stat-card"><div class="label">Lv12+ 占比</div><div class="value" style="color:var(--purple)">24.7%</div><div class="sub">83/336 可玩单日活动</div></div>
+  </div>
+  <div class="chart-box full">
+    <div class="chart-title">付费玩家：参与 vs 未参与活动的 D1/D3/D7 留存差异</div>
+    <div class="chart-sub">仅统计「D0当天活动开放 且 玩家等级≥解锁等级」的付费玩家 · 柱高 = 参与组留存率 - 未参与组留存率(pp)</div>
+    <div id="chart_payer_ret" class="chart-tall"></div>
+  </div>
+  <div class="chart-box full">
+    <table class="data">
+      <thead><tr><th>活动</th><th>解锁</th><th>符合人数</th><th>参与</th><th>未参与</th><th>D1参与</th><th>D1未参与</th><th>D1差</th><th>D3参与</th><th>D3未参与</th><th>D3差</th><th>D7参与</th><th>D7未参与</th><th>D7差</th></tr></thead>
+      <tbody>
+        <tr><td>WaterOrder</td><td>Lv12</td><td>16</td><td>10</td><td>6</td><td>100.0%</td><td>66.7%</td><td class="diff-pos">+33.3pp</td><td>70.0%</td><td>33.3%</td><td class="diff-pos">+36.7pp</td><td>70.0%</td><td>33.3%</td><td class="diff-pos">+36.7pp</td></tr>
+        <tr><td>FoodCollection</td><td>Lv8</td><td>22</td><td>18</td><td>4</td><td>83.3%</td><td>50.0%</td><td class="diff-pos">+33.3pp</td><td>72.2%</td><td>25.0%</td><td class="diff-pos">+47.2pp</td><td>38.9%</td><td>25.0%</td><td class="diff-pos">+13.9pp</td></tr>
+        <tr><td>RoadTrip</td><td>Lv8</td><td>48</td><td>31</td><td>17</td><td>87.1%</td><td>58.8%</td><td class="diff-pos">+28.3pp</td><td>58.1%</td><td>35.3%</td><td class="diff-pos">+22.8pp</td><td>45.2%</td><td>47.1%</td><td class="diff-neg">-1.9pp</td></tr>
+        <tr><td>LimitedOrder</td><td>Lv12</td><td>15</td><td>13</td><td>2</td><td>76.9%</td><td>50.0%</td><td class="diff-pos">+26.9pp</td><td>84.6%</td><td>50.0%</td><td class="diff-pos">+34.6pp</td><td>38.5%</td><td>—</td><td>—</td></tr>
+        <tr><td>ThemeDecoBalloon</td><td>Lv9</td><td>216</td><td>84</td><td>132</td><td>85.7%</td><td>68.2%</td><td class="diff-pos">+17.5pp</td><td>58.3%</td><td>50.0%</td><td class="diff-pos">+8.3pp</td><td>46.4%</td><td>43.9%</td><td class="diff-pos">+2.5pp</td></tr>
+        <tr><td>MiniBoardAreaScroll</td><td>Lv10</td><td>93</td><td>90</td><td>3</td><td>65.6%</td><td>66.7%</td><td class="diff-neg">-1.1pp</td><td>53.3%</td><td>33.3%</td><td class="diff-pos">+20.0pp</td><td>47.8%</td><td>33.3%</td><td class="diff-pos">+14.4pp</td></tr>
+        <tr><td>CoinRacing</td><td>Lv8</td><td>127</td><td>47</td><td>80</td><td>68.1%</td><td>77.5%</td><td class="diff-neg">-9.4pp</td><td>46.8%</td><td>50.0%</td><td class="diff-neg">-3.2pp</td><td>42.6%</td><td>45.0%</td><td class="diff-neg">-2.4pp</td></tr>
+        <tr><td>Balloon</td><td>Lv9</td><td>216</td><td>83</td><td>133</td><td>66.3%</td><td>80.5%</td><td class="diff-neg">-14.2pp</td><td>51.8%</td><td>54.1%</td><td class="diff-neg">-2.3pp</td><td>42.2%</td><td>46.6%</td><td class="diff-neg">-4.4pp</td></tr>
+        <tr><td>MiniBoardDoor</td><td>Lv10</td><td>27</td><td>22</td><td>5</td><td>86.4%</td><td>100.0%</td><td class="diff-neg">-13.6pp</td><td>77.3%</td><td>100.0%</td><td class="diff-neg">-22.7pp</td><td>59.1%</td><td>60.0%</td><td class="diff-neg">-0.9pp</td></tr>
+      </tbody>
+    </table>
+    <div class="chart-sub" style="margin-top:8px">* CardPackageFrenzy(n=40,未参与仅3人)、PuzzleToy(n=55,未参与仅1人)、EndlessReward(n=1)、LadderOrder(n=3) 因样本不足省略</div>
+  </div>
+  <div class="insight-box">
+    <h4>💡 付费玩家活动×留存洞察</h4>
+    <ul>
+      <li><b>WaterOrder 参与者全量留存</b>：D1=100%，D7=70%，远超未参与组（D1=66.7%，D7=33.3%），D7差距达 +36.7pp</li>
+      <li><b>FoodCollection D3增益最大</b>：参与组 72.2% vs 未参与 25.0%（+47.2pp），但样本偏小(n=22)</li>
+      <li><b>RoadTrip / ThemeDecoBalloon 中等样本量正向效果</b>：D1留存分别高出 +28.3pp / +17.5pp</li>
+      <li><b>Balloon 出现负效应(D1: -14.2pp)</b>：参与气球活动的付费玩家反而留存更低——可能因为气球活动吸引了「短期消费后流失」的付费画像</li>
+      <li><b>CoinRacing 全维度负效应</b>：D1/D3/D7 均低于未参与组——赛车活动可能产生负面体验</li>
+      <li>注意：部分活动未参与组样本极小（MiniBoardAreaScroll未参与仅3人），结论需谨慎</li>
+    </ul>
+  </div>
+</div>
+
 <!-- ======================== 总结 ======================== -->
 <div class="section">
   <h2 class="section-title">综合结论</h2>
@@ -424,36 +509,113 @@ const sl={lineStyle:{color:'#2a2d3a'}};
   });
 })();
 
-// ===== Gantt chart =====
+// ===== CSS Gantt chart =====
 (function(){
-  const acts=['BattlePass','Balloon','MiniBoardAreaScroll','CoinCollection','PuzzleToy','LimitedOrder',
-    'CoinRacing','CardPackageFrenzy','Treasure','WaterOrder','ThemeDecoBalloon','RoadTrip',
-    'MiniBoardDoor','EndlessReward','FoodCollection','LadderOrder'];
-  const lvl=['Lv1','Lv9','Lv10','Lv8','Lv8','Lv12','Lv8','Lv7','Lv1','Lv12','Lv9','Lv8','Lv10','Lv12','Lv8','Lv12'];
-  // active days (from Q1 data, >50 participants)
-  const ranges={
-    'BattlePass':[6,24],'Balloon':[6,21],'MiniBoardAreaScroll':[6,15],'CoinCollection':[6,8],
-    'PuzzleToy':[8,12],'LimitedOrder':[10,24],'CoinRacing':[11,14],'CardPackageFrenzy':[12,19],
-    'Treasure':[14,19],'WaterOrder':[14,21],'ThemeDecoBalloon':[15,24],'RoadTrip':[19,23],
-    'MiniBoardDoor':[19,24],'EndlessReward':[20,21],'FoodCollection':[22,24],'LadderOrder':[22,23]
-  };
-  const data=[];const colors=['#6c7bff','#22d3ee','#34d399','#a78bfa','#fbbf24','#f87171','#fb923c','#818cf8',
-    '#2dd4bf','#f472b6','#facc15','#4ade80','#38bdf8','#e879f9','#a3e635','#f97316'];
-  acts.forEach((a,i)=>{
-    const r=ranges[a];
-    for(let d=r[0];d<=r[1];d++){
-      data.push([d-6,i,1]);
-    }
+  const ROW_LABELS=['卡册','战令','组合','主题装修','棋盘','四日活动','三日活动','单日活动','礼包'];
+  const ROW_COLORS=['#7B61FF','#6C757D','#D1495B','#4D908E','#D45087','#2A9D8F','#43AA8B','#277DA1','#F07C2E'];
+  const activities=[
+    {name:'卡册',start:'06-01 16:00',end:'07-16 16:00',row:0},
+    {name:'战令2(儿童节)',start:'06-01 16:00',end:'07-01 16:00',row:1},
+    {name:'组合活动',start:'06-01 16:00',end:'07-01 16:00',row:2},
+    {name:'气球嘉年华',start:'06-06 16:00',end:'06-30 16:00',row:3},
+    {name:'滚动棋盘',start:'06-06 16:00',end:'06-15 16:00',row:4},
+    {name:'多层棋盘',start:'06-20 16:00',end:'06-29 16:00',row:4},
+    {name:'玩具拼图',start:'06-08 16:00',end:'06-12 16:00',row:5},
+    {name:'池塘钓鱼',start:'06-15 16:00',end:'06-19 16:00',row:5},
+    {name:'食品券兑换',start:'06-22 16:00',end:'06-26 16:00',row:5},
+    {name:'玩具拼图',start:'06-29 16:00',end:'07-03 16:00',row:5},
+    {name:'杰西卡基金',start:'06-05 16:00',end:'06-08 16:00',row:6},
+    {name:'小车竞速',start:'06-12 16:00',end:'06-15 16:00',row:6},
+    {name:'开车探险',start:'06-19 16:00',end:'06-22 16:00',row:6},
+    {name:'杰西卡基金',start:'06-26 16:00',end:'06-29 16:00',row:6},
+    {name:'WO',start:'06-07 16:00',end:'06-08 16:00',row:7},
+    {name:'LO',start:'06-10 16:00',end:'06-11 16:00',row:7},
+    {name:'CPF',start:'06-12 16:00',end:'06-13 16:00',row:7},
+    {name:'WO',start:'06-14 16:00',end:'06-15 16:00',row:7},
+    {name:'LO',start:'06-17 16:00',end:'06-18 16:00',row:7},
+    {name:'CPF',start:'06-19 16:00',end:'06-20 16:00',row:7},
+    {name:'ER',start:'06-20 16:00',end:'06-21 16:00',row:7},
+    {name:'WO',start:'06-21 16:00',end:'06-22 16:00',row:7},
+    {name:'LadO',start:'06-22 16:00',end:'06-23 16:00',row:7},
+    {name:'LO',start:'06-24 16:00',end:'06-25 16:00',row:7},
+    {name:'CPF',start:'06-26 16:00',end:'06-27 16:00',row:7},
+    {name:'ER',start:'06-27 16:00',end:'06-28 16:00',row:7},
+    {name:'WO',start:'06-28 16:00',end:'06-29 16:00',row:7},
+    {name:'1+2',start:'06-07 16:00',end:'06-08 16:00',row:8},
+    {name:'礼包链',start:'06-08 16:00',end:'06-11 16:00',row:8},
+    {name:'3in1',start:'06-12 16:00',end:'06-13 16:00',row:8},
+    {name:'1+2',start:'06-14 16:00',end:'06-15 16:00',row:8},
+    {name:'3in1',start:'06-16 16:00',end:'06-17 16:00',row:8},
+    {name:'1+2',start:'06-17 16:00',end:'06-18 16:00',row:8},
+    {name:'礼包链',start:'06-19 16:00',end:'06-22 16:00',row:8},
+    {name:'3in1',start:'06-22 16:00',end:'06-23 16:00',row:8},
+    {name:'1+2',start:'06-24 16:00',end:'06-25 16:00',row:8},
+    {name:'3in1',start:'06-26 16:00',end:'06-27 16:00',row:8},
+    {name:'1+2',start:'06-28 16:00',end:'06-29 16:00',row:8},
+  ];
+  function parseDay(s){const[md,hm]=s.split(' ');const[m,d]=md.split('-').map(Number);const[h]=hm.split(':').map(Number);if(m===6)return(d-1)+h/24;if(m===7)return 30+(d-1)+h/24;return 0}
+  const TOTAL_DAYS=30,BAR_H=24,GAP=3,ROW_GAP=8;
+  const track=document.getElementById('ganttTrack');
+  const rowGroups={};
+  activities.forEach(act=>{if(!rowGroups[act.row])rowGroups[act.row]=[];rowGroups[act.row].push(act)});
+  const DISPLAY_ROWS=[0,1,2,3,4,5,6,7,8];
+  let currentTop=0;
+  DISPLAY_ROWS.forEach(rowIdx=>{
+    const items=rowGroups[rowIdx]||[];
+    const lanes=[];
+    const rowTop=currentTop;
+    items.forEach(act=>{
+      const s=parseDay(act.start),e=parseDay(act.end);
+      let lane=-1;
+      for(let i=0;i<lanes.length;i++){if(lanes[i]<=s+0.01){lane=i;break}}
+      if(lane===-1)lane=lanes.length;
+      lanes[lane]=e;
+      const leftFrac=s/TOTAL_DAYS,widthFrac=Math.min((e-s)/TOTAL_DAYS,1-leftFrac);
+      const clipped=e>TOTAL_DAYS;
+      const top=currentTop+lane*(BAR_H+GAP);
+      const color=ROW_COLORS[rowIdx];
+      const bar=document.createElement('div');
+      bar.className='gantt-bar'+(clipped?' is-clipped-end':'');
+      bar.style.cssText=`left:calc(80px + (100% - 80px) * ${leftFrac.toFixed(5)});width:calc((100% - 80px) * ${widthFrac.toFixed(5)});top:${top}px;--type-color:${color};height:${BAR_H}px;font-size:${(e-s)<=1.5?'9px':'11px'};`;
+      bar.title=act.name;
+      bar.innerHTML=`<strong>${act.name}</strong>`;
+      track.appendChild(bar);
+    });
+    const numLanes=Math.max(lanes.length,1);
+    const rowH=numLanes*(BAR_H+GAP);
+    const label=document.createElement('div');
+    label.className='gantt-row-label';
+    label.style.cssText=`top:${rowTop}px;height:${rowH}px;`;
+    label.textContent=ROW_LABELS[DISPLAY_ROWS.indexOf(rowIdx)];
+    track.appendChild(label);
+    const bg=document.createElement('div');
+    bg.className='gantt-row-bg';
+    bg.style.cssText=`top:${rowTop}px;height:${rowH}px;`;
+    track.appendChild(bg);
+    currentTop+=rowH+ROW_GAP;
   });
-  const ch=echarts.init(document.getElementById('chart_gantt'));
+  track.style.height=currentTop+'px';
+  document.getElementById('ganttCanvas').style.setProperty('--chart-height',currentTop+'px');
+})();
+
+// ===== Payer × Activity × Retention chart =====
+(function(){
+  const acts=['WaterOrder','FoodColl','RoadTrip','LimitedOrder','ThemeDeco','MiniBoard','CoinRacing','Balloon','MiniDoor'];
+  const d1Diff=[33.3,33.3,28.3,26.9,17.5,-1.1,-9.4,-14.2,-13.6];
+  const d3Diff=[36.7,47.2,22.8,34.6,8.3,20.0,-3.2,-2.3,-22.7];
+  const d7Diff=[36.7,13.9,-1.9,null,2.5,14.4,-2.4,-4.4,-0.9];
+  const ch=echarts.init(document.getElementById('chart_payer_ret'));
   ch.setOption({
-    tooltip:{...tt,formatter:p=>{if(p.data){const a=acts[p.data[1]];return `${a} (${lvl[p.data[1]]})<br/>6/${p.data[0]+6}`}return''}},
-    grid:{top:20,bottom:40,left:160,right:40},
-    xAxis:{type:'category',data:Array.from({length:19},(_, i)=>'6/'+(i+6)),axisLabel:{...al,rotate:45},splitLine:{show:false}},
-    yAxis:{type:'category',data:acts.map((a,i)=>`${a} (${lvl[i]})`),axisLabel:{...al,fontSize:11},inverse:true},
-    visualMap:{show:false,min:0,max:1,inRange:{color:['#1a1d28','#6c7bff']}},
-    series:[{type:'heatmap',data:data,itemStyle:{borderRadius:3,borderWidth:1,borderColor:'#1a1d28'},
-      emphasis:{itemStyle:{shadowBlur:10,shadowColor:'rgba(108,123,255,.5)'}}}]
+    tooltip:{...tt,trigger:'axis',formatter:ps=>{let s=ps[0].name;ps.forEach(p=>{if(p.value!=null)s+=`<br/>${p.marker}${p.seriesName}: <b>${p.value>0?'+':''}${p.value}pp</b>`});return s}},
+    legend:{data:['D1差','D3差','D7差'],textStyle:{color:C.text2},top:0},
+    grid:{top:40,bottom:60,left:120,right:40},
+    yAxis:{type:'category',data:acts,axisLabel:{...al,fontSize:11},inverse:true},
+    xAxis:{type:'value',axisLabel:{...al,formatter:v=>(v>0?'+':'')+v+'pp'},splitLine:sl,min:-30,max:50},
+    series:[
+      {name:'D1差',type:'bar',data:d1Diff.map(v=>({value:v,itemStyle:{color:v>=0?C.green:C.red}})),barWidth:'25%'},
+      {name:'D3差',type:'bar',data:d3Diff.map(v=>v!=null?{value:v,itemStyle:{color:v>=0?C.cyan:'rgba(248,113,113,.7)'}}:null),barWidth:'25%'},
+      {name:'D7差',type:'bar',data:d7Diff.map(v=>v!=null?{value:v,itemStyle:{color:v>=0?C.purple:'rgba(248,113,113,.5)'}}:null),barWidth:'25%'},
+    ]
   });
 })();
 
