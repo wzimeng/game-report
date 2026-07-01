@@ -750,13 +750,14 @@
 <section class="chapter" id="ch3">
   <div class="chapter-title"><span class="chapter-num">第三章</span> 三日和四日活动完成情况</div>
 
-  <!-- 三日活动对比 -->
+  <!-- 三日/四日活动合并对比表 -->
   <div class="card">
-    <div class="card-title">三日活动横向对比（Lv.8解锁）</div>
+    <div class="card-title">三日 & 四日活动横向对比（Lv.8解锁）</div>
     <div style="overflow-x:auto;">
     <table class="data-table">
       <thead>
         <tr>
+          <th style="text-align:left;width:50px;">类型</th>
           <th style="text-align:left;">活动</th>
           <th>时间</th>
           <th>参与人数</th>
@@ -771,6 +772,7 @@
       </thead>
       <tbody>
         <tr>
+          <td rowspan="4" style="font-weight:600;color:#58a6ff;border-right:2px solid var(--border);vertical-align:middle;text-align:center;">3日</td>
           <td>艾瑞克小车竞速</td>
           <td class="num">6/12 – 6/15</td>
           <td class="num">2,206</td>
@@ -818,38 +820,8 @@
           <td class="num">1,544</td>
           <td class="num" style="color:#d29922;">✅</td>
         </tr>
-      </tbody>
-    </table>
-    </div>
-  </div>
-
-  <!-- 三日活动 通关玩家体力对比图 -->
-  <div class="card">
-    <div class="card-title">三日活动 · 通关玩家体力消耗对比</div>
-    <div id="day3EnergyChart" class="chart-box"></div>
-  </div>
-
-  <!-- 四日活动对比 -->
-  <div class="card">
-    <div class="card-title">四日活动横向对比（Lv.8解锁）</div>
-    <div style="overflow-x:auto;">
-    <table class="data-table">
-      <thead>
-        <tr>
-          <th style="text-align:left;">活动</th>
-          <th>时间</th>
-          <th>参与人数</th>
-          <th>1/4完成率</th>
-          <th>1/2完成率</th>
-          <th>3/4完成率</th>
-          <th>通关率</th>
-          <th>付费玩家通关率</th>
-          <th>通关日均体力</th>
-          <th>难度调整</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
+        <tr style="border-top:2px solid var(--border);">
+          <td rowspan="3" style="font-weight:600;color:#3fb950;border-right:2px solid var(--border);vertical-align:middle;text-align:center;">4日</td>
           <td>露娜玩具拼图</td>
           <td class="num">6/8 – 6/12</td>
           <td class="num">1,801</td>
@@ -890,10 +862,16 @@
     </div>
   </div>
 
-  <!-- 四日活动 通关玩家体力对比图 -->
-  <div class="card">
-    <div class="card-title">四日活动 · 通关玩家体力消耗对比</div>
-    <div id="day4EnergyChart" class="chart-box"></div>
+  <!-- 体力消耗对比 左右并排 -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div class="card">
+      <div class="card-title">三日活动 · 通关玩家体力消耗对比</div>
+      <div id="day3EnergyChart" class="chart-box"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">四日活动 · 通关玩家体力消耗对比</div>
+      <div id="day4EnergyChart" class="chart-box"></div>
+    </div>
   </div>
 
 </section>
@@ -989,6 +967,12 @@
       </tbody>
     </table>
     </div>
+  </div>
+
+  <!-- 首日购买序列河流图 (Sankey) -->
+  <div class="card">
+    <div class="card-title">首日购买商品序列河流图 <span style="color:var(--text2);font-size:12px;font-weight:400;">（475人 · 第1-4笔购买流向）</span></div>
+    <div id="ch4SankeyChart" class="chart-box" style="height:480px;"></div>
   </div>
 
   <!-- 首日付费类别河流图 -->
@@ -1520,6 +1504,124 @@ var resetFirstFilter = createLinkedGroup(FIRST_RAW,
 var resetAllFilter = createLinkedGroup(ALL_RAW,
   { level: 'ch4AllLevel', category: 'ch4AllCategory', amount: 'ch4AllAmount' },
   'resetAll', 'allFilterTags');
+
+// --- 首日购买序列河流图 (Sankey) ---
+(function(){
+  var dom = document.getElementById('ch4SankeyChart');
+  if(!dom) return;
+  var chart = makeChart(dom);
+  var nodes = [
+    {name:'第1笔:商城直购',itemStyle:{color:'#6c7bff'}},
+    {name:'第1笔:战令',itemStyle:{color:'#a78bfa'}},
+    {name:'第1笔:破冰礼包',itemStyle:{color:'#fbbf24'}},
+    {name:'第1笔:等级礼包',itemStyle:{color:'#22d3ee'}},
+    {name:'第1笔:每日礼包',itemStyle:{color:'#f87171'}},
+    {name:'第1笔:体力礼包',itemStyle:{color:'#34d399'}},
+    {name:'第1笔:连锁礼包',itemStyle:{color:'#818cf8'}},
+    {name:'第1笔:1+1礼包',itemStyle:{color:'#f472b6'}},
+    {name:'第2笔:商城直购',itemStyle:{color:'#6c7bff'}},
+    {name:'第2笔:战令',itemStyle:{color:'#a78bfa'}},
+    {name:'第2笔:破冰礼包',itemStyle:{color:'#fbbf24'}},
+    {name:'第2笔:等级礼包',itemStyle:{color:'#22d3ee'}},
+    {name:'第2笔:每日礼包',itemStyle:{color:'#f87171'}},
+    {name:'第2笔:体力礼包',itemStyle:{color:'#34d399'}},
+    {name:'第2笔:连锁礼包',itemStyle:{color:'#818cf8'}},
+    {name:'第2笔:1+1礼包',itemStyle:{color:'#f472b6'}},
+    {name:'第2笔:棋盘滚动',itemStyle:{color:'#fb923c'}},
+    {name:'第2笔:棋盘门',itemStyle:{color:'#F07C2E'}},
+    {name:'第3笔:商城直购',itemStyle:{color:'#6c7bff'}},
+    {name:'第3笔:战令',itemStyle:{color:'#a78bfa'}},
+    {name:'第3笔:等级礼包',itemStyle:{color:'#22d3ee'}},
+    {name:'第3笔:每日礼包',itemStyle:{color:'#f87171'}},
+    {name:'第3笔:连锁礼包',itemStyle:{color:'#818cf8'}},
+    {name:'第3笔:棋盘滚动',itemStyle:{color:'#fb923c'}},
+    {name:'第4笔:商城直购',itemStyle:{color:'#6c7bff'}},
+    {name:'第4笔:等级礼包',itemStyle:{color:'#22d3ee'}},
+    {name:'不再购买',itemStyle:{color:'#30363d'}}
+  ];
+  var links = [
+    {source:'第1笔:战令',target:'不再购买',value:136},
+    {source:'第1笔:商城直购',target:'不再购买',value:109},
+    {source:'第1笔:商城直购',target:'第2笔:商城直购',value:32},
+    {source:'第1笔:破冰礼包',target:'不再购买',value:21},
+    {source:'第2笔:战令',target:'不再购买',value:21},
+    {source:'第2笔:商城直购',target:'不再购买',value:21},
+    {source:'第1笔:等级礼包',target:'不再购买',value:19},
+    {source:'第1笔:商城直购',target:'第2笔:破冰礼包',value:14},
+    {source:'第2笔:商城直购',target:'第3笔:商城直购',value:13},
+    {source:'第1笔:破冰礼包',target:'第2笔:战令',value:11},
+    {source:'第1笔:每日礼包',target:'不再购买',value:11},
+    {source:'第1笔:体力礼包',target:'不再购买',value:11},
+    {source:'第1笔:破冰礼包',target:'第2笔:每日礼包',value:10},
+    {source:'第1笔:商城直购',target:'第2笔:战令',value:10},
+    {source:'第2笔:每日礼包',target:'第3笔:战令',value:10},
+    {source:'第3笔:战令',target:'不再购买',value:10},
+    {source:'第3笔:商城直购',target:'不再购买',value:9},
+    {source:'第1笔:连锁礼包',target:'不再购买',value:8},
+    {source:'第2笔:破冰礼包',target:'不再购买',value:8},
+    {source:'第1笔:战令',target:'第2笔:棋盘滚动',value:7},
+    {source:'第2笔:等级礼包',target:'不再购买',value:7},
+    {source:'第3笔:商城直购',target:'第4笔:商城直购',value:7},
+    {source:'第1笔:战令',target:'第2笔:商城直购',value:6},
+    {source:'第1笔:每日礼包',target:'第2笔:战令',value:5},
+    {source:'第1笔:商城直购',target:'第2笔:体力礼包',value:5},
+    {source:'第1笔:商城直购',target:'第2笔:等级礼包',value:5},
+    {source:'第1笔:1+1礼包',target:'不再购买',value:5},
+    {source:'第2笔:破冰礼包',target:'第3笔:战令',value:5},
+    {source:'第2笔:体力礼包',target:'不再购买',value:5},
+    {source:'第3笔:等级礼包',target:'不再购买',value:5},
+    {source:'第1笔:战令',target:'第2笔:等级礼包',value:4},
+    {source:'第1笔:战令',target:'第2笔:战令',value:4},
+    {source:'第2笔:棋盘滚动',target:'不再购买',value:4},
+    {source:'第2笔:每日礼包',target:'不再购买',value:4},
+    {source:'第2笔:棋盘门',target:'不再购买',value:4},
+    {source:'第1笔:战令',target:'第2笔:1+1礼包',value:3},
+    {source:'第1笔:战令',target:'第2笔:棋盘门',value:3},
+    {source:'第1笔:破冰礼包',target:'第2笔:等级礼包',value:3},
+    {source:'第1笔:战令',target:'第2笔:体力礼包',value:3},
+    {source:'第2笔:战令',target:'第3笔:棋盘滚动',value:3},
+    {source:'第2笔:战令',target:'第3笔:商城直购',value:3},
+    {source:'第2笔:连锁礼包',target:'不再购买',value:3},
+    {source:'第3笔:战令',target:'第4笔:等级礼包',value:3},
+    {source:'第3笔:每日礼包',target:'不再购买',value:3},
+    {source:'第3笔:棋盘滚动',target:'不再购买',value:3},
+    {source:'第3笔:连锁礼包',target:'不再购买',value:3}
+  ];
+  chart.setOption({
+    backgroundColor: 'transparent',
+    tooltip: {
+      trigger: 'item',
+      formatter: function(p) {
+        if (p.dataType === 'edge') return p.data.source + ' → ' + p.data.target + '<br/>人数: ' + p.data.value;
+        return p.name + '<br/>人数: ' + p.value;
+      },
+      backgroundColor: '#161b22', borderColor: '#30363d',
+      textStyle: { color: '#e4e6eb', fontSize: 12 }
+    },
+    series: [{
+      type: 'sankey',
+      layout: 'none',
+      emphasis: { focus: 'adjacency' },
+      nodeAlign: 'left',
+      orient: 'horizontal',
+      nodeWidth: 20,
+      nodeGap: 12,
+      layoutIterations: 32,
+      left: 60, right: 80, top: 20, bottom: 20,
+      data: nodes,
+      links: links,
+      label: {
+        color: '#e4e6eb', fontSize: 11,
+        formatter: function(p) {
+          var parts = p.name.split(':');
+          return parts.length > 1 ? parts[1] : p.name;
+        }
+      },
+      lineStyle: { color: 'gradient', opacity: 0.35, curveness: 0.5 }
+    }]
+  });
+  window.addEventListener('resize', function(){ chart.resize(); });
+})();
 
 // --- 首日付费商品类别趋势（堆叠面积图） ---
 (function(){
