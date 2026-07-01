@@ -897,6 +897,36 @@
 
 </section>
 
+<!-- ========== 第四章 · 首日付费行为分析 ========== -->
+<section class="chapter" id="ch4">
+  <div class="chapter-title"><span class="chapter-num">第四章</span> 首日付费行为分析</div>
+
+  <!-- 首付等级分布 -->
+  <div class="card">
+    <div class="card-title">D0付费玩家等级分布 <span style="color:var(--text2);font-size:12px;font-weight:400;">（336人 · 首日即付费）</span></div>
+    <div id="ch4LevelChart" class="chart-box" style="height:320px;"></div>
+  </div>
+
+  <!-- 商品类别分布 + 金额档位分布 -->
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;">
+    <div class="card">
+      <div class="card-title">首付商品类别分布 <span style="color:var(--text2);font-size:12px;font-weight:400;">（674人首付 · 按类型）</span></div>
+      <div id="ch4CategoryChart" class="chart-box" style="height:360px;"></div>
+    </div>
+    <div class="card">
+      <div class="card-title">首付金额档位分布 <span style="color:var(--text2);font-size:12px;font-weight:400;">（674人首付 · 按金额）</span></div>
+      <div id="ch4AmountChart" class="chart-box" style="height:360px;"></div>
+    </div>
+  </div>
+
+  <!-- 河流图：每日D0付费行为 -->
+  <div class="card">
+    <div class="card-title">每日D0付费行为趋势 <span style="color:var(--text2);font-size:12px;font-weight:400;">（6/6 – 6/30）</span></div>
+    <div id="ch4RiverChart" class="chart-box" style="height:400px;"></div>
+  </div>
+
+</section>
+
 </div><!-- container end -->
 
 <!-- Footer -->
@@ -1233,59 +1263,173 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
 })();
 
 // ============================================================
-// 第三章 · 各活动关卡停留体力消耗曲线
+// 第四章 · 首日付费行为分析
 // ============================================================
+
+// --- D0付费等级分布 ---
 (function(){
-  var dom = document.getElementById('allEnergyChart');
+  var dom = document.getElementById('ch4LevelChart');
   if(!dom) return;
   var chart = makeChart(dom);
+  chart.setOption(Object.assign(baseOption({ grid: { left: 50, right: 20, top: 40, bottom: 40 } }), {
+    tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: function(p){ return p[0].name + '<br/>付费人数: ' + p[0].value + '人'; } },
+    xAxis: {
+      type: 'category',
+      data: ['Lv1','Lv2','Lv3','Lv4','Lv5','Lv6','Lv7','Lv8','Lv9','Lv10','Lv11','Lv12','Lv13+'],
+      axisLabel: { color: THEME.textColor2, fontSize: 11 },
+      axisLine: { lineStyle: { color: THEME.axisLine } }
+    },
+    yAxis: {
+      type: 'value', name: '人数',
+      axisLabel: { color: THEME.textColor2, fontSize: 11 },
+      splitLine: { lineStyle: { color: THEME.splitLine, type: 'dashed' } },
+      axisLine: { lineStyle: { color: THEME.axisLine } }
+    },
+    series: [{
+      type: 'bar', barWidth: '55%',
+      data: [
+        { value: 1, itemStyle: { color: 'rgba(88,166,255,0.3)' } },
+        { value: 4, itemStyle: { color: 'rgba(88,166,255,0.35)' } },
+        { value: 6, itemStyle: { color: 'rgba(88,166,255,0.4)' } },
+        { value: 6, itemStyle: { color: 'rgba(88,166,255,0.45)' } },
+        { value: 13, itemStyle: { color: 'rgba(88,166,255,0.55)' } },
+        { value: 35, itemStyle: { color: '#58a6ff' } },
+        { value: 21, itemStyle: { color: '#58a6ff' } },
+        { value: 34, itemStyle: { color: '#58a6ff' } },
+        { value: 56, itemStyle: { color: '#f87149' } },
+        { value: 35, itemStyle: { color: '#58a6ff' } },
+        { value: 42, itemStyle: { color: '#58a6ff' } },
+        { value: 28, itemStyle: { color: '#58a6ff' } },
+        { value: 55, itemStyle: { color: '#3fb950' } }
+      ],
+      label: { show: true, position: 'top', fontSize: 10, color: THEME.textColor, formatter: '{c}' },
+      markLine: {
+        data: [{ xAxis: 'Lv9', lineStyle: { color: '#f87149', type: 'dashed', width: 2 } }],
+        symbol: 'none',
+        label: { show: true, formatter: 'Lv9 付费高峰', color: '#f87149', fontSize: 10, position: 'insideEndTop' }
+      }
+    }]
+  }));
+})();
 
-  chart.setOption(Object.assign(baseOption({ grid: { left: 60, right: 30, top: 60, bottom: 40 } }), {
+// --- 首付商品类别分布（饼图） ---
+(function(){
+  var dom = document.getElementById('ch4CategoryChart');
+  if(!dom) return;
+  var chart = makeChart(dom);
+  chart.setOption(Object.assign(baseOption({}), {
+    tooltip: { trigger: 'item', formatter: '{b}<br/>{c}人 ({d}%)' },
+    legend: {
+      orient: 'vertical', right: 10, top: 'center',
+      textStyle: { color: THEME.textColor2, fontSize: 11 }
+    },
+    series: [{
+      type: 'pie', radius: ['35%', '65%'], center: ['40%', '50%'],
+      label: { show: true, color: THEME.textColor, fontSize: 11, formatter: '{b}\n{d}%' },
+      labelLine: { lineStyle: { color: THEME.textColor2 } },
+      data: [
+        { value: 289, name: '商城直购', itemStyle: { color: '#6c7bff' } },
+        { value: 88, name: '等级礼包', itemStyle: { color: '#a78bfa' } },
+        { value: 73, name: '每日礼包', itemStyle: { color: '#22d3ee' } },
+        { value: 51, name: '体力礼包', itemStyle: { color: '#f87171' } },
+        { value: 47, name: '破冰礼包', itemStyle: { color: '#fbbf24' } },
+        { value: 43, name: '棋盘门', itemStyle: { color: '#34d399' } },
+        { value: 35, name: '棋盘区域', itemStyle: { color: '#fb923c' } },
+        { value: 28, name: '连锁礼包', itemStyle: { color: '#818cf8' } },
+        { value: 18, name: '1+1礼包', itemStyle: { color: '#f472b6' } },
+        { value: 2, name: '3合1礼包', itemStyle: { color: '#94a3b8' } }
+      ]
+    }]
+  }));
+})();
+
+// --- 首付金额档位分布（饼图） ---
+(function(){
+  var dom = document.getElementById('ch4AmountChart');
+  if(!dom) return;
+  var chart = makeChart(dom);
+  chart.setOption(Object.assign(baseOption({}), {
+    tooltip: { trigger: 'item', formatter: '{b}<br/>{c}人 ({d}%)' },
+    legend: {
+      orient: 'vertical', right: 10, top: 'center',
+      textStyle: { color: THEME.textColor2, fontSize: 11 }
+    },
+    series: [{
+      type: 'pie', radius: ['35%', '65%'], center: ['40%', '50%'],
+      label: { show: true, color: THEME.textColor, fontSize: 11, formatter: '{b}\n{d}%' },
+      labelLine: { lineStyle: { color: THEME.textColor2 } },
+      data: [
+        { value: 193, name: '$1.99', itemStyle: { color: '#34d399' } },
+        { value: 173, name: '$2.99~$4.99', itemStyle: { color: '#22d3ee' } },
+        { value: 137, name: '$6.99', itemStyle: { color: '#58a6ff' } },
+        { value: 131, name: '$9.99', itemStyle: { color: '#fbbf24' } },
+        { value: 40, name: '$14.99+', itemStyle: { color: '#f87171' } }
+      ]
+    }]
+  }));
+})();
+
+// --- 每日D0付费行为河流图 ---
+(function(){
+  var dom = document.getElementById('ch4RiverChart');
+  if(!dom) return;
+  var chart = makeChart(dom);
+  var dates = ['6/6','6/7','6/8','6/9','6/10','6/11','6/12','6/13','6/14','6/15','6/16','6/17','6/18','6/19','6/20','6/21','6/22','6/23','6/24','6/25','6/26','6/27','6/28','6/29','6/30'];
+  var payers = [15,27,14,16,36,10,22,22,19,12,11,15,24,26,10,26,11,18,13,18,17,17,37,17,16];
+  var revenue = [162.74,410.50,151.75,135.78,558.19,85.88,328.66,323.62,325.64,146.72,126.79,172.80,354.58,219.69,100.87,357.60,120.85,276.58,111.82,275.74,189.72,134.80,629.13,240.74,221.71];
+  var payRate = [1.17,1.99,1.74,2.71,4.95,2.10,2.98,2.67,2.30,1.92,1.69,2.37,3.42,3.81,1.69,3.13,1.41,2.61,1.90,3.40,2.96,2.66,3.94,2.32,1.98];
+
+  chart.setOption(Object.assign(baseOption({ grid: { left: 60, right: 60, top: 60, bottom: 40 } }), {
     tooltip: {
       trigger: 'axis',
       formatter: function(ps) {
         var s = '<b>' + ps[0].axisValue + '</b><br/>';
-        ps.forEach(function(p){ if(p.value!=null) s += p.marker + ' ' + p.seriesName + ': ' + p.value + '<br/>'; });
+        ps.forEach(function(p){ s += p.marker + ' ' + p.seriesName + ': ' + (p.seriesName === 'D0收入' ? '$' : '') + p.value + (p.seriesName === 'D0付费率' ? '%' : p.seriesName === 'D0付费人数' ? '人' : '') + '<br/>'; });
         return s;
       }
     },
-    legend: {
-      data: ['小车竞速','开车探险★','杰西卡金币募集★','玩具拼图','水塘钓鱼','食品券兑换★'],
-      textStyle: { color: THEME.textColor2, fontSize: 11 }, top: 6, type: 'scroll'
-    },
+    legend: { data: ['D0付费人数','D0收入','D0付费率'], textStyle: { color: THEME.textColor2 }, top: 6 },
     xAxis: {
-      type: 'category',
-      data: ['阶段1','阶段2','阶段3','阶段4','阶段5','阶段6','阶段7','阶段8','阶段9','阶段10','阶段11','阶段12','阶段13'],
-      axisLabel: { color: THEME.textColor2, fontSize: 11 },
-      axisLine: { lineStyle: { color: THEME.axisLine } },
-      name: '各活动统一标准化阶段（入门→通关→循环）', nameTextStyle: { color: THEME.textColor2, fontSize: 10 }, nameLocation: 'center', nameGap: 28
+      type: 'category', data: dates,
+      axisLabel: { color: THEME.textColor2, fontSize: 10, rotate: 35 },
+      axisLine: { lineStyle: { color: THEME.axisLine } }
     },
-    yAxis: {
-      type: 'value', name: '日均体力',
-      axisLabel: { color: THEME.textColor2, fontSize: 11 },
-      splitLine: { lineStyle: { color: THEME.splitLine, type: 'dashed' } },
-      axisLine: { lineStyle: { color: THEME.axisLine } },
-      nameTextStyle: { color: THEME.textColor2 }
-    },
+    yAxis: [
+      {
+        type: 'value', name: '人数 / 收入($)',
+        axisLabel: { color: THEME.textColor2, fontSize: 11 },
+        splitLine: { lineStyle: { color: THEME.splitLine, type: 'dashed' } },
+        axisLine: { lineStyle: { color: THEME.axisLine } }
+      },
+      {
+        type: 'value', name: '付费率(%)',
+        axisLabel: { color: '#fbbf24', fontSize: 11, formatter: '{value}%' },
+        splitLine: { show: false },
+        axisLine: { lineStyle: { color: '#fbbf24' } }
+      }
+    ],
     series: [
-      { name: '小车竞速', type: 'line', smooth: true, symbol: 'circle', symbolSize: 5,
-        data: [432,491,670,664,745,767,844,868,867,933],
-        lineStyle: { color: '#277DA1', width: 2 }, itemStyle: { color: '#277DA1' } },
-      { name: '开车探险★', type: 'line', smooth: true, symbol: 'circle', symbolSize: 5,
-        data: [377,351,441,439,497,567,605,657,730,869,1324],
-        lineStyle: { color: '#D1495B', width: 2, type: 'dashed' }, itemStyle: { color: '#D1495B' } },
-      { name: '杰西卡金币募集★', type: 'line', smooth: true, symbol: 'circle', symbolSize: 5,
-        data: [347,436,474,486,490,561,598,718,885,1030,1544],
-        lineStyle: { color: '#3fb950', width: 2, type: 'dashed' }, itemStyle: { color: '#3fb950' } },
-      { name: '玩具拼图', type: 'line', smooth: true, symbol: 'diamond', symbolSize: 6,
-        data: [592,719,878,888,1143],
-        lineStyle: { color: '#2A9D8F', width: 2 }, itemStyle: { color: '#2A9D8F' } },
-      { name: '水塘钓鱼', type: 'line', smooth: true, symbol: 'diamond', symbolSize: 6,
-        data: [246,490,529,592,623,669,674,742,828,856],
-        lineStyle: { color: '#4D908E', width: 2 }, itemStyle: { color: '#4D908E' } },
-      { name: '食品券兑换★', type: 'line', smooth: true, symbol: 'diamond', symbolSize: 6,
-        data: [340,458,578,517,556,613,599,650,692,701,825,899,1232],
-        lineStyle: { color: '#d29922', width: 2, type: 'dashed' }, itemStyle: { color: '#d29922' } }
+      {
+        name: 'D0付费人数', type: 'bar', barWidth: '40%', yAxisIndex: 0,
+        data: payers,
+        itemStyle: { color: 'rgba(88,166,255,0.7)' },
+        label: { show: false }
+      },
+      {
+        name: 'D0收入', type: 'line', smooth: true, yAxisIndex: 0,
+        data: revenue,
+        lineStyle: { color: '#3fb950', width: 2 },
+        itemStyle: { color: '#3fb950' },
+        areaStyle: { color: 'rgba(63,185,80,0.12)' },
+        symbol: 'circle', symbolSize: 4
+      },
+      {
+        name: 'D0付费率', type: 'line', smooth: true, yAxisIndex: 1,
+        data: payRate,
+        lineStyle: { color: '#fbbf24', width: 2, type: 'dashed' },
+        itemStyle: { color: '#fbbf24' },
+        symbol: 'diamond', symbolSize: 5
+      }
     ]
   }));
 })();
