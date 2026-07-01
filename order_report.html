@@ -46,6 +46,9 @@ tr:hover { background:#1c2128; }
 .def-box dd { display:inline; margin:0; margin-right:14px; }
 .def-box dd::after { content:''; display:block; margin-bottom:2px; }
 .def-box .filter-tag { display:inline-block; background:#21262d; border:1px solid #30363d; border-radius:3px; padding:1px 6px; font-size:11px; color:#d29922; margin-right:4px; }
+.activity-legend { display:flex; gap:18px; justify-content:center; margin-top:8px; font-size:11px; color:#8b949e; }
+.activity-legend span { display:inline-flex; align-items:center; gap:4px; }
+.activity-legend i { display:inline-block; width:12px; height:12px; border-radius:2px; }
 </style>
 </head>
 <body>
@@ -53,25 +56,25 @@ tr:hover { background:#1c2128; }
 <!-- Header -->
 <div class="header">
   <h1>📋 玩家订单行为分析</h1>
-  <div class="subtitle">FINISH_ORDER事件 · 6.6-6.30 · 订单位/物品结构/活动关联/等级分析</div>
+  <div class="subtitle">FINISH_ORDER事件 · 6.6-6.24 · 订单位/物品结构/活动关联/等级分析</div>
 </div>
 
 <!-- Section 0: Overview Cards -->
 <div class="summary-cards">
   <div class="card">
     <div class="label">总订单数</div>
-    <div class="value blue">1,503,614</div>
-    <div class="sub">25天累计</div>
+    <div class="value blue">1,060,865</div>
+    <div class="sub">19天累计</div>
   </div>
   <div class="card">
     <div class="label">日均订单</div>
-    <div class="value green">60,145</div>
-    <div class="sub">总订单 / 25天</div>
+    <div class="value green">55,835</div>
+    <div class="sub">总订单 / 19天</div>
   </div>
   <div class="card">
     <div class="label">峰值日</div>
-    <div class="value orange">6/28</div>
-    <div class="sub">80,794 单</div>
+    <div class="value orange">6/21</div>
+    <div class="sub">73,469 单</div>
   </div>
   <div class="card">
     <div class="label">订单位</div>
@@ -86,7 +89,7 @@ tr:hover { background:#1c2128; }
   <div class="card">
     <div class="label">合成链</div>
     <div class="value red">10 条</div>
-    <div class="sub">前4条占84.7%</div>
+    <div class="sub">前4条占86.8%</div>
   </div>
 </div>
 
@@ -94,8 +97,14 @@ tr:hover { background:#1c2128; }
 <div class="section">
   <h2>📈 每日订单趋势 + 活动标注</h2>
   <div id="chartDailyTrend" class="chart-full"></div>
+  <div class="activity-legend">
+    <span><i style="background:rgba(88,166,255,0.4)"></i> WO（水滴订单）</span>
+    <span><i style="background:rgba(63,185,80,0.4)"></i> LO（限时订单）</span>
+    <span><i style="background:rgba(210,153,34,0.4)"></i> CPF</span>
+    <span><i style="background:rgba(188,140,255,0.4)"></i> LadO（阶梯订单）</span>
+  </div>
   <div class="insight">
-    <strong>💡 趋势洞察：</strong>WO日（水滴订单）人均订单最高26.15单，比无活动日23.80高+10%。6/28是订单峰值日（80,794单），恰逢WO活动。人均订单随时间从38.76（6/6）降至15.03（6/30），反映早期高活跃用户的贡献逐渐被大量新进用户稀释。
+    <strong>💡 趋势洞察：</strong>WO日（水滴订单）人均订单28.59，显著高于无活动日24.75（+15.5%）。6/21 WO日订单峰值73,469单。人均订单从38.76（6/6）下降至20.88（6/24），随新用户涌入自然稀释。CPF日人均25.12略高于基线，LO日23.12与基线持平。
   </div>
 </div>
 
@@ -108,30 +117,30 @@ tr:hover { background:#1c2128; }
       <div id="chartSlotDaily" class="chart-tall"></div>
     </div>
     <div class="chart-box">
-      <h3>各活动日Slot结构对比（分组柱状图）</h3>
+      <h3>各活动日Slot人均完成量（分组柱状图）</h3>
       <div id="chartSlotActivity" class="chart-tall"></div>
     </div>
   </div>
   <table>
     <thead>
-      <tr><th>Slot</th><th>WO</th><th>LO</th><th>LadO</th><th>CPF</th><th>无活动</th></tr>
+      <tr><th>Slot</th><th>WO (单/人)</th><th>LO (单/人)</th><th>LadO (单/人)</th><th>CPF (单/人)</th><th>无活动 (单/人)</th></tr>
     </thead>
     <tbody>
-      <tr><td>Slot 1</td><td>29.1%</td><td>27.9%</td><td>26.8%</td><td>27.1%</td><td>27.5%</td></tr>
-      <tr><td>Slot 2</td><td>23.9%</td><td>23.5%</td><td>22.9%</td><td>23.0%</td><td>23.1%</td></tr>
-      <tr><td>Slot 3</td><td>20.6%</td><td>20.3%</td><td>19.5%</td><td>20.4%</td><td>20.5%</td></tr>
-      <tr><td>Slot 4</td><td>13.2%</td><td>13.9%</td><td>13.2%</td><td>14.0%</td><td>14.1%</td></tr>
-      <tr><td>Slot 5</td><td>8.5%</td><td>8.9%</td><td>8.9%</td><td>9.2%</td><td>9.3%</td></tr>
-      <tr><td>Slot 6</td><td>2.4%</td><td>2.6%</td><td>3.0%</td><td>3.3%</td><td>2.9%</td></tr>
-      <tr><td>Slot 7</td><td>2.1%</td><td>2.5%</td><td>2.8%</td><td>2.8%</td><td>2.4%</td></tr>
-      <tr><td>Slot 8</td><td>0.2%</td><td>0.3%</td><td>0.2%</td><td>0.2%</td><td>0.2%</td></tr>
-      <tr><td>Slot 20 (LO)</td><td>—</td><td>0.2%</td><td>—</td><td>—</td><td>0.0%</td></tr>
-      <tr><td>Slot 30 (LadO)</td><td>0.0%</td><td>—</td><td>2.7%</td><td>—</td><td>0.0%</td></tr>
-      <tr><td>Slot 50</td><td>0.0%</td><td>0.0%</td><td>0.0%</td><td>0.0%</td><td>0.0%</td></tr>
+      <tr><td>Slot 1</td><td>10.92</td><td>9.02</td><td>6.80</td><td>8.72</td><td>15.45</td></tr>
+      <tr><td>Slot 2</td><td>9.41</td><td>8.06</td><td>6.00</td><td>7.59</td><td>13.90</td></tr>
+      <tr><td>Slot 3</td><td>8.84</td><td>7.45</td><td>5.54</td><td>7.27</td><td>13.08</td></tr>
+      <tr><td>Slot 4</td><td>7.19</td><td>6.16</td><td>4.49</td><td>6.00</td><td>11.41</td></tr>
+      <tr><td>Slot 5</td><td>5.28</td><td>4.45</td><td>3.34</td><td>4.45</td><td>8.74</td></tr>
+      <tr><td>Slot 6</td><td>3.19</td><td>2.96</td><td>2.28</td><td>3.12</td><td>5.96</td></tr>
+      <tr><td>Slot 7</td><td>1.77</td><td>1.92</td><td>1.31</td><td>1.67</td><td>4.07</td></tr>
+      <tr><td>Slot 8</td><td>1.26</td><td>1.41</td><td>1.18</td><td>1.29</td><td>1.90</td></tr>
+      <tr><td>Slot 20 (LO)</td><td>—</td><td>1.13</td><td>—</td><td>—</td><td>1.00</td></tr>
+      <tr><td>Slot 30 (LadO)</td><td>3.00</td><td>—</td><td>2.23</td><td>—</td><td>2.65</td></tr>
+      <tr><td>Slot 50</td><td>1.00</td><td>1.00</td><td>1.00</td><td>1.00</td><td>1.00</td></tr>
     </tbody>
   </table>
   <div class="insight">
-    <strong>💡 Slot洞察：</strong>Slot 1-3占总订单量~71%，是核心订单位。Lv1-5玩家只解锁Slot 1-3（占比100%），Lv6-10开始使用Slot 4-5。Slot 6-7在Lv11+开始活跃。特殊Slot: 20=LO限时订单（仅LO日出现），30=LadO阶梯订单（LadO日2.7%），50=未知特殊订单。WO日Slot 1占比略高(29.1% vs 27.5%)，可能与WO增加的额外订单集中在Slot 1有关。
+    <strong>💡 Slot洞察：</strong>WO日每个Slot的人均完成量都显著高于其他活动——Slot 1人均10.92单 vs 无活动日15.45单（注意none包含9天累积的去重玩家）。Slot 1-3占总量~71%是核心订单位。特殊Slot: 20=LO限时订单仅LO日出现，30=LadO阶梯订单仅LadO日出现（2.23单/人），50=季节性特殊订单。
   </div>
 </div>
 
@@ -153,18 +162,18 @@ tr:hover { background:#1c2128; }
       <tr><th>物品等级</th><th>WO</th><th>LO</th><th>LadO</th><th>CPF</th><th>无活动</th></tr>
     </thead>
     <tbody>
-      <tr><td>Lv2</td><td>4.5%</td><td>4.6%</td><td>4.7%</td><td>4.6%</td><td>4.5%</td></tr>
-      <tr><td>Lv3</td><td>21.8%</td><td>22.3%</td><td>22.2%</td><td>22.1%</td><td>22.1%</td></tr>
-      <tr><td>Lv4</td><td>25.1%</td><td>25.5%</td><td>25.8%</td><td>25.8%</td><td>25.8%</td></tr>
-      <tr><td>Lv5</td><td>18.2%</td><td>17.2%</td><td>16.7%</td><td>16.8%</td><td>16.9%</td></tr>
-      <tr><td>Lv6</td><td>14.6%</td><td>14.3%</td><td>14.0%</td><td>13.9%</td><td>14.3%</td></tr>
-      <tr><td>Lv7</td><td>12.0%</td><td>12.1%</td><td>12.0%</td><td>12.3%</td><td>12.3%</td></tr>
-      <tr><td>Lv8</td><td>3.2%</td><td>3.3%</td><td>3.8%</td><td>3.9%</td><td>3.5%</td></tr>
-      <tr><td>Lv9</td><td>0.3%</td><td>0.4%</td><td>0.4%</td><td>0.5%</td><td>0.4%</td></tr>
+      <tr><td>Lv2</td><td>4.4%</td><td>4.6%</td><td>4.7%</td><td>4.5%</td><td>4.5%</td></tr>
+      <tr><td>Lv3</td><td>21.8%</td><td>22.3%</td><td>22.2%</td><td>22.2%</td><td>22.1%</td></tr>
+      <tr><td>Lv4</td><td>25.2%</td><td>25.5%</td><td>25.8%</td><td>25.7%</td><td>25.8%</td></tr>
+      <tr><td>Lv5</td><td>18.3%</td><td>17.2%</td><td>16.7%</td><td>17.0%</td><td>17.1%</td></tr>
+      <tr><td>Lv6</td><td>14.6%</td><td>14.3%</td><td>14.0%</td><td>14.0%</td><td>14.3%</td></tr>
+      <tr><td>Lv7</td><td>12.2%</td><td>12.1%</td><td>12.0%</td><td>12.5%</td><td>12.4%</td></tr>
+      <tr><td>Lv8</td><td>3.0%</td><td>3.3%</td><td>3.8%</td><td>3.6%</td><td>3.3%</td></tr>
+      <tr><td>Lv9</td><td>0.3%</td><td>0.4%</td><td>0.4%</td><td>0.4%</td><td>0.4%</td></tr>
     </tbody>
   </table>
   <div class="insight">
-    <strong>💡 物品洞察：</strong>item_id编码格式20XXYYZ，末位数字代表合成等级。等级3-5的物品占订单需求~64%，是主力难度区间。各活动日的物品难度分布几乎相同（差异&lt;1%），说明<strong>活动不改变订单物品配置</strong>，订单难度由玩家等级和进度决定。高级物品(Lv7+)占~16%，是进阶玩家的挑战内容。
+    <strong>💡 物品洞察：</strong>item_id末位代表合成等级。等级3-5物品占~65%是主力需求。各活动日物品难度分布几乎相同（差异&lt;1%），说明<strong>活动不改变订单物品配置</strong>，订单难度由玩家等级决定。高级物品(Lv7+)占~16%。
   </div>
 </div>
 
@@ -176,16 +185,16 @@ tr:hover { background:#1c2128; }
       <tr><th>活动类型</th><th>天数</th><th>总订单</th><th>日均订单</th><th>日均人数</th><th>人均订单</th></tr>
     </thead>
     <tbody>
-      <tr style="background:#1c2128;"><td style="color:#58a6ff;">WO（水滴订单）</td><td>4</td><td>286,435</td><td>71,609</td><td>2,738</td><td style="color:#3fb950;font-weight:700;">26.15</td></tr>
+      <tr style="background:#1c2128;"><td style="color:#58a6ff;">WO（水滴订单）</td><td>3</td><td>205,641</td><td>68,547</td><td>2,398</td><td style="color:#3fb950;font-weight:700;">28.59</td></tr>
       <tr><td>LO（限时订单）</td><td>3</td><td>172,649</td><td>57,550</td><td>2,489</td><td>23.12</td></tr>
       <tr><td>LadO（阶梯订单）</td><td>1</td><td>73,303</td><td>73,303</td><td>3,160</td><td>23.20</td></tr>
-      <tr><td>CPF</td><td>3</td><td>180,269</td><td>60,090</td><td>2,581</td><td>23.28</td></tr>
-      <tr><td style="color:#8b949e;">无活动 (基线)</td><td>11</td><td>635,177</td><td>57,743</td><td>2,426</td><td>23.80</td></tr>
+      <tr><td>CPF</td><td>2</td><td>115,401</td><td>57,701</td><td>2,297</td><td>25.12</td></tr>
+      <tr><td style="color:#8b949e;">无活动 (基线)</td><td>9</td><td>499,951</td><td>55,550</td><td>2,245</td><td>24.75</td></tr>
     </tbody>
   </table>
   <div id="chartActivityCompare" class="chart-full" style="margin-top:16px;"></div>
   <div class="insight">
-    <strong>💡 活动影响：</strong>WO（水滴订单）日人均26.15单，显著高于基线23.80单(+10%)。CPF和LO日人均与无活动日持平(~23.1-23.3)，说明这两个活动不直接刺激订单完成。LadO仅1天样本（23.20单），无统计意义。WO是唯一显著提升订单完成量的活动，可能因为水滴订单提供了额外的订单奖励机制。
+    <strong>💡 活动影响：</strong>WO日人均28.59单，显著高于基线24.75（+15.5%），是唯一显著提升订单的活动。CPF日人均25.12略高于基线（+1.5%），LO日23.12反而略低（-6.6%），LadO日23.20与基线持平。WO通过水滴奖励机制有效刺激了订单完成。
   </div>
 </div>
 
@@ -203,7 +212,7 @@ tr:hover { background:#1c2128; }
     </div>
   </div>
   <div class="insight">
-    <strong>💡 合成链洞察：</strong>10条合成链中，前4条（101/102/111/112）占订单需求的84.7%。Chain 101（主线棋子链1）独占34.7%，是最核心的合成链。后6条链合计仅15.3%，其中chain 171几乎无订单(132单)。建议关注chain 101/102的物品供给平衡，避免玩家在这两条链上卡关。
+    <strong>💡 合成链洞察：</strong>前4条链（101/102/111/112）占86.8%。Chain 101独占36%是核心链。后6条链合计13.2%。Chain 171几乎无订单(75单)，可能是未开放或极晚期内容。建议关注101/102供给平衡。
   </div>
 </div>
 
@@ -226,16 +235,16 @@ tr:hover { background:#1c2128; }
     </thead>
     <tbody>
       <tr><td>Lv01-05</td><td>5.5%</td><td>25.4%</td><td>19.1%</td><td>27.3%</td><td>13.8%</td><td>5.9%</td><td>3.0%</td><td>—</td></tr>
-      <tr><td>Lv06-10</td><td>2.9%</td><td>18.2%</td><td>28.7%</td><td>14.4%</td><td>17.6%</td><td>17.8%</td><td>0.4%</td><td>—</td></tr>
-      <tr><td>Lv11-15</td><td>5.7%</td><td>25.4%</td><td>29.4%</td><td>9.3%</td><td>10.1%</td><td>12.7%</td><td>6.6%</td><td>0.8%</td></tr>
-      <tr><td>Lv16-20</td><td>5.8%</td><td>20.4%</td><td>27.3%</td><td>13.0%</td><td>12.9%</td><td>12.2%</td><td>6.5%</td><td>0.9%</td></tr>
-      <tr><td>Lv21-25</td><td>4.8%</td><td>19.5%</td><td>27.3%</td><td>12.6%</td><td>13.6%</td><td>12.0%</td><td>7.8%</td><td>1.4%</td></tr>
-      <tr><td>Lv26-30</td><td>4.6%</td><td>20.7%</td><td>23.9%</td><td>17.1%</td><td>12.9%</td><td>9.0%</td><td>7.5%</td><td>3.1%</td></tr>
-      <tr><td>Lv31+</td><td>4.5%</td><td>20.7%</td><td>23.8%</td><td>15.3%</td><td>14.5%</td><td>9.0%</td><td>6.1%</td><td>4.3%</td></tr>
+      <tr><td>Lv06-10</td><td>2.8%</td><td>17.9%</td><td>28.8%</td><td>14.3%</td><td>17.7%</td><td>18.1%</td><td>0.5%</td><td>—</td></tr>
+      <tr><td>Lv11-15</td><td>5.6%</td><td>25.7%</td><td>29.4%</td><td>9.0%</td><td>10.0%</td><td>12.7%</td><td>6.5%</td><td>0.9%</td></tr>
+      <tr><td>Lv16-20</td><td>5.5%</td><td>20.7%</td><td>27.8%</td><td>12.5%</td><td>12.4%</td><td>12.6%</td><td>6.4%</td><td>0.9%</td></tr>
+      <tr><td>Lv21-25</td><td>4.7%</td><td>19.4%</td><td>28.0%</td><td>12.0%</td><td>13.3%</td><td>12.4%</td><td>8.0%</td><td>1.4%</td></tr>
+      <tr><td>Lv26-30</td><td>4.3%</td><td>20.2%</td><td>24.3%</td><td>16.7%</td><td>12.8%</td><td>9.2%</td><td>8.1%</td><td>3.3%</td></tr>
+      <tr><td>Lv31+</td><td>4.1%</td><td>20.0%</td><td>23.4%</td><td>15.2%</td><td>13.3%</td><td>10.2%</td><td>6.7%</td><td>5.1%</td></tr>
     </tbody>
   </table>
   <div class="insight">
-    <strong>💡 等级洞察：</strong>人均订单随等级稳步增长，从Lv1-5的27.3单到Lv31+的98.9单（3.6倍）。关键转变点：Lv6-10解锁Slot 4-5，Lv11-15解锁Slot 6-7-8。低等级(Lv1-5)玩家Lv5物品占27.3%（最高），高等级(Lv26-30)玩家Lv8-9物品占10.6%。物品难度配置基本合理，随等级渐进提升。
+    <strong>💡 等级洞察：</strong>人均订单从Lv1-5的27.5单到Lv26-30的83.3单（3倍增长）。Lv31+反而下降到80.2可能因样本少(53人)。Lv1-5只用Slot 1-3（100%），Lv6-10解锁Slot 4-5，Lv11+解锁Slot 6-8。高等级Lv8-9物品占比随等级提升：Lv1-5仅3%，Lv31+达11.8%。
   </div>
 </div>
 
@@ -243,27 +252,27 @@ tr:hover { background:#1c2128; }
 <div class="section">
   <h2>📋 总结与优化建议</h2>
   <div class="insight" style="border-left-color:#58a6ff;">
-    <strong style="color:#58a6ff;">1. WO是订单引擎：</strong>水滴订单日人均订单+10%，是唯一显著提升订单完成的活动。
+    <strong style="color:#58a6ff;">1. WO是订单引擎：</strong>人均+15.5%，唯一显著提升订单完成的活动。
   </div>
   <div class="insight" style="margin-top:10px; border-left-color:#3fb950;">
-    <strong style="color:#3fb950;">2. 物品难度由进度决定：</strong>各活动日的物品等级分布几乎相同，活动不改变订单配置。
+    <strong style="color:#3fb950;">2. 物品难度由进度驱动：</strong>活动不改变订单配置，各活动日物品等级分布相同。
   </div>
   <div class="insight" style="margin-top:10px; border-left-color:#f85149;">
-    <strong style="color:#f85149;">3. 合成链不平衡：</strong>前4条链占85%需求，后6条链存在"冷门"风险。
+    <strong style="color:#f85149;">3. 合成链不平衡：</strong>前4条链占87%需求，Chain 101独占36%。
   </div>
   <div class="insight" style="margin-top:10px; border-left-color:#d29922;">
-    <strong style="color:#d29922;">4. Slot解锁节奏合理：</strong>随等级渐进开放，但Slot 6-7使用率偏低(~5%)。
+    <strong style="color:#d29922;">4. LO未提升主线订单：</strong>限时订单(Slot 20)是独立系统，不影响主线订单量。
   </div>
   <div class="insight" style="margin-top:10px; border-left-color:#bc8cff;">
-    <strong style="color:#bc8cff;">5. 特殊Slot需关注：</strong>LO的Slot 20和LadO的Slot 30是活动专属订单位。
+    <strong style="color:#bc8cff;">5. Slot解锁节奏合理：</strong>Lv1-5用3个Slot，Lv6-10用5个，Lv11+用7-8个。
   </div>
   <div class="insight" style="margin-top:10px; border-left-color:#f85149;">
-    <strong style="color:#f85149;">6. maxlevel字段缺失：</strong>6条合成链最高等级数据全部为null，建议排查数据埋点。
+    <strong style="color:#f85149;">6. maxlevel字段缺失：</strong>6条合成链最高等级数据全null，建议排查埋点。
   </div>
 </div>
 
 <!-- Footer -->
-<div class="footer">Generated 2026-07-01 | Data: FINISH_ORDER events 2026-06-06 ~ 2026-06-30 | Merge Hope</div>
+<div class="footer">Generated 2026-07-01 | Data: FINISH_ORDER 2026-06-06 ~ 2026-06-24 | Merge Hope</div>
 
 <script>
 // === Common ECharts theme config ===
@@ -291,26 +300,19 @@ var colors = {
 // ===========================
 (function(){
   var chart = echarts.init(document.getElementById('chartDailyTrend'));
-  var dates = ['6/6','6/7','6/8','6/9','6/10','6/11','6/12','6/13','6/14','6/15','6/16','6/17','6/18','6/19','6/20','6/21','6/22','6/23','6/24','6/25','6/26','6/27','6/28','6/29','6/30'];
-  var orders = [43920,64309,50134,43739,50987,44582,55688,61717,67863,55801,52631,53481,57383,59713,61125,73469,73303,72839,68181,66401,64868,68825,80794,64319,47562];
-  var opp = [38.76,36.58,30.72,28.06,29.39,25.92,28.14,28.69,28.14,23.91,22.37,21.68,22.05,22.83,22.82,24.30,23.20,22.96,20.88,20.82,20.59,20.87,21.49,17.70,15.03];
+  var dates = ['6/6','6/7','6/8','6/9','6/10','6/11','6/12','6/13','6/14','6/15','6/16','6/17','6/18','6/19','6/20','6/21','6/22','6/23','6/24'];
+  var orders = [43920,64309,50134,43739,50987,44582,55688,61717,67863,55801,52631,53481,57383,59713,61125,73469,73303,72839,68181];
+  var opp = [38.76,36.58,30.72,28.06,29.39,25.92,28.14,28.69,28.14,23.91,22.37,21.68,22.05,22.83,22.82,24.30,23.20,22.96,20.88];
 
-  // Activity mark areas
-  // WO: 6/7(idx1),6/14(idx8),6/21(idx15),6/28(idx22)
-  // LO: 6/10(idx4),6/17(idx11),6/24(idx18)
-  // CPF: 6/12(idx6),6/19(idx13),6/26(idx20)
-  // LadO: 6/22(idx16)
   var markAreas = [
     [{itemStyle:{color:'rgba(88,166,255,0.08)'},label:{show:true,position:'top',color:'#58a6ff',fontSize:10,formatter:'WO'},xAxis:'6/7'},{xAxis:'6/7'}],
     [{itemStyle:{color:'rgba(88,166,255,0.08)'},label:{show:false},xAxis:'6/14'},{xAxis:'6/14'}],
     [{itemStyle:{color:'rgba(88,166,255,0.08)'},label:{show:false},xAxis:'6/21'},{xAxis:'6/21'}],
-    [{itemStyle:{color:'rgba(88,166,255,0.08)'},label:{show:false},xAxis:'6/28'},{xAxis:'6/28'}],
     [{itemStyle:{color:'rgba(63,185,80,0.08)'},label:{show:true,position:'top',color:'#3fb950',fontSize:10,formatter:'LO'},xAxis:'6/10'},{xAxis:'6/10'}],
     [{itemStyle:{color:'rgba(63,185,80,0.08)'},label:{show:false},xAxis:'6/17'},{xAxis:'6/17'}],
     [{itemStyle:{color:'rgba(63,185,80,0.08)'},label:{show:false},xAxis:'6/24'},{xAxis:'6/24'}],
     [{itemStyle:{color:'rgba(210,153,34,0.08)'},label:{show:true,position:'top',color:'#d29922',fontSize:10,formatter:'CPF'},xAxis:'6/12'},{xAxis:'6/12'}],
     [{itemStyle:{color:'rgba(210,153,34,0.08)'},label:{show:false},xAxis:'6/19'},{xAxis:'6/19'}],
-    [{itemStyle:{color:'rgba(210,153,34,0.08)'},label:{show:false},xAxis:'6/26'},{xAxis:'6/26'}],
     [{itemStyle:{color:'rgba(188,140,255,0.12)'},label:{show:true,position:'top',color:'#bc8cff',fontSize:10,formatter:'LadO'},xAxis:'6/22'},{xAxis:'6/22'}]
   ];
 
@@ -355,17 +357,16 @@ var colors = {
 // ===========================
 (function(){
   var chart = echarts.init(document.getElementById('chartSlotDaily'));
-  var dates = ['6/6','6/7','6/8','6/9','6/10','6/11','6/12','6/13','6/14','6/15','6/16','6/17','6/18','6/19','6/20','6/21','6/22','6/23','6/24','6/25','6/26','6/27','6/28','6/29','6/30'];
+  var dates = ['6/6','6/7','6/8','6/9','6/10','6/11','6/12','6/13','6/14','6/15','6/16','6/17','6/18','6/19','6/20','6/21','6/22','6/23','6/24'];
 
-  var s1=[16182,21331,15342,12573,14748,12193,15624,17267,18730,15407,14730,14908,16180,16452,16284,20557,19650,19443,18434,17069,16719,18110,22855,17872,13706];
-  var s2=[11763,16284,12158,10499,12212,10205,12807,14520,15604,12588,11990,12554,13307,13814,13828,17277,16751,16766,15742,15181,14786,15887,19231,15126,11401];
-  var s3=[9787,14313,10948,9324,10955,9401,11757,13087,14160,11582,10562,10793,11605,12196,12374,14726,14284,14688,13384,13043,12815,13510,15855,12361,8768];
-  var s4=[4054,7686,6833,6296,7085,6570,7818,8625,9829,8035,7448,7494,7729,8243,8692,9878,9686,10085,9452,9565,9140,9559,10513,8426,5875];
-  var s5=[2109,4437,4205,4042,4444,4419,5265,5702,6599,5284,4883,4731,5115,5374,5802,6464,6493,6872,6191,6234,6019,6285,6793,5495,3905];
-  var s67=[21,250,629,973,1421,1710,2321,2400,2830,2771,2876,2715,3281,3478,3973,4403,4256,4715,4608,5107,5186,5240,5289,4829,3719];
-  var s8=[4,8,19,32,79,79,92,114,110,133,132,158,156,145,165,152,174,186,211,195,195,214,245,207,187];
-  // special = 20+30+50
-  var sp=[0,0,0,0,43,5,4,2,1,1,10,128,10,11,7,12,2009,84,159,7,8,20,13,3,9];
+  var s1=[16182,21331,15342,12573,14748,12193,15624,17267,18730,15407,14730,14908,16180,16452,16284,20557,19650,19443,18434];
+  var s2=[11763,16284,12158,10499,12212,10205,12807,14520,15604,12588,11990,12554,13307,13814,13828,17277,16751,16766,15742];
+  var s3=[9787,14313,10948,9324,10955,9401,11757,13087,14160,11582,10562,10793,11605,12196,12374,14726,14284,14688,13384];
+  var s4=[4054,7686,6833,6296,7085,6570,7818,8625,9829,8035,7448,7494,7729,8243,8692,9878,9686,10085,9452];
+  var s5=[2109,4437,4205,4042,4444,4419,5265,5702,6599,5284,4883,4731,5115,5374,5802,6464,6493,6872,6191];
+  var s67=[21,250,629,973,1421,1710,2321,2400,2830,2771,2876,2715,3281,3478,3973,4403,4256,4715,4608];
+  var s8=[4,8,19,32,79,79,92,114,110,133,132,158,156,145,165,152,174,186,211];
+  var sp=[0,0,0,0,43,5,4,2,1,1,10,128,10,11,7,12,2009,84,159];
 
   var slotColors = ['#58a6ff','#3fb950','#d29922','#f85149','#bc8cff','#79c0ff','#484f58','#8b949e'];
 
@@ -390,18 +391,18 @@ var colors = {
 })();
 
 // ===========================
-// Chart 2b: 各活动日Slot结构对比
+// Chart 2b: 各活动日Slot人均完成量（分组柱状图）
 // ===========================
 (function(){
   var chart = echarts.init(document.getElementById('chartSlotActivity'));
   var actTags = ['WO','LO','LadO','CPF','无活动'];
-  var slots = ['S1','S2','S3','S4','S5','S6','S7','S8'];
+  var slots = ['S1','S2','S3','S4','S5','S6','S7'];
   var data = {
-    WO:   [29.1,23.9,20.6,13.2,8.5,2.4,2.1,0.2],
-    LO:   [27.9,23.5,20.3,13.9,8.9,2.6,2.5,0.3],
-    LadO: [26.8,22.9,19.5,13.2,8.9,3.0,2.8,0.2],
-    CPF:  [27.1,23.0,20.4,14.0,9.2,3.3,2.8,0.2],
-    none: [27.5,23.1,20.5,14.1,9.3,2.9,2.4,0.2]
+    WO:   [10.92,9.41,8.84,7.19,5.28,3.19,1.77],
+    LO:   [9.02,8.06,7.45,6.16,4.45,2.96,1.92],
+    LadO: [6.80,6.00,5.54,4.49,3.34,2.28,1.31],
+    CPF:  [8.72,7.59,7.27,6.00,4.45,3.12,1.67],
+    none: [15.45,13.90,13.08,11.41,8.74,5.96,4.07]
   };
   var actColors = [colors.blue, colors.green, colors.purple, colors.orange, colors.gray];
   var series = actTags.map(function(tag,i){
@@ -415,14 +416,14 @@ var colors = {
     tooltip: Object.assign({ trigger: 'axis', axisPointer: { type: 'shadow' },
       formatter: function(p) {
         var s = p[0].name + '<br/>';
-        p.forEach(function(item){ s += item.marker + ' ' + item.seriesName + ': <b>' + item.value + '%</b><br/>'; });
+        p.forEach(function(item){ s += item.marker + ' ' + item.seriesName + ': <b>' + item.value + ' 单/人</b><br/>'; });
         return s;
       }
     }, tooltipStyle),
     legend: Object.assign({ data: actTags }, legendStyle),
     grid: { left: 45, right: 10, top: 35, bottom: 30 },
     xAxis: Object.assign({ type: 'category', data: slots }, axisStyle),
-    yAxis: Object.assign({ type: 'value', axisLabel: { formatter: '{value}%' } }, axisStyle),
+    yAxis: Object.assign({ type: 'value', name: '单/人', nameTextStyle: { color: '#8b949e' } }, axisStyle),
     series: series
   });
   window.addEventListener('resize', function(){ chart.resize(); });
@@ -433,9 +434,8 @@ var colors = {
 // ===========================
 (function(){
   var chart = echarts.init(document.getElementById('chartItemTop15'));
-  var items = ['2010105','2011104','2010106','2011103','2011204','2010103','2010107','2011203','2010104','2010207','2010206','2010205','2010204','2011102','2010108'];
-  var counts = [133443,104955,103058,95171,91414,88362,84578,81110,78920,75050,66141,62774,52212,37856,29817];
-  // Reverse for horizontal bar
+  var items = ['2010105','2011104','2010106','2011103','2010103','2011204','2010107','2010104','2011203','2010207','2010206','2010205','2010204','2011102','2010108'];
+  var counts = [103010,79597,78889,70999,68996,68587,64474,60002,59857,57428,49946,47418,39007,29637,21881];
   items.reverse(); counts.reverse();
 
   chart.setOption({
@@ -464,11 +464,11 @@ var colors = {
   var lvls = ['Lv2','Lv3','Lv4','Lv5','Lv6','Lv7','Lv8','Lv9'];
   var actTags = ['WO','LO','LadO','CPF','无活动'];
   var data = {
-    WO:   [4.5,21.8,25.1,18.2,14.6,12.0,3.2,0.3],
+    WO:   [4.4,21.8,25.2,18.3,14.6,12.2,3.0,0.3],
     LO:   [4.6,22.3,25.5,17.2,14.3,12.1,3.3,0.4],
     LadO: [4.7,22.2,25.8,16.7,14.0,12.0,3.8,0.4],
-    CPF:  [4.6,22.1,25.8,16.8,13.9,12.3,3.9,0.5],
-    none: [4.5,22.1,25.8,16.9,14.3,12.3,3.5,0.4]
+    CPF:  [4.5,22.2,25.7,17.0,14.0,12.5,3.6,0.4],
+    none: [4.5,22.1,25.8,17.1,14.3,12.4,3.3,0.4]
   };
   var actColors = [colors.blue, colors.green, colors.purple, colors.orange, colors.gray];
   var series = actTags.map(function(tag,i){
@@ -502,9 +502,9 @@ var colors = {
 (function(){
   var chart = echarts.init(document.getElementById('chartActivityCompare'));
   var tags = ['WO','LO','LadO','CPF','无活动'];
-  var opp = [26.15, 23.12, 23.20, 23.28, 23.80];
-  var dailyOrders = [71609, 57550, 73303, 60090, 57743];
-  var dailyPlayers = [2738, 2489, 3160, 2581, 2426];
+  var opp = [28.59, 23.12, 23.20, 25.12, 24.75];
+  var dailyOrders = [68547, 57550, 73303, 57701, 55550];
+  var dailyPlayers = [2398, 2489, 3160, 2297, 2245];
   var barColors = [colors.blue, colors.green, colors.purple, colors.orange, colors.gray];
 
   chart.setOption({
@@ -523,7 +523,7 @@ var colors = {
     xAxis: Object.assign({ type: 'category', data: tags }, axisStyle),
     yAxis: [
       Object.assign({ type: 'value', name: '日均量', nameTextStyle: { color: '#8b949e' } }, axisStyle),
-      Object.assign({ type: 'value', name: '人均订单', nameTextStyle: { color: '#8b949e' }, position: 'right', min: 20, max: 28 }, axisStyle)
+      Object.assign({ type: 'value', name: '人均订单', nameTextStyle: { color: '#8b949e' }, position: 'right', min: 20, max: 32 }, axisStyle)
     ],
     series: [
       {
@@ -554,16 +554,16 @@ var colors = {
 (function(){
   var chart = echarts.init(document.getElementById('chartChainPie'));
   var chainData = [
-    {value:522199, name:'Chain 101 (34.7%)', itemStyle:{color:'#58a6ff'}},
-    {value:293517, name:'Chain 102 (19.5%)', itemStyle:{color:'#3fb950'}},
-    {value:257723, name:'Chain 111 (17.1%)', itemStyle:{color:'#d29922'}},
-    {value:201280, name:'Chain 112 (13.4%)', itemStyle:{color:'#f85149'}},
-    {value:86095, name:'Chain 201 (5.7%)', itemStyle:{color:'#bc8cff'}},
-    {value:79593, name:'Chain 313 (5.3%)', itemStyle:{color:'#79c0ff'}},
-    {value:35574, name:'Chain 104 (2.4%)', itemStyle:{color:'#56d364'}},
-    {value:16964, name:'Chain 105 (1.1%)', itemStyle:{color:'#e3b341'}},
-    {value:10875, name:'Chain 114 (0.7%)', itemStyle:{color:'#db6d28'}},
-    {value:132, name:'Chain 171 (0.0%)', itemStyle:{color:'#484f58'}}
+    {value:399971, name:'Chain 101 (36.0%)', itemStyle:{color:'#58a6ff'}},
+    {value:220405, name:'Chain 102 (19.8%)', itemStyle:{color:'#3fb950'}},
+    {value:194722, name:'Chain 111 (17.5%)', itemStyle:{color:'#d29922'}},
+    {value:149695, name:'Chain 112 (13.5%)', itemStyle:{color:'#f85149'}},
+    {value:55853, name:'Chain 201 (5.0%)', itemStyle:{color:'#bc8cff'}},
+    {value:55257, name:'Chain 313 (5.0%)', itemStyle:{color:'#79c0ff'}},
+    {value:21193, name:'Chain 104 (1.9%)', itemStyle:{color:'#56d364'}},
+    {value:8617, name:'Chain 105 (0.8%)', itemStyle:{color:'#e3b341'}},
+    {value:5077, name:'Chain 114 (0.5%)', itemStyle:{color:'#db6d28'}},
+    {value:75, name:'Chain 171 (0.0%)', itemStyle:{color:'#484f58'}}
   ];
   chart.setOption({
     tooltip: Object.assign({ trigger: 'item', formatter: '{b}<br/>订单数: {c} ({d}%)' }, tooltipStyle),
@@ -584,7 +584,7 @@ var colors = {
 (function(){
   var chart = echarts.init(document.getElementById('chartChainBar'));
   var chains = ['101','102','111','112','201','313','104','105','114','171'];
-  var cnts = [522199,293517,257723,201280,86095,79593,35574,16964,10875,132];
+  var cnts = [399971,220405,194722,149695,55853,55257,21193,8617,5077,75];
   var chainColors = ['#58a6ff','#3fb950','#d29922','#f85149','#bc8cff','#79c0ff','#56d364','#e3b341','#db6d28','#484f58'];
 
   chart.setOption({
@@ -610,8 +610,8 @@ var colors = {
 (function(){
   var chart = echarts.init(document.getElementById('chartLevelOrders'));
   var tiers = ['Lv01-05','Lv06-10','Lv11-15','Lv16-20','Lv21-25','Lv26-30','Lv31+'];
-  var avgOrders = [27.3, 47.6, 57.1, 70.4, 77.5, 91.5, 98.9];
-  var players = [17258, 10552, 4627, 2147, 852, 369, 157];
+  var avgOrders = [27.5, 47.1, 54.0, 63.5, 72.3, 83.3, 80.2];
+  var players = [13508, 8358, 3589, 1514, 499, 185, 53];
 
   chart.setOption({
     tooltip: Object.assign({ trigger: 'axis', axisPointer: { type: 'shadow' },
@@ -641,19 +641,17 @@ var colors = {
 (function(){
   var chart = echarts.init(document.getElementById('chartLevelSlot'));
   var tiers = ['Lv01-05','Lv06-10','Lv11-15','Lv16-20','Lv21-25','Lv26-30','Lv31+'];
-  // s14 data converted to % arrays per slot
   var slotData = {
-    'S1': [45.3,20.6,19.7,20.5,20.0,19.7,20.2],
-    'S2': [31.9,19.3,19.7,20.4,19.6,19.6,20.5],
-    'S3': [22.9,21.7,16.8,16.4,16.9,18.5,18.2],
-    'S4': [0,24.7,15.4,14.4,15.3,16.3,16.7],
-    'S5': [0,13.7,12.7,11.5,12.5,10.2,9.9],
-    'S6': [0,0,8.6,6.9,6.8,7.5,6.7],
-    'S7': [0,0,6.5,8.3,7.3,6.6,6.3],
-    'S8': [0,0.1,0.2,1.0,1.1,1.1,1.0]
+    'S1': [45.2,20.4,19.5,20.0,19.6,18.9,18.1],
+    'S2': [31.8,19.0,19.5,19.9,19.0,18.8,18.4],
+    'S3': [22.9,21.7,17.1,16.6,17.3,19.3,19.9],
+    'S4': [0,24.9,15.6,14.9,15.8,16.8,18.0],
+    'S5': [0,14.0,12.9,12.0,13.2,10.8,10.9],
+    'S6': [0,0,8.3,7.2,6.5,7.7,7.5],
+    'S7': [0,0,6.3,7.5,6.4,5.6,4.9]
   };
-  var slotNames = ['S1','S2','S3','S4','S5','S6','S7','S8'];
-  var slotColors = ['#58a6ff','#3fb950','#d29922','#f85149','#bc8cff','#79c0ff','#56d364','#484f58'];
+  var slotNames = ['S1','S2','S3','S4','S5','S6','S7'];
+  var slotColors = ['#58a6ff','#3fb950','#d29922','#f85149','#bc8cff','#79c0ff','#56d364'];
 
   var series = slotNames.map(function(name,i){
     return {
