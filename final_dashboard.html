@@ -903,7 +903,7 @@
 
   <!-- 首付等级分布 -->
   <div class="card">
-    <div class="card-title">D0付费玩家等级分布 <span style="color:var(--text2);font-size:12px;font-weight:400;">（336人 · 首日即付费）</span></div>
+    <div class="card-title">D0付费玩家等级分布 <span style="color:var(--text2);font-size:12px;font-weight:400;">（475人 · 首日即付费）</span></div>
     <div id="ch4LevelChart" class="chart-box" style="height:320px;"></div>
   </div>
 
@@ -1276,7 +1276,7 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' }, formatter: function(p){ return p[0].name + '<br/>付费人数: ' + p[0].value + '人'; } },
     xAxis: {
       type: 'category',
-      data: ['Lv1','Lv2','Lv3','Lv4','Lv5','Lv6','Lv7','Lv8','Lv9','Lv10','Lv11','Lv12','Lv13+'],
+      data: ['Lv1','Lv2','Lv3','Lv4','Lv5','Lv6','Lv7','Lv8','Lv9','Lv10','Lv11','Lv12'],
       axisLabel: { color: THEME.textColor2, fontSize: 11 },
       axisLine: { lineStyle: { color: THEME.axisLine } }
     },
@@ -1289,25 +1289,24 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
     series: [{
       type: 'bar', barWidth: '55%',
       data: [
-        { value: 1, itemStyle: { color: 'rgba(88,166,255,0.3)' } },
-        { value: 4, itemStyle: { color: 'rgba(88,166,255,0.35)' } },
-        { value: 6, itemStyle: { color: 'rgba(88,166,255,0.4)' } },
-        { value: 6, itemStyle: { color: 'rgba(88,166,255,0.45)' } },
-        { value: 13, itemStyle: { color: 'rgba(88,166,255,0.55)' } },
-        { value: 35, itemStyle: { color: '#58a6ff' } },
-        { value: 21, itemStyle: { color: '#58a6ff' } },
-        { value: 34, itemStyle: { color: '#58a6ff' } },
-        { value: 56, itemStyle: { color: '#f87149' } },
-        { value: 35, itemStyle: { color: '#58a6ff' } },
-        { value: 42, itemStyle: { color: '#58a6ff' } },
-        { value: 28, itemStyle: { color: '#58a6ff' } },
-        { value: 55, itemStyle: { color: '#3fb950' } }
+        { value: 10, itemStyle: { color: 'rgba(88,166,255,0.3)' } },
+        { value: 9, itemStyle: { color: 'rgba(88,166,255,0.35)' } },
+        { value: 21, itemStyle: { color: 'rgba(88,166,255,0.4)' } },
+        { value: 38, itemStyle: { color: 'rgba(88,166,255,0.5)' } },
+        { value: 44, itemStyle: { color: 'rgba(88,166,255,0.6)' } },
+        { value: 177, itemStyle: { color: '#f87149' } },
+        { value: 59, itemStyle: { color: '#58a6ff' } },
+        { value: 41, itemStyle: { color: '#58a6ff' } },
+        { value: 51, itemStyle: { color: '#58a6ff' } },
+        { value: 16, itemStyle: { color: 'rgba(88,166,255,0.45)' } },
+        { value: 7, itemStyle: { color: 'rgba(88,166,255,0.35)' } },
+        { value: 2, itemStyle: { color: 'rgba(88,166,255,0.3)' } }
       ],
       label: { show: true, position: 'top', fontSize: 10, color: THEME.textColor, formatter: '{c}' },
       markLine: {
-        data: [{ xAxis: 'Lv9', lineStyle: { color: '#f87149', type: 'dashed', width: 2 } }],
+        data: [{ xAxis: 'Lv6', lineStyle: { color: '#f87149', type: 'dashed', width: 2 } }],
         symbol: 'none',
-        label: { show: true, formatter: 'Lv9 付费高峰', color: '#f87149', fontSize: 10, position: 'insideEndTop' }
+        label: { show: true, formatter: 'Lv6 付费高峰', color: '#f87149', fontSize: 10, position: 'insideEndTop' }
       }
     }]
   }));
