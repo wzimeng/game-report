@@ -1236,7 +1236,7 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
   var c1 = makeChart(dom1);
   c1.setOption(Object.assign(baseOption({ grid: { left: 50, right: 20, top: 50, bottom: 40 } }), {
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    legend: { data: ['通关日均体力','隐藏关日均体力','对照组日均体力'], textStyle: { color: THEME.textColor2 }, top: 6 },
+    legend: { data: ['通关日均体力','隐藏关日均体力'], textStyle: { color: THEME.textColor2 }, top: 6 },
     xAxis: {
       type: 'category',
       data: ['小车竞速','开车探险★','金币募集★'],
@@ -1266,12 +1266,6 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
           { value: 1544, itemStyle: { color: '#43AA8B', borderColor: '#d29922', borderWidth: 2, borderType: 'dashed' } }
         ],
         label: { show: true, position: 'top', fontSize: 11, color: THEME.textColor, formatter: '{c}' }
-      },
-      {
-        name: '对照组日均体力', type: 'line', symbol: 'none',
-        data: [340, 373, 290],
-        lineStyle: { color: 'rgba(139,143,163,0.5)', type: 'dashed', width: 2 },
-        itemStyle: { color: THEME.textColor2 }
       }
     ]
   }));
@@ -1286,7 +1280,7 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
   var c1 = makeChart(dom1);
   c1.setOption(Object.assign(baseOption({ grid: { left: 50, right: 20, top: 50, bottom: 50 } }), {
     tooltip: { trigger: 'axis', axisPointer: { type: 'shadow' } },
-    legend: { data: ['通关日均体力','对照组日均体力'], textStyle: { color: THEME.textColor2 }, top: 6 },
+    legend: { show: false },
     xAxis: {
       type: 'category',
       data: ['玩具拼图','水塘钓鱼','食品券兑换★'],
@@ -1308,12 +1302,6 @@ window.addEventListener('resize', function(){ charts.forEach(function(c){ c.resi
           { value: 1232, itemStyle: { color: '#2A9D8F', borderColor: '#d29922', borderWidth: 2 } }
         ],
         label: { show: true, position: 'top', fontSize: 11, color: THEME.textColor, formatter: '{c}' }
-      },
-      {
-        name: '对照组日均体力', type: 'line', symbol: 'none',
-        data: [256, 234, 245],
-        lineStyle: { color: 'rgba(139,143,163,0.5)', type: 'dashed', width: 2 },
-        itemStyle: { color: THEME.textColor2 }
       }
     ]
   }));
