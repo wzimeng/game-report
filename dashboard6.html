@@ -945,6 +945,12 @@
     <div id="ch4RiverChart" class="chart-box" style="height:420px;"></div>
   </div>
 
+  <!-- BP购买与留存对比 -->
+  <div class="card">
+    <div class="card-title">付费玩家留存对比：买过BP vs 未买BP</div>
+    <div id="ch4BpRetentionChart" class="chart-box" style="height:340px;"></div>
+  </div>
+
 </section>
 
 </div><!-- container end -->
@@ -1621,6 +1627,50 @@ var resetAllFilter = createLinkedGroup(ALL_RAW,
         data: s.data
       };
     })
+  }));
+})();
+
+// --- 付费玩家BP留存对比 ---
+(function(){
+  var dom = document.getElementById('ch4BpRetentionChart');
+  if(!dom) return;
+  var chart = makeChart(dom);
+  var cats = ['平均次留率','平均3留率','平均7留率'];
+  chart.setOption(Object.assign(baseOption({ grid: { left: 50, right: 30, top: 50, bottom: 40 } }), {
+    tooltip: {
+      trigger: 'axis', axisPointer: { type: 'shadow' },
+      formatter: function(ps) {
+        var s = '<b>' + ps[0].name + '</b><br/>';
+        ps.forEach(function(p){ s += p.marker + ' ' + p.seriesName + ': ' + p.value + '%<br/>'; });
+        return s;
+      }
+    },
+    legend: { data: ['买过BP（602人）','未买BP（575人）'], textStyle: { color: THEME.textColor2 }, top: 6 },
+    xAxis: {
+      type: 'category', data: cats,
+      axisLabel: { color: THEME.textColor2, fontSize: 12 },
+      axisLine: { lineStyle: { color: THEME.axisLine } }
+    },
+    yAxis: {
+      type: 'value', name: '留存率 %', max: 100,
+      axisLabel: { color: THEME.textColor2, fontSize: 11, formatter: '{value}%' },
+      splitLine: { lineStyle: { color: THEME.splitLine, type: 'dashed' } },
+      axisLine: { show: false }
+    },
+    series: [
+      {
+        name: '买过BP（602人）', type: 'bar', barWidth: 40, barGap: '20%',
+        data: [77.1, 65.8, 45.8],
+        itemStyle: { color: '#3fb950' },
+        label: { show: true, position: 'top', fontSize: 12, color: '#3fb950', formatter: '{c}%' }
+      },
+      {
+        name: '未买BP（575人）', type: 'bar', barWidth: 40,
+        data: [65.4, 52.8, 38.7],
+        itemStyle: { color: '#58a6ff' },
+        label: { show: true, position: 'top', fontSize: 12, color: '#58a6ff', formatter: '{c}%' }
+      }
+    ]
   }));
 })();
 
